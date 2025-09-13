@@ -1,0 +1,24 @@
+server:
+  port: 8081
+
+individuals-api:
+  path: ${INDIVIDUALS_API_PATH:/v1}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:payment-system}
+  client-id: ${KEYCLOAK_CLIENT_ID:individuals-api}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:oRQctok7p2NqxbpaENd1YsSsV2XGPWbu} # вынести в докер компоуз
+
+spring:
+  main:
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${keycloak.host}/realms/${keycloak.realm}
+
+#logging:
+#  level:
+#    root: debug
