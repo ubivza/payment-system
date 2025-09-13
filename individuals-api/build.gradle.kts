@@ -36,7 +36,7 @@ dependencies {
     //openapi codegen libs
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
 
-    //implementation("io.micrometer:micrometer-registry-prometheus:1.15.4")
+    implementation("io.micrometer:micrometer-registry-prometheus:1.15.4")
     //implementation("com.github.loki4j:loki-logback-appender:2.0.0")
     implementation("com.auth0:java-jwt:4.5.0")
     implementation("com.auth0:jwks-rsa:0.22.2")
@@ -53,7 +53,7 @@ tasks.withType<Test> {
 
 openApiGenerate {
     generatorName.set("java")
-    inputSpec.set("$rootDir/openapi/individuals-api.yml")
+    inputSpec.set("$rootDir/individuals-api/openapi/individuals-api.yml")
     outputDir.set(layout.buildDirectory.dir("/generated-sources/openapi").get().toString())
     modelPackage.set("com.example.dto")
     globalProperties.set(

@@ -19,6 +19,15 @@ spring:
         jwt:
           issuer-uri: ${keycloak.host}/realms/${keycloak.realm}
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include: prometheus, health
+  endpoint:
+    prometheus:
+      access: read_only
+
 #logging:
 #  level:
 #    root: debug

@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s # интервал сбора и очистки данных с целей
+  evaluation_interval: 15s # интервал вычисления правил сбора
+
+scrape_configs:
+  - job_name: prometheus # имя задания, которое будет собирать данные
+    metrics_path: '/actuator/prometheus'
+    static_configs: # целевые адреса целей в рамках указанного задания
+      - targets: ['192.168.1.104:8081']
