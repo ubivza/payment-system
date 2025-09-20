@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import reactor.core.publisher.Mono;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
@@ -17,40 +18,40 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(NotValidException.class)
     @ResponseBody
-    public ErrorResponse handleException(NotValidException exception) {
+    public Mono<ErrorResponse> handleException(NotValidException exception) {
         ErrorResponse response = new ErrorResponse();
         response.setStatus(400);
         response.setError(exception.getMessage());
-        return response;
+        return Mono.just(response);
     }
 
     @ResponseStatus(HttpStatus.CONFLICT)
     @ExceptionHandler(UserAlreadyExistsException.class)
     @ResponseBody
-    public ErrorResponse handleException(UserAlreadyExistsException exception) {
+    public Mono<ErrorResponse> handleException(UserAlreadyExistsException exception) {
         ErrorResponse response = new ErrorResponse();
         response.setStatus(409);
         response.setError(exception.getMessage());
-        return response;
+        return Mono.just(response);
     }
 
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
     @ExceptionHandler(BadCredentialsException.class)
     @ResponseBody
-    public ErrorResponse handleException(BadCredentialsException exception) {
+    public Mono<ErrorResponse> handleException(BadCredentialsException exception) {
         ErrorResponse response = new ErrorResponse();
         response.setStatus(401);
         response.setError(exception.getMessage());
-        return response;
+        return Mono.just(response);
     }
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NotFoundException.class)
     @ResponseBody
-    public ErrorResponse handleException(NotFoundException exception) {
+    public Mono<ErrorResponse> handleException(NotFoundException exception) {
         ErrorResponse response = new ErrorResponse();
         response.setStatus(404);
         response.setError(exception.getMessage());
-        return response;
+        return Mono.just(response);
     }
 }

@@ -11,6 +11,8 @@ keycloak:
   client-secret: ${KEYCLOAK_CLIENT_SECRET:oRQctok7p2NqxbpaENd1YsSsV2XGPWbu} # вынести в докер компоуз
 
 spring:
+  application:
+    name: individuals-api
   main:
     banner-mode: off
   security:
@@ -20,14 +22,18 @@ spring:
           issuer-uri: ${keycloak.host}/realms/${keycloak.realm}
 
 management:
+  server:
+    port: 8081
   endpoints:
     web:
       exposure:
-        include: prometheus, health
+        include: "*"
   endpoint:
+    health:
+      show-details: always
     prometheus:
       access: read_only
 
-#logging:
-#  level:
-#    root: debug
+logging:
+  level:
+    reactor.netty.http.client.HttpClient: DEBUG

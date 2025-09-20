@@ -1,5 +1,6 @@
 package com.example.individualsapi.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -13,10 +14,13 @@ import org.springframework.web.reactive.config.EnableWebFlux;
 @EnableReactiveMethodSecurity
 public class SecurityConfig {
 
+    @Value("${individuals-api.path}")
+    private String apiPath;
+
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         http.authorizeExchange(authorizeExchangeSpec ->
-                authorizeExchangeSpec.pathMatchers("/v1/auth/me")
+                authorizeExchangeSpec.pathMatchers(apiPath + "/auth/me")
                         .authenticated()
                         .anyExchange()
                         .permitAll())

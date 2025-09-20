@@ -31,15 +31,16 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    //вынести версии в гред пропертис
+    //вынести версии в гредл пропертис
 
     //openapi codegen libs
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
 
     implementation("io.micrometer:micrometer-registry-prometheus:1.15.4")
-    //implementation("com.github.loki4j:loki-logback-appender:2.0.0")
+    implementation("com.github.loki4j:loki-logback-appender:2.0.0")
     implementation("com.auth0:java-jwt:4.5.0")
     implementation("com.auth0:jwks-rsa:0.22.2")
+    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
@@ -53,7 +54,7 @@ tasks.withType<Test> {
 
 openApiGenerate {
     generatorName.set("java")
-    inputSpec.set("$rootDir/individuals-api/openapi/individuals-api.yml")
+    inputSpec.set("/individuals-api/openapi/individuals-api.yml")
     outputDir.set(layout.buildDirectory.dir("/generated-sources/openapi").get().toString())
     modelPackage.set("com.example.dto")
     globalProperties.set(
