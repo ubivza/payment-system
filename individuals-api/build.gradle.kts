@@ -56,7 +56,7 @@ tasks.withType<Test> {
 
 openApiGenerate {
     generatorName.set("java")
-    inputSpec.set("openapi/individuals-api.yml")
+    inputSpec.set("${projectDir}/openapi/individuals-api.yml")
     outputDir.set(layout.buildDirectory.dir("generated-sources/openapi").get().toString())
     modelPackage.set("com.example.dto")
     globalProperties.set(
@@ -102,5 +102,9 @@ tasks {
 
     clean {
         delete(layout.buildDirectory.dir("generated-sources"))
+    }
+
+    withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
+        mainClass.set("com.example.individualsapi.IndividualsApiApplication")
     }
 }

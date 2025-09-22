@@ -46,12 +46,16 @@ services:
 
   individuals-api:
     build:
+      context: individuals-api
       dockerfile: Dockerfile
     container_name: individuals-api
     ports:
       - "8081:8081"
     environment:
       SPRING_PROFILES_ACTIVE: docker
+      KEYCLOAK_HOST: http://keycloak:8080
+      KEYCLOAK_CLIENT_ID: individuals-api
+      KEYCLOAK_CLIENT_SECRET: oRQctok7p2NqxbpaENd1YsSsV2XGPWbu
     depends_on:
       keycloak:
         condition: service_healthy
