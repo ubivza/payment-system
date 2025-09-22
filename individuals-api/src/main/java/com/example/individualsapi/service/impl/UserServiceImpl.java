@@ -22,7 +22,6 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<TokenResponse> registerUser(UserRegistrationRequest registrationRequest) {
-        System.out.println();
         return keycloakClient.createUser(registrationRequest)
                 .flatMap(response -> {
                     if (response.getStatusCode().equals(HttpStatus.CREATED)) {

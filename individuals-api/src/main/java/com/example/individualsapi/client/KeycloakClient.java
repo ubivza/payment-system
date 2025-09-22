@@ -39,7 +39,7 @@ public class KeycloakClient {
     public KeycloakClient(@Value("${keycloak.host}") String keycloakUrl, @Value("${keycloak.realm}") String realm,
                           @Value("${keycloak.client-id}") String clientId, @Value("${keycloak.client-secret}") String clientSecret,
                           MetricsCollector metricsCollector) {
-        //todo how to rework to use filters
+        //todo how to rework using filters
         HttpClient httpClient = HttpClient.create()
                 .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
         this.keycloakClient = WebClient.builder()

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.http.server.reactive.ServerHttpResponseDecorator;
 import org.springframework.stereotype.Component;
@@ -28,7 +29,10 @@ public class ResponseLoggingFilter implements WebFilter {
             return chain.filter(exchange);
         }
         ServerHttpResponse decoratedResponse = new LoggingResponseDecorator(exchange.getResponse(), exchange);
-        exchange.getResponse().setRawStatusCode(exchange.getResponse().getStatusCode().value());
+        HttpStatusCode statusCode = exchange.getResponse().getStatusCode();
+        if (statusCode != null) {
+            exchange.getResponse().setRawStatusCode(statusCode.value());
+        }
 
         ServerWebExchange decoratedExchange = exchange.mutate().response(decoratedResponse).build();
 

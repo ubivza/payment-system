@@ -20,6 +20,7 @@ spring:
       resourceserver:
         jwt:
           issuer-uri: ${keycloak.host}/realms/${keycloak.realm}
+          jwk-set-uri: ${keycloak.host}/realms/${keycloak.realm}/protocol/openid-connect/certs
 
 management:
   server:

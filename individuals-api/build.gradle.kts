@@ -31,7 +31,6 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    //вынести версии в гредл пропертис
 
     //openapi codegen libs
     implementation("jakarta.validation:jakarta.validation-api:3.1.1")
@@ -45,6 +44,9 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
+    testImplementation("org.testcontainers:testcontainers:1.21.3")
+    testImplementation("com.github.dasniko:testcontainers-keycloak:3.8.0")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
@@ -54,7 +56,7 @@ tasks.withType<Test> {
 
 openApiGenerate {
     generatorName.set("java")
-    inputSpec.set("/individuals-api/openapi/individuals-api.yml")
+    inputSpec.set("$rootDir/openapi/individuals-api.yml")
     outputDir.set(layout.buildDirectory.dir("/generated-sources/openapi").get().toString())
     modelPackage.set("com.example.dto")
     globalProperties.set(
