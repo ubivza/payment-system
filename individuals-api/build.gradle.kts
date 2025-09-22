@@ -56,8 +56,8 @@ tasks.withType<Test> {
 
 openApiGenerate {
     generatorName.set("java")
-    inputSpec.set("$rootDir/openapi/individuals-api.yml")
-    outputDir.set(layout.buildDirectory.dir("/generated-sources/openapi").get().toString())
+    inputSpec.set("openapi/individuals-api.yml")
+    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi").get().toString())
     modelPackage.set("com.example.dto")
     globalProperties.set(
             mapOf(

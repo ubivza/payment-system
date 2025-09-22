@@ -1,17 +1,20 @@
-FROM gradle:8.14-jdk17 AS builder
+FROM gradle:8.14-jdk24 AS builder
 
 WORKDIR /app
 
-COPY build.gradle settings.gradle ./
+COPY build.gradle.kts settings.gradle.kts ./
 RUN gradle dependencies --no-daemon
 
-COPY src ./src
+COPY . .
+
 RUN gradle clean build -x test --no-daemon
 
-FROM openjdk:17-jdk-slim
+FROM openjdk:24-jdk-slim
 
 WORKDIR /app
 
 COPY --from=builder /app/build/libs/*.jar app.jar
+
+EXPOSE 8081
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
