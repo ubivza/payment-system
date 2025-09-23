@@ -146,3 +146,7 @@ individuals-api/
 ## Метрики
 
 Собираются с помощью Prometheus, `org.springframework.boot:spring-boot-starter-actuator` и `io.micrometer:micrometer-registry-prometheus:1.15.4`, и отправляются в Grafana для построения дашбордов.
+
+## Тестирование
+
+Тестирование разделено на юнит и интеграционное. Юнит проверяет отдельные сервисы и контроллер, интеграционное проверяет с помощью контейнера с Keycloak работу сервиса в целом.
