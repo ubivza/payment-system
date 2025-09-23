@@ -1,0 +1,189 @@
+{
+	"info": {
+		"_postman_id": "f75434fd-6f25-44f4-b8a7-9ad9fbb8f407",
+		"name": "Test individuals api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31789287"
+	},
+	"item": [
+		{
+			"name": "registration",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"testpersonsmail@mail.ru\",\r\n    \"password\": \"2222\",\r\n    \"confirm_password\": \"2222\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/v1/auth/registration",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"auth",
+						"registration"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "login",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"email\": \"testpersonsmail@mail.ru\",\r\n    \"password\": \"2222\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/v1/auth/login",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"auth",
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "refresh-token",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"refresh_token\": \"eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2Yzc3NzQ2NS02MDhjLTQ1MzAtODVkMi05MTMwZTBkMTJmNjAifQ.eyJleHAiOjE3NTc3Nzc1NDQsImlhdCI6MTc1Nzc3NTc0NCwianRpIjoiNTdlOWVlN2EtZTFlMS00MWRhLWJhYmItNzc5YmNjZmM3OGU2IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJzdWIiOiIwNWU3NGI2Yy0xYTI2LTRhYWMtOWU0Yy1iYjY0ZGYyNGU4ZDMiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwic2lkIjoiOTE2ODJjMzAtMGVjOS00ODcxLWE1ODYtYzFlYzQzN2ZlM2E2Iiwic2NvcGUiOiJhY3Igd2ViLW9yaWdpbnMgc2VydmljZV9hY2NvdW50IHByb2ZpbGUgYmFzaWMgcm9sZXMgZW1haWwifQ.qkgMssdDTLBh9Jkos0LvLhRgxjMZF3AhQm1ieU7YqAFC72p4D4j9vkvnjnW_FrfhiQ4HCgne1s7NyRRUFRcO2w1\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8081/v1/auth/refresh-token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"auth",
+						"refresh-token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get user info",
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZTW5YYVpRMmF1N2hjQVhZanhNcXRFekNMc3JKLVdHNG9tWDlzVkk0N3FZIn0.eyJleHAiOjE3NTc3NjE1NjYsImlhdCI6MTc1Nzc2MTI2NiwianRpIjoib25ydHJvOmE2OWJmNTQwLTBkNWMtNGM1Yy04NTYwLTM2YmRkNGJhYjNjOCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMDVlNzRiNmMtMWEyNi00YWFjLTllNGMtYmI2NGRmMjRlOGQzIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwic2lkIjoiM2MwZTQxNTctZDhmZi00ODEwLWJjNTktOGEwMjJlZGJhZGJkIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsInByZWZlcnJlZF91c2VybmFtZSI6InZlcm9uQG1haWwucnUiLCJlbWFpbCI6InZlcm9uQG1haWwucnUifQ.pawWoxF1HELU5zLrk-PQsZq9g-AkiDxF6vQ_FYrpJxZwyEJJUKxy1rLGIi5xpoLi-IAUacf_KYqskIZgMUcR5PigN2DwQH2xWl0CQDh3YOWc2NXCbblEUVPm4P5RWQYE9xU-kBvIybVMAKjSt2Jkevor9j-AYHs0mkCUQ5EXnxn97lko93HVK8TAsJluA2Feyh4pwYsLOHvfO8fiwweZD_sQYbzSoYMWxGA8OFXhTlgJRtM9cPCOERm2NlhAHG7BbpoI49mpX2UUf951DwTXwtRh6Sq2k2EgMCZzjNULmbuPgvG5gfx7P1zFVJS5UylEWlY6Tj-pNxyJI4zgNE7uzw",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/v1/auth/me",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"v1",
+						"auth",
+						"me"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "actuator",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/actuator",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"actuator"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "prometheus",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8081/actuator/prometheus",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8081",
+					"path": [
+						"actuator",
+						"prometheus"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "refreshToken",
+			"value": "",
+			"type": "default"
+		}
+	]
+}
