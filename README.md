@@ -12,7 +12,7 @@
 8. Перейти в realm -> payment-system -> clients -> credentials и поменять client-secret на секрет из docker compose поле `services.individuals-api.environment.KEYCLOAK_CLIENT_SECRET`
 	8.1 Optional Если Keycloak требует HTTPS нужно зайти в настройки докера -> Resources -> Network и поставить галочку Enable host networking
 9. Перезапустить individuals-keycloak и individuals-api
-10. Проверить работоспособность микросервиса с помощью приложенной постман коллекции
+10. Проверить работоспособность микросервиса с помощью приложенной постман коллекции individuals-api/postman/Test individuals api.postman_collection.json
 
 Микросервис представляет из себя оркестратор аутентификации, при посредничестве Keycloak.
 Предоставляет реактивное API для
