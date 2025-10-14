@@ -20,12 +20,16 @@ public class SecurityConfig {
     @Bean
     public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
         http.authorizeExchange(authorizeExchangeSpec ->
-                authorizeExchangeSpec.pathMatchers(apiPath + "/auth/me")
+                authorizeExchangeSpec.pathMatchers(collectAuthenticatedPaths())
                         .authenticated()
                         .anyExchange()
                         .permitAll())
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()))
                 .csrf(ServerHttpSecurity.CsrfSpec::disable);
         return http.build();
+    }
+
+    private String collectAuthenticatedPaths() {
+        return apiPath + "/auth/me";
     }
 }

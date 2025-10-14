@@ -5,20 +5,16 @@ import com.example.dto.UserInfoResponse;
 import com.example.dto.UserRegistrationRequest;
 import com.example.individualsapi.exception.*;
 import com.example.individualsapi.service.impl.MetricsCollector;
-import io.netty.handler.logging.LogLevel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
-import reactor.netty.http.client.HttpClient;
-import reactor.netty.transport.logging.AdvancedByteBufFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -39,14 +35,8 @@ public class KeycloakClient {
     public KeycloakClient(@Value("${keycloak.host}") String keycloakUrl, @Value("${keycloak.realm}") String realm,
                           @Value("${keycloak.client-id}") String clientId, @Value("${keycloak.client-secret}") String clientSecret,
                           MetricsCollector metricsCollector) {
-        //todo how to rework using filters
-        HttpClient httpClient = HttpClient.create()
-                .wiretap("reactor.netty.http.client.HttpClient", LogLevel.DEBUG, AdvancedByteBufFormat.TEXTUAL);
         this.keycloakClient = WebClient.builder()
                 .baseUrl(keycloakUrl)
-                .clientConnector(new ReactorClientHttpConnector(httpClient))
-//                .filter(WebClientLoggingFilter.logRequest())
-//                .filter(WebClientLoggingFilter.logResponse())
                 .build();
         this.REALM = realm;
         this.CLIENT_ID = clientId;
@@ -72,7 +62,12 @@ public class KeycloakClient {
                     log.warn("Failed to get user token by username password: {}", email);
                     return Mono.error(new BadCredentialsException("Неверный логин или пароль"));
                 })
-                .bodyToMono(TokenResponse.class);
+                .bodyToMono(TokenResponse.class)
+                .flatMap(tokenResponse -> {
+                    log.info("Keycloak user token response: access_token: *****, refresh_token: *****, expires_in: {}, token_type: {}",
+                            tokenResponse.getExpiresIn(), tokenResponse.getTokenType());
+                    return Mono.just(tokenResponse);
+                });
     }
 
     public Mono<TokenResponse> refreshToken(String refreshToken) {
@@ -87,7 +82,11 @@ public class KeycloakClient {
                     log.warn("Failed to refresh user token");
                     return Mono.error(new BadCredentialsException("Недействительный или просроченный refresh token"));
                 })
-                .bodyToMono(TokenResponse.class);
+                .bodyToMono(TokenResponse.class).flatMap(tokenResponse -> {
+                    log.info("Keycloak user token refresh response: access_token: *****, refresh_token: *****, expires_in: {}, token_type: {}",
+                            tokenResponse.getExpiresIn(), tokenResponse.getTokenType());
+                    return Mono.just(tokenResponse);
+                });
     }
 
     public Mono<UserInfoResponse> getUserInfo(String currentUserUid) {
@@ -106,7 +105,12 @@ public class KeycloakClient {
                     log.warn("Failed to get user info by id {} because user not found", currentUserId);
                     return Mono.error(new NotFoundException("Пользователь не найден"));
                 })
-                .bodyToMono(UserInfoResponse.class);
+                .bodyToMono(UserInfoResponse.class)
+                .flatMap(userInfoResponse -> {
+                    log.info("Keycloak user info response: id: {}, email: {}, roles: {}, createdAt: {}",
+                            userInfoResponse.getId(), userInfoResponse.getEmail(), userInfoResponse.getRoles(),  userInfoResponse.getCreatedAt());
+                    return Mono.just(userInfoResponse);
+                });
     }
 
     private Mono<TokenResponse> getAdminToken() {
@@ -120,7 +124,11 @@ public class KeycloakClient {
                     log.error("Failed to get admin token");
                     return Mono.error(new RuntimeException("Failed to get admin token"));
                 })
-                .bodyToMono(TokenResponse.class); //.contextWrite(Context.of("accessToken", "bearer xxx.yyy.zzz")) maybe tak??
+                .bodyToMono(TokenResponse.class).flatMap(tokenResponse -> {
+                    log.info("Keycloak admin token response: access_token: *****, refresh_token: *****, expires_in: {}, token_type: {}",
+                            tokenResponse.getExpiresIn(), tokenResponse.getTokenType());
+                    return Mono.just(tokenResponse);
+                });
     }
 
     private Mono<ResponseEntity<Void>> sendCreateUserRequest(UserRegistrationRequest request, TokenResponse adminToken) {

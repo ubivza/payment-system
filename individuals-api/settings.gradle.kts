@@ -1,1 +1,2 @@
-rootProject.name = "individuals-api"
+rootProject.name = "payment-system"
+include("individuals-api")
