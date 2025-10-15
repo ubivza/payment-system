@@ -15,8 +15,8 @@ ENV DOCKER_HOST tcp://dind:2375
 FROM openjdk:24-jdk-slim
 
 WORKDIR /app
-#TODO перенастроить сборку чтобы сделать *.jar
-COPY --from=builder /app/build/libs/individuals-api-0.0.1-SNAPSHOT.jar app.jar
+
+COPY --from=builder /app/build/libs/*.jar app.jar
 
 EXPOSE 8081
 

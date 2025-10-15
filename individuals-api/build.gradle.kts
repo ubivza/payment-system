@@ -67,6 +67,10 @@ tasks.withType<Test> {
     useJUnitPlatform()
 }
 
+tasks.getByName<Jar>("jar") {
+    enabled = false
+}
+
 openApiGenerate {
     generatorName.set("java")
     inputSpec.set("${projectDir}/openapi/individuals-api.yml")

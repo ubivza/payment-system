@@ -33,7 +33,6 @@ import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
 @SpringBootTest
 @Import(KeycloakTestContainerConfig.class)
-@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class AuthControllerIntegrationTest {
 
     @Autowired
@@ -54,25 +53,7 @@ public class AuthControllerIntegrationTest {
                 .bindToApplicationContext(context)
                 .configureClient()
                 .build();
-
-//        await().atMost(15, TimeUnit.SECONDS)
-//                .pollInterval(1, TimeUnit.SECONDS)
-//                .until(() -> {
-//                    try {
-//                        getKeycloakInstance().realms().findAll();
-//                        return true;
-//                    } catch (Exception e) {
-//                        return false;
-//                    }
-//                });
     }
-
-//    @AfterEach
-//    void tearDown() {
-//        for (UserRepresentation userRepresentation : getKeycloakInstance().realm(realm).users().list()) {
-//            getKeycloakInstance().realm(realm).users().get(userRepresentation.getId()).remove();
-//        }
-//    }
 
     @Test
     @DisplayName("Registration -> get info")
