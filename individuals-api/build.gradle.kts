@@ -25,6 +25,19 @@ repositories {
     mavenCentral()
 }
 
+val versions = mapOf(
+    "jakartaValidationApi" to "3.1.1",
+    "micrometerRegistryPrometheus" to "1.15.4",
+    "lokiLogbackAppender" to "2.0.0",
+    "javaJwt" to "4.5.0",
+    "jwksRsa" to "0.22.2",
+    "logstashLogbackEncoder" to "8.1",
+    "junitJupiter" to "1.21.3",
+    "logbackClassicVersion" to "1.5.18",
+    "testcontainers" to "1.21.3",
+    "testcontainersKeycloak" to "3.8.0"
+)
+
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -33,25 +46,31 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter-actuator")
 
     //openapi codegen libs
-    implementation("jakarta.validation:jakarta.validation-api:3.1.1")
+    implementation("jakarta.validation:jakarta.validation-api:${versions["jakartaValidationApi"]}")
 
-    implementation("io.micrometer:micrometer-registry-prometheus:1.15.4")
-    implementation("com.github.loki4j:loki-logback-appender:2.0.0")
-    implementation("com.auth0:java-jwt:4.5.0")
-    implementation("com.auth0:jwks-rsa:0.22.2")
-    implementation("net.logstash.logback:logstash-logback-encoder:8.1")
+    implementation("io.micrometer:micrometer-registry-prometheus:${versions["micrometerRegistryPrometheus"]}")
+    implementation("com.github.loki4j:loki-logback-appender:${versions["lokiLogbackAppender"]}")
+    implementation("com.auth0:java-jwt:${versions["javaJwt"]}")
+    implementation("com.auth0:jwks-rsa:${versions["jwksRsa"]}")
+    implementation("net.logstash.logback:logstash-logback-encoder:${versions["logstashLogbackEncoder"]}")
+    implementation("ch.qos.logback:logback-classic:${versions["logbackClassicVersion"]}")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
-    testImplementation("org.testcontainers:junit-jupiter:1.21.3")
-    testImplementation("org.testcontainers:testcontainers:1.21.3")
-    testImplementation("com.github.dasniko:testcontainers-keycloak:3.8.0")
+    testImplementation("org.springframework.security:spring-security-test")
+    testImplementation("org.testcontainers:junit-jupiter:${versions["junitJupiter"]}")
+    testImplementation("org.testcontainers:testcontainers:${versions["testcontainers"]}")
+    testImplementation("com.github.dasniko:testcontainers-keycloak:${versions["testcontainersKeycloak"]}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {
     useJUnitPlatform()
+}
+
+tasks.getByName<Jar>("jar") {
+    enabled = false
 }
 
 openApiGenerate {
