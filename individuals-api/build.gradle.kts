@@ -33,6 +33,7 @@ val versions = mapOf(
     "jwksRsa" to "0.22.2",
     "logstashLogbackEncoder" to "8.1",
     "junitJupiter" to "1.21.3",
+    "logbackClassicVersion" to "1.5.18",
     "testcontainers" to "1.21.3",
     "testcontainersKeycloak" to "3.8.0"
 )
@@ -52,6 +53,7 @@ dependencies {
     implementation("com.auth0:java-jwt:${versions["javaJwt"]}")
     implementation("com.auth0:jwks-rsa:${versions["jwksRsa"]}")
     implementation("net.logstash.logback:logstash-logback-encoder:${versions["logstashLogbackEncoder"]}")
+    implementation("ch.qos.logback:logback-classic:${versions["logbackClassicVersion"]}")
 
     compileOnly("org.projectlombok:lombok")
     annotationProcessor("org.projectlombok:lombok")

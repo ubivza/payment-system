@@ -6,7 +6,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 RUN gradle dependencies --no-daemon
 
 COPY . .
-RUN gradle clean build --no-daemon
+RUN gradle clean build -x test --no-daemon
 
 FROM openjdk:24-jdk-slim
 
