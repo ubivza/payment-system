@@ -6,11 +6,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 RUN gradle dependencies --no-daemon
 
 COPY . .
-RUN gradle clean build -x test --no-daemon
-
-FROM openjdk:17-jdk-slim
-
-ENV DOCKER_HOST tcp://dind:2375
+RUN gradle clean build --no-daemon
 
 FROM openjdk:24-jdk-slim
 

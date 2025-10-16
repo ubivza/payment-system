@@ -2,38 +2,22 @@ package com.example.individualsapi.controller;
 
 
 import com.example.dto.*;
-import com.example.individualsapi.config.KeycloakTestContainerConfig;
+import com.example.individualsapi.config.KeycloakTestContainerBase;
 import com.example.individualsapi.util.TestUtils;
-import dasniko.testcontainers.keycloak.KeycloakContainer;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.keycloak.OAuth2Constants;
-import org.keycloak.admin.client.Keycloak;
-import org.keycloak.admin.client.KeycloakBuilder;
-import org.keycloak.representations.idm.UserRepresentation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import java.util.concurrent.TimeUnit;
-
 import static org.junit.jupiter.api.Assertions.*;
-import static org.testcontainers.shaded.org.awaitility.Awaitility.await;
 
-@SpringBootTest
-@Import(KeycloakTestContainerConfig.class)
-public class AuthControllerIntegrationTest {
+public class AuthControllerIntegrationTest extends KeycloakTestContainerBase {
 
     @Autowired
     ApplicationContext context;
@@ -190,14 +174,4 @@ public class AuthControllerIntegrationTest {
                 .exchange()
                 .expectStatus().isEqualTo(HttpStatus.UNAUTHORIZED);
     }
-
-//    private Keycloak getKeycloakInstance() {
-//        return KeycloakBuilder.builder()
-//                .serverUrl(keycloak.getAuthServerUrl())
-//                .realm(realm)
-//                .grantType(OAuth2Constants.CLIENT_CREDENTIALS)
-//                .clientId(clientId)
-//                .clientSecret(clientSecret)
-//                .build();
-//    }
 }
