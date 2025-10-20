@@ -1,0 +1,221 @@
+openapi: 3.0.0
+info:
+  title: Person service API
+  description: REST API для регистрации, получения пользователя по ID и email, обновление данных пользователя, удаление пользователя во внутренней системе.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8082/v1 #TODO выбрать порт
+
+paths:
+  /person-service/individual:
+    post:
+      summary: Регистрация пользователя во внутренней системе
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualRequest'
+      responses:
+        '201':
+          description: Успешная регистрация, айди записи
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RegistrationResponse'
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '409':
+          description: Пользователь уже существует
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    get:
+      summary: Получение пользователя по Id и email
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Id пользователя
+        - name: email
+          in: query
+          required: true
+          schema:
+            type: string
+            format: email
+          description: Email пользователя
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IndividualRequest' #TODO что отдаем?
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /person-service/individual/{id}:
+    put:
+      summary: Обновление пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Id пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IndividualRequest'
+      responses:
+        '200':
+          description: Пользователь обновлен
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      summary: Удаление пользователя
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Id пользователя
+      responses:
+        '200':
+          description: Пользователь удален
+        '404':
+          description: Пользователь не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /person-service/individual/compensate-registration/{id}:
+    delete:
+      summary: Компенсация транзакции по регистрации в случае неудачи
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Id пользователя
+      responses:
+        '200':
+          description: Пользователь удален
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    IndividualRequest:
+      type: object
+      required: [user, passport_number, phone_number, status]
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        passport_number:
+          type: string
+        phone_number:
+          type: string
+        verified_at:
+          type: string
+          format: date-time
+        archived_at:
+          type: string
+          format: date-time
+        status:
+          type: string
+
+    User:
+      type: object
+      required: [email, first_name, last_name, address]
+      properties:
+        secret_key:
+          type: string
+        email:
+          type: string
+          format: email
+        first_name:
+          type: string
+        last_name:
+          type: string
+        filled:
+          type: boolean
+        address:
+          $ref: '#/components/schemas/Address'
+
+    Address:
+      type: object
+      required: [country, address, zip_code, city, state]
+      properties:
+        country:
+          $ref: '#/components/schemas/Country'
+        address:
+          type: string
+        zip_code:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+
+    Country:
+      type: object
+      required: [name, alpha2, alpha3, status]
+      properties:
+        name:
+          type: string
+        alpha2:
+          type: string
+        alpha3:
+          type: string
+        status:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        status:
+          type: integer
+
+    RegistrationResponse:
+      type: object
+      properties:
+        user_uid:
+          type: string
