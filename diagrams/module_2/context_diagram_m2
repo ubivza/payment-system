@@ -1,0 +1,18 @@
+@startuml
+!define RECTANGLE class
+!define ARROW ->
+
+' Участники
+actor Client
+[Payment system]
+[Keycloak]
+[KC DB]
+[PS DB]
+
+' Связи
+Client -right-> [Payment system]
+[Payment system] -right-> [Keycloak]
+[Keycloak] -right-> [KC DB]
+[Payment system] -down-> [PS DB]
+
+@enduml

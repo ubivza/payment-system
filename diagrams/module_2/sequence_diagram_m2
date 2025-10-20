@@ -1,0 +1,28 @@
+@startuml
+actor Client
+participant "individuals-api"
+participant "person-service"
+participant Keycloak
+participant "PS DB"
+
+
+Client -> "individuals-api" : POST /registration
+"individuals-api" -> "person-service" : POST /person-service/individual
+"person-service" -> "PS DB" : SAVE
+"PS DB" --> "person-service" : OK
+"person-service" --> "individuals-api" : OK
+"individuals-api" -> Keycloak : create user
+
+alt OK Flow
+  Keycloak --> "individuals-api" : OK
+  "individuals-api" --> Client : Tokens
+
+else Not OK Flow
+  Keycloak --> "individuals-api" : failed
+  "individuals-api" -> "person-service" : DELETE /person-service/individual/compensate-registration/{id}
+  "person-service" -> "PS DB" : DELETE
+  "PS DB" --> "person-service" : OK
+  "person-service" --> "individuals-api" : OK
+  "individuals-api" --> Client : failed
+end
+@enduml
