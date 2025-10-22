@@ -1,0 +1,22 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_LEFT_RIGHT()
+
+Person(client, "Client", "Пользователь системы")
+
+System_Boundary(payment_boundary, "Payment System") {
+}
+
+Component(keycloak, "Keycloak", "OpenID Connect", "Управление пользователями и аутентификация")
+
+ContainerDb(kc_db, "Keycloak Database", "PostgreSQL", "Хранилище данных аутентификации")
+ContainerDb(ps_db, "Payment Database", "PostgreSQL", "Хранилище платежных данных")
+
+' Связи
+Rel(client, payment_boundary, "Использует", "HTTP/JSON")
+Rel(payment_boundary, keycloak, "Аутентификация", "OpenID Connect")
+Rel(keycloak, kc_db, "Хранение данных", "JDBC")
+Rel(payment_boundary, ps_db, "Хранение платежей", "JDBC")
+
+@enduml

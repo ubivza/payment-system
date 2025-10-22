@@ -1,0 +1,49 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_TOP_DOWN()
+
+Person(client, "Client", "Пользователь системы")
+
+Container_Boundary(payment_system, "Payment System") {
+Component(individuals_api, "Individuals API", "REST API", "Обработка запросов пользователей")
+Component(person_service, "Person Service", "Business Logic", "Управление персональными данными")
+ContainerDb(person_db, "Person Database", "PostgreSQL", "Хранилище персональных данных")
+}
+
+System_Boundary(auth_system, "Authentication System") {
+Component(keycloak, "Keycloak", "OpenID Connect", "Аутентификация и авторизация")
+ContainerDb(kc_db, "Keycloak DB", "PostgreSQL", "Хранилище данных аутентификации")
+}
+
+
+Component(nexus, "Nexus", "Service Mesh", "Межсервисная коммуникация")
+
+System_Boundary(monitoring_system, "Monitoring System") {
+Component(alloy, "Alloy", "Observability Agent", "Сбор метрик и логов")
+Component(tempo, "Tempo", "Distributed Tracing", "Хранение трейсов")
+Component(loki, "Loki", "Log Aggregation", "Хранение логов")
+Component(prometheus, "Prometheus", "Metrics", "Сбор метрик")
+Component(grafana, "Grafana", "Dashboard", "Визуализация мониторинга")
+}
+
+' Связи между компонентами
+Rel(client, individuals_api, "HTTP", "REST API")
+Rel(individuals_api, nexus, "HTTP", "Service communication")
+Rel(nexus, person_service, "HTTP", "Internal calls")
+Rel(person_service, person_db, "JDBC", "Database operations")
+Rel(individuals_api, keycloak, "HTTP", "Authentication")
+Rel(keycloak, kc_db, "JDBC", "User data storage")
+
+' Мониторинг
+Rel(alloy, payment_system, "HTTP", "Metrics collection")
+Rel(alloy, tempo, "OTLP", "Traces export")
+Rel(alloy, loki, "HTTP", "Logs export")
+Rel(alloy, prometheus, "HTTP", "Metrics export")
+Rel(tempo, grafana, "HTTP", "Traces query")
+Rel(loki, grafana, "HTTP", "Logs query")
+Rel(prometheus, grafana, "HTTP", "Metrics query")
+
+@enduml
+
+TODO refactor

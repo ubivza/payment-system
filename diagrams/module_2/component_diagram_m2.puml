@@ -1,0 +1,33 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+Person_Ext(client, "Клиент", "Внешние вызовы от individuals-api")
+Component(nexus, "Nexus", "Хранилище артефактов")
+
+Container_Boundary(person_service, "person-service") {
+Component(individual_controller, "IndividualController", "Spring MVC", "REST API для управления пользователями")
+Component(individual_service, "IndividualService", "Business Logic", "Логика операций с пользователями")
+Component(user_repo, "UserRepository", "Spring Data JPA", "CRUD операции для пользователей")
+Component(address_repo, "AddressRepository", "Spring Data JPA", "CRUD операции для адресов")
+Component(individuals_repo, "IndividualRepository", "Spring Data JPA", "CRUD операции для физ лиц")
+Component(countries_repo, "CountriesRepository", "Spring Data JPA", "CRUD операции для стран")
+Component(audit_config, "AuditConfig", "Конфиг для Hibernate Envers")
+Component(openapi_generator, "OpenApi Auto Generation", "Настройка автогенерации апи клиента")
+}
+
+ContainerDb(db, "Person Service Database", "PostgreSQL", "Хранилище всех данных приложения")
+
+Rel(client, individual_controller, "HTTP", "HTTP запросы")
+Rel(individual_controller, individual_service, "Сервисные методы",)
+Rel(individual_service, user_repo,)
+Rel(individual_service, address_repo,)
+Rel(individual_service, individuals_repo,)
+Rel(individual_service, countries_repo,)
+Rel(user_repo, db, "JDBC", "SQL запросы")
+Rel(address_repo, db, "JDBC", "SQL запросы")
+Rel(individuals_repo, db, "JDBC", "SQL запросы")
+Rel(countries_repo, db, "JDBC", "SQL запросы")
+Rel(openapi_generator, nexus, )
+
+@enduml

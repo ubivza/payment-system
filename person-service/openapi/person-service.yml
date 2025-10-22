@@ -7,7 +7,7 @@ servers:
   - url: http://localhost:8082/v1 #TODO выбрать порт
 
 paths:
-  /person-service/individual:
+  /individuals:
     post:
       summary: Регистрация пользователя во внутренней системе
       requestBody:
@@ -66,7 +66,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /person-service/individual/{id}:
+  /person-service/individuals/{id}:
     put:
       summary: Обновление пользователя
       parameters:
@@ -118,7 +118,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /person-service/individual/compensate-registration/{id}:
+  /person-service/individuals/compensate-registration/{id}:
     delete:
       summary: Компенсация транзакции по регистрации в случае неудачи
       parameters:
