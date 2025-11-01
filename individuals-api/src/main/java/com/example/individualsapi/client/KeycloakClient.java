@@ -5,6 +5,7 @@ import com.example.dto.UserInfoResponse;
 import com.example.dto.UserRegistrationRequest;
 import com.example.individualsapi.exception.*;
 import com.example.individualsapi.service.impl.MetricsCollector;
+import io.opentelemetry.instrumentation.annotations.WithSpan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -44,10 +45,13 @@ public class KeycloakClient {
         this.metricsCollector = metricsCollector;
     }
 
-    public Mono<ResponseEntity<Void>> createUser(UserRegistrationRequest request) {
-        return getAdminToken().flatMap(adminToken -> sendCreateUserRequest(request, adminToken));
+    public Mono<ResponseEntity<Void>> createUser(UserRegistrationRequest request, String innerId) {
+        return getAdminToken()
+                .flatMap(adminToken ->
+                        sendCreateUserRequest(request, adminToken, innerId));
     }
 
+    @WithSpan("keycloakClient.getUserToken")
     public Mono<TokenResponse> getUserToken(String email, String password) {
         return keycloakClient.post().uri("/realms/{realm}/protocol/openid-connect/token", REALM)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -70,6 +74,7 @@ public class KeycloakClient {
                 });
     }
 
+    @WithSpan("keycloakClient.refreshToken")
     public Mono<TokenResponse> refreshToken(String refreshToken) {
         return keycloakClient.post().uri("/realms/{realm}/protocol/openid-connect/token", REALM)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -89,6 +94,7 @@ public class KeycloakClient {
                 });
     }
 
+    //pod snos? TODO
     public Mono<UserInfoResponse> getUserInfo(String currentUserUid) {
         return getAdminToken().flatMap(adminToken -> getUserInfo(currentUserUid, adminToken));
     }
@@ -107,13 +113,13 @@ public class KeycloakClient {
                 })
                 .bodyToMono(UserInfoResponse.class)
                 .flatMap(userInfoResponse -> {
-                    log.info("Keycloak user info response: id: {}, email: {}, roles: {}, createdAt: {}",
-                            userInfoResponse.getId(), userInfoResponse.getEmail(), userInfoResponse.getRoles(),  userInfoResponse.getCreatedAt());
+                    log.info("Keycloak user info response: {}", userInfoResponse);
                     return Mono.just(userInfoResponse);
                 });
     }
 
-    private Mono<TokenResponse> getAdminToken() {
+    @WithSpan("keycloakClient.getAdminToken")
+    public Mono<TokenResponse> getAdminToken() {
         return keycloakClient.post().uri("/realms/{realm}/protocol/openid-connect/token", REALM)
                 .contentType(MediaType.APPLICATION_FORM_URLENCODED)
                 .body(BodyInserters.fromFormData("grant_type", "client_credentials")
@@ -131,12 +137,14 @@ public class KeycloakClient {
                 });
     }
 
-    private Mono<ResponseEntity<Void>> sendCreateUserRequest(UserRegistrationRequest request, TokenResponse adminToken) {
+    @WithSpan("keycloakClient.sendCreateUserRequest")
+    private Mono<ResponseEntity<Void>> sendCreateUserRequest(UserRegistrationRequest request, TokenResponse adminToken, String innerId) {
         Map<String, Object> user = new HashMap<>();
         user.put("username", request.getEmail());
         user.put("email", request.getEmail());
         user.put("emailVerified", true);
         user.put("enabled", true);
+        user.put("attributes", Map.of("inner_id", innerId));
 
         List<Map<String, Object>> credentials = new ArrayList<>();
         Map<String, Object> credential = new HashMap<>();

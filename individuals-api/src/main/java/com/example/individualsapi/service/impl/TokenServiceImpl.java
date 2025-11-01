@@ -1,7 +1,6 @@
 package com.example.individualsapi.service.impl;
 
 import com.example.dto.TokenResponse;
-import com.example.dto.UserRegistrationRequest;
 import com.example.individualsapi.client.KeycloakClient;
 import com.example.individualsapi.service.api.TokenService;
 import lombok.RequiredArgsConstructor;
@@ -22,5 +21,10 @@ public class TokenServiceImpl implements TokenService {
     @Override
     public Mono<TokenResponse> refreshUserToken(String refreshToken) {
         return client.refreshToken(refreshToken);
+    }
+
+    @Override
+    public Mono<TokenResponse> getAdminToken() {
+        return client.getAdminToken();
     }
 }

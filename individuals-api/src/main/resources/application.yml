@@ -22,15 +22,33 @@ spring:
           issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
           jwk-set-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_JWK_SET_URI:${keycloak.host}/realms/${keycloak.realm}/protocol/openid-connect/certs}
 
+person:
+  name: ${PERSON_NAME:person}
+  contextId: ${person.name}
+  url: ${PERSON_URL:http://localhost:8082}
+
 management:
   server:
-    port: ${MANAGEMENT_SERVER_PORT:8081}
+    port: ${INDIVIDUALS_API_MANAGEMENT_SERVER_PORT:8081}
   endpoints:
     web:
       exposure:
-        include: ${MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+        include: ${INDIVIDUALS_API_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
   endpoint:
     health:
-      show-details: ${MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+      show-details: ${INDIVIDUALS_API_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
     prometheus:
-      access: ${MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+      access: ${INDIVIDUALS_API_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${INDIVIDUALS_API_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none

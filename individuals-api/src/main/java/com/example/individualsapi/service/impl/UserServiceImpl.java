@@ -2,6 +2,8 @@ package com.example.individualsapi.service.impl;
 
 import com.example.dto.*;
 import com.example.individualsapi.client.KeycloakClient;
+import com.example.individualsapi.mapper.PersonMapper;
+import com.example.individualsapi.service.api.PersonService;
 import com.example.individualsapi.service.api.TokenService;
 import com.example.individualsapi.service.api.UserService;
 import lombok.RequiredArgsConstructor;
@@ -19,18 +21,27 @@ public class UserServiceImpl implements UserService {
     private final KeycloakClient keycloakClient;
     private final ContextUserSubExtractor uidExtractor;
     private final MetricsCollector metricsCollector;
+    private final PersonService personService;
+    private final PersonMapper personMapper;
 
     @Override
     public Mono<TokenResponse> registerUser(UserRegistrationRequest registrationRequest) {
-        return keycloakClient.createUser(registrationRequest)
-                .flatMap(response -> {
-                    if (response.getStatusCode().equals(HttpStatus.CREATED)) {
-                        metricsCollector.recordRegistration(true);
-                        return tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword());
-                    }
-                    log.error("Something went wrong while register user {}", registrationRequest.getEmail());
-                    return Mono.error(new RuntimeException("Something went wrong"));
-                });
+        return tokenService.getAdminToken()
+                .flatMap(tokenResponse ->
+                        personService.register(registrationRequest, tokenResponse.getAccessToken())
+                                .flatMap(innerId ->
+                                        keycloakClient.createUser(registrationRequest, innerId)
+                                                .flatMap(response -> {
+                                                    if (response.getStatusCode().equals(HttpStatus.CREATED)) {
+                                                        metricsCollector.recordRegistration(true);
+                                                        return tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword());
+                                                    }
+                                                    log.error("Something went wrong while register user in keycloak {}", registrationRequest.getEmail());
+                                                    return Mono.error(new RuntimeException("Something went wrong"));
+                                                })
+                                                .onErrorResume(err ->
+                                                        personService.rollbackRegistration(innerId, tokenResponse.getAccessToken()).then(Mono.error(err)))
+                                ));
     }
 
     @Override
@@ -47,6 +58,35 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Mono<UserInfoResponse> getUserInfo() {
-        return uidExtractor.getCurrentUserSub().flatMap(keycloakClient::getUserInfo);
+        return uidExtractor.getCurrentUserRequestData()
+                .flatMap(userRequestData ->
+                        tokenService.getAdminToken()
+                                .flatMap(tokenResponse ->
+                                        personService.getUserInfo(userRequestData.getInnerId(), userRequestData.getEmail(), tokenResponse.getAccessToken())
+                                                .flatMap(userInfo -> {
+                                                    log.info("User info retrieved successfully {}", userInfo);
+                                                    return Mono.just(personMapper.map(userInfo));
+                                                }))
+                );
+    }
+
+    @Override
+    public Mono<Void> deleteUser() {
+        return uidExtractor.getCurrentUserRequestData()
+                .flatMap(userRequestData ->
+                        tokenService.getAdminToken()
+                                .flatMap(tokenResponse ->
+                                        personService.deleteUser(userRequestData.getInnerId(), tokenResponse.getAccessToken()))
+                );
+    }
+
+    @Override
+    public Mono<Void> updateUser(UserUpdateRequest userUpdateRequest) {
+        return uidExtractor.getCurrentUserRequestData()
+                .flatMap(userRequestData ->
+                        tokenService.getAdminToken()
+                                .flatMap(tokenResponse ->
+                                        personService.updateUser(userRequestData.getInnerId(), userUpdateRequest, tokenResponse.getAccessToken()))
+                );
     }
 }

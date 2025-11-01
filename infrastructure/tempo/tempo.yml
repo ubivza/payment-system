@@ -1,0 +1,24 @@
+server:
+  http_listen_port: 3200
+
+distributor:
+  receivers:
+    otlp:
+      protocols:
+        grpc:
+          endpoint: "tempo:4317"
+        http:
+
+ingester:
+  trace_idle_period: 10s #если ждет дольше 10 сек считает что трейс закончился
+
+compactor:
+  compaction:
+    block_retention: 48h
+    compacted_block_retention: 1h
+
+storage:
+  trace:
+    backend: local
+    local:
+      path: /var/tempo/traces

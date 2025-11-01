@@ -86,7 +86,7 @@ paths:
     get:
       summary: Получение данных текущего пользователя
       security:
-        - bearerAuth: []
+        - bearerAuth: [ ]
       responses:
         '200':
           description: Данные пользователя
@@ -107,6 +107,44 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /individual/delete:
+    delete:
+      summary: Удаление (деактивация) аккаунта
+      responses:
+        '200':
+          description: Пользователь удален (деактивирован)
+        '401':
+          description: Недействительный токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /individual/update:
+    put:
+      summary: Обновление пользовательских данных
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdateRequest'
+      responses:
+        '200':
+          description: Успешное обновление данных
+        '400':
+          description: Ошибка валидации
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Недействительный токен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -117,7 +155,7 @@ components:
   schemas:
     UserRegistrationRequest:
       type: object
-      required: [email, password, confirm_password]
+      required: [ email, password, confirm_password, passport_number, phone_number, status, email, first_name, last_name, address, zip_code, city, state, name, alpha2, alpha3 ]
       properties:
         email:
           type: string
@@ -126,10 +164,66 @@ components:
           type: string
         confirm_password:
           type: string
+        passport_number:
+          type: string
+        phone_number:
+          type: string
+        secret_key:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+        zip_code:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        name:
+          type: string
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+
+    UserUpdateRequest:
+      type: object
+      properties:
+        passport_number:
+          type: string
+        phone_number:
+          type: string
+        secret_key:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+        zip_code:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        name:
+          type: string
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
 
     UserLoginRequest:
       type: object
-      required: [email, password]
+      required: [ email, password ]
       properties:
         email:
           type: string
@@ -139,7 +233,7 @@ components:
 
     TokenRefreshRequest:
       type: object
-      required: [refresh_token]
+      required: [ refresh_token ]
       properties:
         refresh_token:
           type: string
@@ -160,17 +254,35 @@ components:
     UserInfoResponse:
       type: object
       properties:
-        id:
-          type: string
         email:
           type: string
-        roles:
-          type: array
-          items:
-            type: string
-        created_at:
+          format: email
+        passport_number:
           type: string
-          format: date-time
+        phone_number:
+          type: string
+        secret_key:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        address:
+          type: string
+        zip_code:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        name:
+          type: string
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
 
     ErrorResponse:
       type: object

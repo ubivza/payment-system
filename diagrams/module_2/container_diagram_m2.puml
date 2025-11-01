@@ -29,8 +29,8 @@ Component(grafana, "Grafana", "Dashboard", "Визуализация монит�
 
 ' Связи между компонентами
 Rel(client, individuals_api, "HTTP", "REST API")
-Rel(individuals_api, nexus, "HTTP", "Service communication")
-Rel(nexus, person_service, "HTTP", "Internal calls")
+Rel(individuals_api, nexus, "HTTP", "Publish client")
+Rel(individuals_api, person_service, "HTTP", "Service communication")
 Rel(person_service, person_db, "JDBC", "Database operations")
 Rel(individuals_api, keycloak, "HTTP", "Authentication")
 Rel(keycloak, kc_db, "JDBC", "User data storage")
@@ -39,11 +39,9 @@ Rel(keycloak, kc_db, "JDBC", "User data storage")
 Rel(alloy, payment_system, "HTTP", "Metrics collection")
 Rel(alloy, tempo, "OTLP", "Traces export")
 Rel(alloy, loki, "HTTP", "Logs export")
-Rel(alloy, prometheus, "HTTP", "Metrics export")
+Rel(prometheus, payment_system, "HTTP", "Metrics export")
 Rel(tempo, grafana, "HTTP", "Traces query")
 Rel(loki, grafana, "HTTP", "Logs query")
 Rel(prometheus, grafana, "HTTP", "Metrics query")
 
 @enduml
-
-TODO refactor

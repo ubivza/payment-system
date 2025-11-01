@@ -14,13 +14,14 @@ services:
       KC_DB_URL: jdbc:postgresql://keycloak-postgres:5432/keycloak
       KC_DB_USERNAME: keycloak
       KC_DB_PASSWORD: keycloak
+      KC_OTEL: true
     volumes:
       - ./individuals-api/src/main/resources/realm-config.json:/opt/keycloak/data/import/realm-config.json
     depends_on:
       keycloak-postgres:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8080/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/health" ]
       interval: 10s
       timeout: 5s
       retries: 10
@@ -37,7 +38,7 @@ services:
     ports:
       - "5433:5432"
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      test: [ "CMD-SHELL", "pg_isready -U keycloak" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -56,6 +57,8 @@ services:
       KEYCLOAK_HOST: http://keycloak:8080
       KEYCLOAK_CLIENT_ID: individuals-api
       KEYCLOAK_CLIENT_SECRET: oRQctok7p2NqxbpaENd1YsSsV2XGPWbu
+      INDIVIDUALS_API_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      PERSON_URL: http://person-service:8082
     depends_on:
       keycloak:
         condition: service_healthy
@@ -63,8 +66,10 @@ services:
         condition: service_healthy
       loki:
         condition: service_healthy
+      alloy:
+        condition: service_healthy
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/actuator/health"]
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -79,7 +84,7 @@ services:
     volumes:
       - ./infrastructure/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:9090/-/healthy"]
+      test: [ "CMD", "wget", "--spider", "http://localhost:9090/-/healthy" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -95,7 +100,7 @@ services:
     volumes:
       - ./infrastructure/loki/local-config.yml:/etc/loki/local-config.yml
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:3100/ready"]
+      test: [ "CMD", "wget", "--spider", "http://localhost:3100/ready" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -119,7 +124,7 @@ services:
       - ./infrastructure/grafana/provisioning:/etc/grafana/provisioning
       - ./infrastructure/grafana/dashboards:/var/lib/grafana/dashboards
     healthcheck:
-      test: ["CMD", "wget", "--spider", "http://localhost:3000/api/health"]
+      test: [ "CMD", "wget", "--spider", "http://localhost:3000/api/health" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -149,6 +154,84 @@ services:
     networks:
       - payment-system
 
+  nexus:
+    image: sonatype/nexus3:3.76.0
+    container_name: nexus
+    ports:
+      - "8085:8081"
+    environment:
+      NEXUS_SECURITY_INITIAL_PASSWORD: admin
+      NEXUS_SECURITY_RANDOMPASSWORD: false
+    volumes:
+      - nexus-data:/nexus-data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8085/service/rest/v1/status" ]
+      interval: 5s
+      timeout: 10s
+      retries: 30
+    networks:
+      - payment-system
+
+  person-postgres:
+    image: postgres:16
+    container_name: person-postgres
+    environment:
+      POSTGRES_DB: person
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5434:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
+  person-service:
+    build:
+      context: person-service
+      dockerfile: Dockerfile
+    container_name: person-service
+    ports:
+      - "8082:8082"
+    environment:
+      KEYCLOAK_HOST: http://keycloak:8080
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_HOST: person-postgres
+      POSTGRES_PORT: 5432
+      PERSON_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      SHOW_SQL: false
+      FORMAT_SQL: false
+      HIGHLIGHT_SQL: false
+    depends_on:
+      person-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
+  tempo:
+    image: grafana/tempo:2.4.1
+    container_name: tempo
+    command: [ "-config.file=/etc/tempo/tempo.yml" ]
+    volumes:
+      - ./infrastructure/tempo/tempo.yml:/etc/tempo/tempo.yml
+      - tempo_data:/var/tempo
+    ports:
+      - "3200:3200"
+    networks:
+      - payment-system
+
 networks:
   payment-system:
     driver: bridge
+
+volumes:
+  nexus-data:
+  tempo_data:

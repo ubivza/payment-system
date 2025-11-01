@@ -1,26 +1,31 @@
-loki.write "local" {
+//эти блоки называются компоненты
+//loki.write - имя описывающее ответсвенность компонента
+//"local" - пользовательский лейбл для реюза
+
+//а в целом отвечает за получение логов из других локи компонентов описыннах в аллой конфиге и пересылает в локи узаанный в этом блоке
+loki.write "local" { //компонент отвечает за отправку логов полученных из докер контейнеров которые крутятся в одной сети локал на указанный эндпоинт
   endpoint {
     url = "http://loki:3100/loki/api/v1/push"
   }
 }
 
-discovery.docker "containers" {
-  host             = "unix:///var/run/docker.sock"
-  refresh_interval = "5s"
+discovery.docker "containers" { //изучает докер на наличие контейнеров и открывает их как цели
+  host             = "unix:///var/run/docker.sock" //адрес докер демона
+  refresh_interval = "5s" //частота обновления списка контейнеров
 }
 
 discovery.relabel "containers" {
-  targets = discovery.docker.containers.targets
+  targets = discovery.docker.containers.targets // сслыка на компонент в строке 11, цели релейблинга
 
   rule {
-    source_labels = ["__meta_docker_container_name"]
-    regex         = "/(.*)"
-    target_label  = "container"
+    source_labels = ["__meta_docker_container_name"] // цели ренейма
+    regex         = "/(.*)" // регулярка для фильтрации целей
+    target_label  = "container" // метка в которую будет записан результат релейбла
   }
 
   rule {
     target_label = "job"
-    replacement  = "docker"
+    replacement  = "docker" //Значение, используемое для замены по регулярному выражению, если оно совпадает с извлеченным значением. Поддерживает ранее захваченные группы.
   }
 
   rule {
@@ -40,22 +45,37 @@ discovery.relabel "containers" {
   }
 }
 
+//читает логи из докер контейнеров и пересылает их в другие локи компоненты
 loki.source.docker "containers" {
-  host          = "unix:///var/run/docker.sock"
-  targets       = discovery.docker.containers.targets
-  relabel_rules = discovery.relabel.containers.rules
-  forward_to    = [loki.write.local.receiver]
+  host          = "unix:///var/run/docker.sock" //адрес докер демона
+  targets       = discovery.docker.containers.targets  //список контейнеров из которого читать логи, тоже ссылка на компонент выше
+  relabel_rules = discovery.relabel.containers.rules  //правила ренейминга для логов, тоже ссылка на компонент выше
+  forward_to    = [loki.write.local.receiver] //куда слать логи, компонент объявленный выше, это ссылка на него
 }
 
+//Собирает метрики из приложения инструментированного openTelemetry и пересылает их в другой отелкол компонент
 otelcol.receiver.otlp "default" {
+  grpc {
+    endpoint = "0.0.0.0:4317"
+  }
   http {
     endpoint = "0.0.0.0:4318"
   }
-  output {
-    metrics = [otelcol.exporter.prometheus.default.input]
+  output { //конфигурация адреса отправки
+    traces = [otelcol.exporter.otlp.tempo.input] // куда слать трейсы
+    metrics = [otelcol.exporter.prometheus.default.input] // куда слать метрики
   }
 }
 
-otelcol.exporter.prometheus "default" {
-  forward_to = []
+otelcol.exporter.otlp "tempo" { // пересылает данные телеметрии
+  client {
+    endpoint = "tempo:4317" // gRPC клиент куда посылать данные
+    tls {
+      insecure = true
+    }
+  }
+}
+
+otelcol.exporter.prometheus "default" { // конвертит метрики из otlp формата в прометеус формат и пересылает в прометеус компоненты
+  forward_to = [] // куда пересылать TODO
 }

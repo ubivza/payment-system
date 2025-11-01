@@ -1,0 +1,68 @@
+server:
+  port: ${PERSON_SERVICE_SERVER_PORT:8082}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:payment-system}
+
+spring:
+  application:
+    name: ${PERSON_SERVICE_SPRING_APPLICATION_NAME:person-service}
+  main:
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5434}/person
+    username: ${POSTGRES_USERNAME:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      org.hibernate:
+        envers:
+          autoRegisterListeners: true
+          audit_table_suffix: _history
+          default_schema: person_history
+          store_data_at_delete: true
+          revision_field_name: revision
+          revision_type_field_name: revision_type
+      hibernate:
+        default_schema: person
+        show_sql: ${SHOW_SQL:true}
+        format_sql: ${FORMAT_SQL:true}
+        highlight_sql: ${HIGHLIGHT_SQL:true}
+        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: ${SLOW_SQL_QUERY_INDICATOR_MS:1500}
+        hbm2ddl:
+          auto: validate
+    driver-class-name: org.postgresql.Driver
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: ${PERSON_SERVICE_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  endpoint:
+    health:
+      show-details: ${PERSON_SERVICE_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+    prometheus:
+      access: ${PERSON_SERVICE_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${PERSON_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none

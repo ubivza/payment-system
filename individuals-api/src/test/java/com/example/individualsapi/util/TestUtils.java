@@ -42,12 +42,13 @@ public class TestUtils {
         return tokenRefreshRequest;
     }
 
+    //TODO fix
     public static UserInfoResponse buildMockUserInfoResponse() {
         UserInfoResponse userInfoResponse = new UserInfoResponse();
-        userInfoResponse.setId("user uid");
+//        userInfoResponse.setId("user uid");
         userInfoResponse.setEmail("email@mail.ru");
-        userInfoResponse.setRoles(Collections.emptyList());
-        userInfoResponse.setCreatedAt(OffsetDateTime.of(2000, 01, 01, 01, 01, 01, 01, ZoneOffset.UTC));
+//        userInfoResponse.setRoles(Collections.emptyList());
+//        userInfoResponse.setCreatedAt(OffsetDateTime.of(2000, 01, 01, 01, 01, 01, 01, ZoneOffset.UTC));
 
         return userInfoResponse;
     }

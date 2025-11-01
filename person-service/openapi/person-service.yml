@@ -4,18 +4,33 @@ info:
   description: REST API для регистрации, получения пользователя по ID и email, обновление данных пользователя, удаление пользователя во внутренней системе.
   version: 1.0.0
 servers:
-  - url: http://localhost:8082/v1 #TODO выбрать порт
+  - url: http://localhost:8082
+
+tags:
+  - name: Person
 
 paths:
-  /individuals:
+  /v1/individuals:
     post:
       summary: Регистрация пользователя во внутренней системе
+      operationId: "registration"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Person
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualRequest'
+              $ref: '#/components/schemas/IndividualDto'
       responses:
         '201':
           description: Успешная регистрация, айди записи
@@ -37,6 +52,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: Получение пользователя по Id и email
+      operationId: "getIndividualById"
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: query
@@ -52,13 +70,21 @@ paths:
             type: string
             format: email
           description: Email пользователя
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      tags:
+        - Person
       responses:
         '200':
           description: Данные пользователя
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IndividualRequest' #TODO что отдаем?
+                $ref: '#/components/schemas/IndividualDto'
         '404':
           description: Пользователь не найден
           content:
@@ -66,9 +92,14 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /person-service/individuals/{id}:
+  /v1/individuals/{id}:
     put:
       summary: Обновление пользователя
+      operationId: "updateIndividualById"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Person
       parameters:
         - name: id
           in: path
@@ -77,12 +108,18 @@ paths:
             type: string
             format: uuid
           description: Id пользователя
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/IndividualRequest'
+              $ref: '#/components/schemas/UpdateDto'
       responses:
         '200':
           description: Пользователь обновлен
@@ -100,6 +137,9 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     delete:
       summary: Удаление пользователя
+      operationId: "deleteIndividual"
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -108,6 +148,14 @@ paths:
             type: string
             format: uuid
           description: Id пользователя
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      tags:
+        - Person
       responses:
         '200':
           description: Пользователь удален
@@ -118,9 +166,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /person-service/individuals/compensate-registration/{id}:
+  /v1/individuals/compensate-registration/{id}:
     delete:
       summary: Компенсация транзакции по регистрации в случае неудачи
+      operationId: "compensateFailedRegistration"
+      security:
+        - bearerAuth: [ ]
       parameters:
         - name: id
           in: path
@@ -129,6 +180,14 @@ paths:
             type: string
             format: uuid
           description: Id пользователя
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      tags:
+        - Person
       responses:
         '200':
           description: Пользователь удален
@@ -141,29 +200,16 @@ components:
       bearerFormat: JWT
 
   schemas:
-    IndividualRequest:
+    IndividualDto:
       type: object
-      required: [user, passport_number, phone_number, status]
+      required: [ passport_number, phone_number, status, email, first_name, last_name, address, zip_code, city, state, name, alpha2, alpha3 ]
       properties:
-        user:
-          $ref: '#/components/schemas/User'
         passport_number:
           type: string
         phone_number:
           type: string
-        verified_at:
+        user_status:
           type: string
-          format: date-time
-        archived_at:
-          type: string
-          format: date-time
-        status:
-          type: string
-
-    User:
-      type: object
-      required: [email, first_name, last_name, address]
-      properties:
         secret_key:
           type: string
         email:
@@ -176,14 +222,35 @@ components:
         filled:
           type: boolean
         address:
-          $ref: '#/components/schemas/Address'
+          type: string
+        zip_code:
+          type: string
+        city:
+          type: string
+        state:
+          type: string
+        name:
+          type: string
+        alpha2:
+          type: string
+          maxLength: 2
+        alpha3:
+          type: string
+          maxLength: 3
+        status:
+          type: string
 
-    Address:
+    UpdateDto:
       type: object
-      required: [country, address, zip_code, city, state]
       properties:
-        country:
-          $ref: '#/components/schemas/Country'
+        passport_number:
+          type: string
+        phone_number:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
         address:
           type: string
         zip_code:
@@ -192,19 +259,14 @@ components:
           type: string
         state:
           type: string
-
-    Country:
-      type: object
-      required: [name, alpha2, alpha3, status]
-      properties:
         name:
           type: string
         alpha2:
           type: string
+          maxLength: 2
         alpha3:
           type: string
-        status:
-          type: string
+          maxLength: 3
 
     ErrorResponse:
       type: object

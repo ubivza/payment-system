@@ -19,32 +19,36 @@ public class AuthController {
     @PostMapping("/registration")
     public Mono<ResponseEntity<TokenResponse>> registration(@RequestBody UserRegistrationRequest registrationRequest) {
         return userService.registerUser(registrationRequest)
-                .map(tokenResponse -> ResponseEntity.status(HttpStatus.CREATED)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(tokenResponse));
+                .map(tokenResponse ->
+                        ResponseEntity.status(HttpStatus.CREATED)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(tokenResponse));
     }
 
     @PostMapping("/login")
     public Mono<ResponseEntity<TokenResponse>> login(@RequestBody UserLoginRequest loginRequest) {
         return userService.loginUser(loginRequest)
-                .map(tokenResponse -> ResponseEntity.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(tokenResponse));
+                .map(tokenResponse ->
+                        ResponseEntity.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(tokenResponse));
     }
 
     @PostMapping("/refresh-token")
     public Mono<ResponseEntity<TokenResponse>> refreshToken(@RequestBody TokenRefreshRequest refreshRequest) {
         return userService.refreshUserToken(refreshRequest)
-                .map(tokenResponse -> ResponseEntity.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(tokenResponse));
+                .map(tokenResponse ->
+                        ResponseEntity.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(tokenResponse));
     }
 
     @GetMapping("/me")
     public Mono<ResponseEntity<UserInfoResponse>> me() {
         return userService.getUserInfo()
-                .map(userInfoResponse -> ResponseEntity.status(HttpStatus.OK)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .body(userInfoResponse));
+                .map(userInfoResponse ->
+                        ResponseEntity.status(HttpStatus.OK)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .body(userInfoResponse));
     }
 }

@@ -13,6 +13,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import reactor.core.publisher.Mono;
 
+import java.util.UUID;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -34,8 +36,9 @@ class UserServiceImplTest {
     void registerUser() {
         UserRegistrationRequest registrationRequest = TestUtils.buildMockUserRegistrationRequest();
         TokenResponse response = TestUtils.buildMockTokenResponse();
+        String innerId = UUID.randomUUID().toString();
 
-        when(keycloakClient.createUser(registrationRequest))
+        when(keycloakClient.createUser(registrationRequest, innerId))
                 .thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
         when(tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword()))
                 .thenReturn(Mono.just(response));
@@ -53,8 +56,9 @@ class UserServiceImplTest {
     void registerUserError() {
         UserRegistrationRequest registrationRequest = TestUtils.buildMockUserRegistrationRequest();
         TokenResponse response = TestUtils.buildMockTokenResponse();
+        String innerId = UUID.randomUUID().toString();
 
-        when(keycloakClient.createUser(registrationRequest))
+        when(keycloakClient.createUser(registrationRequest, innerId))
                 .thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CONFLICT).build()));
         when(tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword()))
                 .thenReturn(Mono.just(response));

@@ -4,21 +4,21 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
-import org.springframework.security.config.annotation.method.configuration.EnableReactiveMethodSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.web.reactive.config.EnableWebFlux;
 
 @Configuration
 @EnableWebFlux
-@EnableReactiveMethodSecurity
+@EnableWebFluxSecurity
 public class SecurityConfig {
 
     @Value("${individuals-api.path}")
     private String apiPath;
 
     @Bean
-    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) throws Exception {
+    public SecurityWebFilterChain securityFilterChain(ServerHttpSecurity http) {
         http.authorizeExchange(authorizeExchangeSpec ->
                 authorizeExchangeSpec.pathMatchers(collectAuthenticatedPaths())
                         .authenticated()
@@ -29,7 +29,10 @@ public class SecurityConfig {
         return http.build();
     }
 
-    private String collectAuthenticatedPaths() {
-        return apiPath + "/auth/me";
+    private String[] collectAuthenticatedPaths() {
+        return new String[]{
+                apiPath + "/auth/me",
+                apiPath + "/individual/delete",
+                apiPath + "/individual/update"};
     }
 }
