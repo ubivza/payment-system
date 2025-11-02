@@ -32,7 +32,7 @@ public class Container {
         registry.add("spring.security.oauth2.resourceserver.jwt.issuer-uri", () -> keycloakTestContainer.getAuthServerUrl() + "/realms/payment-system");
         registry.add("spring.security.oauth2.resourceserver.jwt.jwk-set-uri", () -> keycloakTestContainer.getAuthServerUrl() + "/realms/payment-system/protocol/openid-connect/certs");
         registry.add("keycloak.host", keycloakTestContainer::getAuthServerUrl);
-        registry.add("keycloak.client-secret", () -> "**********");
+        registry.add("keycloak.client-secret", () -> "BZG8aGN4k7Th5jjsTpjt2EUkRHwCJMVl");
 
         registry.add("person.url", wireMockContainer::getBaseUrl);
     }
