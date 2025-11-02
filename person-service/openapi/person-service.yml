@@ -52,7 +52,7 @@ paths:
                 $ref: '#/components/schemas/ErrorResponse'
     get:
       summary: Получение пользователя по Id и email
-      operationId: "getIndividualById"
+      operationId: "getIndividualByIdAndEmail"
       security:
         - bearerAuth: [ ]
       parameters:

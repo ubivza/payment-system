@@ -37,7 +37,8 @@ val versions = mapOf(
         "junitJupiter" to "1.21.3",
         "feignMicrometerVersion" to "13.6",
         "hibernateEnvers" to "6.4.4.Final",
-        "apacheCommons" to "3.19.0"
+        "apacheCommons" to "3.19.0",
+        "swaggerAnnotations" to "2.2.40"
 )
 
 springBoot {

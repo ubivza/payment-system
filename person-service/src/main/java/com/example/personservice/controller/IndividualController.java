@@ -6,6 +6,7 @@ import com.example.person.dto.RegistrationResponse;
 import com.example.person.dto.UpdateDto;
 import com.example.personservice.service.IndividualService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -29,14 +30,14 @@ public class IndividualController implements PersonApiClient {
     }
 
     @Override
-    public ResponseEntity<IndividualDto> getIndividualById(UUID id, String email, String authorization) {
+    public ResponseEntity<IndividualDto> getIndividualByIdAndEmail(UUID id, String email, String authorization) {
         return ResponseEntity.ok()
                 .body(individualService.getIndividual(id, email));
     }
 
     @Override
     public ResponseEntity<RegistrationResponse> registration(String authorization, IndividualDto individualDto) {
-        return ResponseEntity.ok()
+        return ResponseEntity.status(HttpStatus.CREATED)
                 .body(individualService.registerIndividual(individualDto));
     }
 
