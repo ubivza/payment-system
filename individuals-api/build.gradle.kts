@@ -35,7 +35,8 @@ val versions = mapOf(
         "personApiVersion" to "1.0.0-SNAPSHOT",
         "feignMicrometerVersion" to "13.6",
         "springCloudStarterOpenfeign" to "4.1.1",
-        "mapstructVersion" to "1.5.5.Final"
+        "mapstructVersion" to "1.5.5.Final",
+        "wiremockTestcontainers" to "1.0-alpha-15"
 )
 
 dependencyManagement {
@@ -88,6 +89,7 @@ dependencies {
     testImplementation("org.testcontainers:junit-jupiter:${versions["junitJupiter"]}")
     testImplementation("org.testcontainers:testcontainers:${versions["testcontainers"]}")
     testImplementation("com.github.dasniko:testcontainers-keycloak:${versions["testcontainersKeycloak"]}")
+    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:${versions["wiremockTestcontainers"]}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

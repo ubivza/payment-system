@@ -2,22 +2,26 @@ package com.example.individualsapi.controller;
 
 
 import com.example.dto.*;
-import com.example.individualsapi.config.KeycloakTestContainerBase;
+import com.example.individualsapi.config.Container;
 import com.example.individualsapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class AuthControllerIntegrationTest extends KeycloakTestContainerBase {
+@Testcontainers
+@SpringBootTest
+public class AuthControllerIntegrationTest extends Container {
 
     @Autowired
     ApplicationContext context;
@@ -30,6 +34,10 @@ public class AuthControllerIntegrationTest extends KeycloakTestContainerBase {
     String clientSecret;
     @Autowired
     Environment environment;
+
+    static {
+        Container.start();
+    }
 
     @BeforeEach
     void init() {

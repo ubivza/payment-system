@@ -1,0 +1,67 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/v1/individuals",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.email =~ /.+@.+\\..+/)]"
+          }
+        ],
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "body": "{ \"user_uid\": \"3ddcecd5-5004-4a8a-9447-ed110912b7ee\" }",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "DELETE",
+        "urlPathPattern": "/v1/individuals/compensate-registration/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPathPattern": "/v1/individuals",
+        "queryParameters": {
+          "id": {
+            "matches": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
+          },
+          "email": {
+            "matches": "^.+@.+\\..+$"
+          }
+        },
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"passport_number\": \"1234567890\",\n  \"phone_number\": \"+79991234567\",\n  \"secret_key\": \"secretKey\",\n  \"email\": \"email@mail.ru\",\n  \"first_name\": \"Иван\",\n  \"last_name\": \"Петров\",\n  \"address\": \"ул. Примерная, д. 123\",\n  \"zip_code\": \"123456\",\n  \"city\": \"Москва\",\n  \"state\": \"Московская область\",\n  \"name\": \"Россия\",\n  \"alpha2\": \"RU\",\n  \"alpha3\": \"RUS\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

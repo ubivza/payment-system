@@ -2,17 +2,27 @@ package com.example.individualsapi.util;
 
 import com.example.dto.*;
 
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-import java.util.Collections;
-
 public class TestUtils {
 
     public static UserRegistrationRequest buildMockUserRegistrationRequest() {
         UserRegistrationRequest registrationRequest = new UserRegistrationRequest();
+
         registrationRequest.setEmail("email@mail.ru");
         registrationRequest.setPassword("password123");
         registrationRequest.setConfirmPassword("password123");
+        registrationRequest.setPassportNumber("1234567890");
+        registrationRequest.setPhoneNumber("+79991234567");
+        registrationRequest.setEmail("email@mail.ru");
+        registrationRequest.setFirstName("Иван");
+        registrationRequest.setLastName("Петров");
+        registrationRequest.setAddress("ул. Примерная, д. 123");
+        registrationRequest.setZipCode("123456");
+        registrationRequest.setCity("Москва");
+        registrationRequest.setState("Московская область");
+        registrationRequest.setName("Россия");
+        registrationRequest.setAlpha2("RU");
+        registrationRequest.setAlpha3("RUS");
+        registrationRequest.setSecretKey("secretKey");
 
         return registrationRequest;
     }
@@ -42,13 +52,23 @@ public class TestUtils {
         return tokenRefreshRequest;
     }
 
-    //TODO fix
     public static UserInfoResponse buildMockUserInfoResponse() {
         UserInfoResponse userInfoResponse = new UserInfoResponse();
-//        userInfoResponse.setId("user uid");
+
         userInfoResponse.setEmail("email@mail.ru");
-//        userInfoResponse.setRoles(Collections.emptyList());
-//        userInfoResponse.setCreatedAt(OffsetDateTime.of(2000, 01, 01, 01, 01, 01, 01, ZoneOffset.UTC));
+        userInfoResponse.setPassportNumber("1234567890");
+        userInfoResponse.setPhoneNumber("+79991234567");
+        userInfoResponse.setEmail("email@mail.ru");
+        userInfoResponse.setFirstName("Иван");
+        userInfoResponse.setLastName("Петров");
+        userInfoResponse.setAddress("ул. Примерная, д. 123");
+        userInfoResponse.setZipCode("123456");
+        userInfoResponse.setCity("Москва");
+        userInfoResponse.setState("Московская область");
+        userInfoResponse.setName("Россия");
+        userInfoResponse.setAlpha2("RU");
+        userInfoResponse.setAlpha3("RUS");
+        userInfoResponse.setSecretKey("secretKey");
 
         return userInfoResponse;
     }
