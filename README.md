@@ -2,8 +2,9 @@
 
 1. Склонировать репозиторий `git clone https://github.com/ubivza/payment-system.git`
 2. Перейти в директорию куда был склонирован репозиторий
-3. В консоли прописать `docker compose up`
-4. Проверить работоспособность микросервиса с помощью приложенной постман коллекции postman/Test individuals api 2.postman_collection.json
+3. В зависимости от вашей ОС выбрать образ нексус и вписать его в поле image контейнера nexus в doker-compose.yml (образы написаны там же, комментарием)
+4. Поднять сервисы в докер компоузе в такой последовательности: nexus -> keycloak-postgres -> keycloak -> prometheus -> loki -> tempo -> alloy -> person-postgres -> person-service -> individuals-api -> grafana
+5. Проверить работоспособность микросервиса с помощью приложенной постман коллекции postman/Test individuals api 2.postman_collection.json
    
 Микросервис individuals-api представляет из себя оркестратор аутентификации, при посредничестве Keycloak.
 Предоставляет реактивное API для
