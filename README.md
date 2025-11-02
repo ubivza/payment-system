@@ -23,6 +23,7 @@
 - Spring Security
 - Spring Boot Actuator
 - Gradle (Kotlin DSL)
+- Mapstruct
 - Keycloak 26.2
 - Prometheus
 - Micrometer
@@ -131,3 +132,56 @@ person-service публикует jar с Feign клиентом, который 
 
 ## Микросервис person-service
 
+Отвечает за хранение и управление данными пользователей. 
+Архитектура описана в C4 нотации расположена в diagrams/module_2 написанная в PUML, для отображения можно использовать https://plantuml.com/ru/ (раздел online server).
+
+Предоставляет REST API для
+регистрации,
+получения информации о пользователе по inner_id и email,
+деактивации аккаунта,
+обновления данных.
+
+## Используемые технологии
+
+- Java 24
+- Spring Boot 3.5.5
+- Spring Web
+- Spring Security
+- Spring Data JPA
+- Spring Boot Actuator
+- Gradle (Kotlin DSL)
+- Keycloak 26.2
+- Prometheus
+- Micrometer
+- Logback (JSON формат)
+- Loki
+- OpenAPI 3.0 (в формате YAML)
+- OpenAPI Generator Plugin (для Gradle)
+- JUnit 5
+- Mockito
+- Testcontainers
+- Docker
+- Docker Compose
+- Grafana
+- Tempo
+- Nexus
+- Feign
+- Grafana Alloy
+- PostgreSQL
+- Flyway
+- Hibernate Envers
+- Mapstruct
+
+## Endpoints
+
+- `POST /v1/individuals` — регистрация нового пользователя (требуется Bearer Token)
+- `GET /v1/individuals` — получение информации о текущем пользователе (требуется Bearer Token)
+- `PUT /v1/individuals/{id}` — обновление данных пользователя (требуется Bearer Token)
+- `DELETE /v1/individuals/{id}` — деактивация пользователя (требуется Bearer Token
+- `DELETE /v1/individuals/compensate-registration/{id}` - компенсирующая ошибку регистрации логика (требуется Bearer Token)
+
+Сервис является resource-server с точки зрения Keycloak, принимает JWT - валидирует их через Keycloak.
+
+## Тестирование
+
+Тестирование интеграционное с использованием PGSQLContainer.
