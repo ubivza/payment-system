@@ -1027,7 +1027,7 @@
       "enabled": true,
       "alwaysDisplayInConsole": true,
       "clientAuthenticatorType": "client-secret",
-      "secret": "**********",
+      "secret": "BZG8aGN4k7Th5jjsTpjt2EUkRHwCJMVl",
       "redirectUris": [
         "http://localhost:8081/v1/auth/registration"
       ],
