@@ -3,18 +3,9 @@
 1. Склонировать репозиторий `git clone https://github.com/ubivza/payment-system.git`
 2. Перейти в директорию куда был склонирован репозиторий
 3. В консоли прописать `docker compose up`
-4. Зайти в grafana по http://localhost:3000/
-5. Добавить два datasource: 
-	- http://loki:3100
-	- http://prometheus:9090
-6. Импортировать дашборд в виде JSON из файла `individuals-api/grafana/grafana-dashbord.json`
-7. Зайти в keycloak по http://localhost:8080/
-8. Перейти в realm -> payment-system -> clients -> credentials, сгенерировать новый client-secret и вставить его в docker compose поле `services.individuals-api.environment.KEYCLOAK_CLIENT_SECRET`
-	8.1 Optional Если Keycloak требует HTTPS нужно зайти в настройки докера -> Resources -> Network и поставить галочку Enable host networking
-9. Перезапустить individuals-keycloak и individuals-api
-10. Проверить работоспособность микросервиса с помощью приложенной постман коллекции individuals-api/postman/Test individuals api.postman_collection.json
-
-Микросервис представляет из себя оркестратор аутентификации, при посредничестве Keycloak.
+4. Проверить работоспособность микросервиса с помощью приложенной постман коллекции postman/Test individuals api 2.postman_collection.json
+   
+Микросервис individuals-api представляет из себя оркестратор аутентификации, при посредничестве Keycloak.
 Предоставляет реактивное API для
 регистрации,
 логина,
@@ -42,6 +33,10 @@
 - Docker
 - Docker Compose
 - Grafana
+- Tempo
+- Nexus
+- Feign
+- Grafana Alloy
 
 ## Endpoints
 
@@ -49,58 +44,12 @@
 - `POST /v1/auth/login` — аутентификация пользователя по email и паролю (без авторизации)
 - `POST /v1/auth/refresh-token` — обновление access/refresh токена (без авторизации)
 - `GET /v1/auth/me` — получение информации о текущем пользователе (требуется Bearer Token)
-
-## Архитектура сервиса
-individuals-api/  
-├── gradle  
-│   ├── build    
-│   ├── gradle  
-│   ├── grafana  
-│	  │	  └──grafana-dashbord.json  
-│   ├── openapi  
-│	  │	  └──individuals-api.yml  
-│   ├── src/main/java/com.example.individualsapi  
-│   │   ├─ client  
-│   │   │	└── KeycloakClient  
-│   │   ├─ config  
-│   │   │   └── SecurityConfig  
-│   │   ├─ controller  
-│   │   │   └── AuthController  
-│   │   ├── exception  
-│   │   │   ├── BadCredentialsException  
-│   │   │   ├── KeycloakErrorResponse  
-│   │   │   ├── NotFoundException  
-│   │   │   ├── NotValidException  
-│   │   │   └── UserAlreadyExistsException  
-│   │   ├── filter  
-│   │   │   ├── RequestLoggingFilter  
-│   │   │   ├── ResponseLoggingFilter  
-│	  │	  │  	└── WebClientLoggingFilter  
-│   │   ├── handler  
-│   │   │   ├── GlobalExceptionHandler  
-│   │   ├── service  
-│   │   │   ├── api  
-│   │   │   │   ├── TokenService  
-│   │   │   │   └── UserService  
-│   │   │   └── impl  
-│   │   │       ├── ContextUserSubExtractor  
-│   │   │       ├── MetricsCollector  
-│   │   │       ├── TokenServiceImpl  
-│   │   │       └── UserServiceImpl  
-│	  │	  ├── util  
-│   │	  │	  └── LoggingUtils  
-│   │	  ├── IndividualsApiApplication  
-│	  │	  ├── resources  
-│   │	  │	  ├── application.yml  
-│   │	  │	  ├── logback-spring.xml  
-│   │	  │	  └── realm-config.json  
-│	  │	  └── test  
-
+- `DELETE /v1/individual/delete` - деактивация пользователя (требуется Bearer Token)
+- `PUT /v1/individual/update` - обновление данных пользователя (требуется Bearer Token)
 
 Сервис не имеет своей БД, всю логику по выдаче токенов, их валидации и менеджмент пользователей переложен на Keycloak по REST API через Admin API:
 
 - `/realms/{realm}/protocol/openid-connect/token` - для получения/обновления токена
-- `/admin/realms/{realm}/users/{id}` - для получения информации о текущем пользователе
 - `/admin/realms/{realm}/users` - для создания нового пользователя 
 
 Взаимодейтсвие с Keycloak API производится `org.springframework.web.reactive.function.client.WebClient`.
@@ -109,9 +58,11 @@ individuals-api/
 
 1. Запрос POST `/v1/auth/registration` на API individuals-api;
 2. Получение админ токена посредством client-id + client-secret у Keycloak для создания пользователя;
-3. Создание пользователя с админ токеном доступа POST `/admin/realms/{realm}/users`;
-4. Если ответ 201, записывается метрика успешной регистрации (MetricsCollector), которая используется для создания дашборда, и отправляется запрос в Keycloak POST `/realms/{realm}/protocol/openid-connect/token` на выдачу токена по email + password только что созданного пользователя;
-5. Получаем ответ 201 и токен доступа + рефреш токен в случае успеха, в случае ошибки в контракте 400, в случае если такой имеил уже зарегистрирован - 409.
+3. Запрос на создание пользователя в person-service с админ токеном `POST /v1/individuals`;
+4. Создание пользователя с админ токеном доступа POST `/admin/realms/{realm}/users` и inner_id полученном в ответ в пункте 3 (айди сущности Individual в бд person-service);
+5. Если ответ 201, записывается метрика успешной регистрации (MetricsCollector), которая используется для создания дашборда, и отправляется запрос в Keycloak POST `/realms/{realm}/protocol/openid-connect/token` на выдачу токена по email + password только что созданного пользователя;
+6. В случае ошибки про сохранение в Keycloak вызывается компенсирующая сохранение в person-service логика - `DELETE /v1/individuals/{id}`;
+7. Получаем ответ 201 и токен доступа + рефреш токен в случае успеха, в случае ошибки в контракте 400, в случае если такой имеил уже зарегистрирован - 409.
 
 ## Логин флоу:
 
@@ -129,19 +80,42 @@ individuals-api/
 
 1. Запрос GET `/v1/auth/me` на API individuals-api;
 2. Spring Security проверяет issuer токена с помощью библиотеки `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, и `spring.security.oauth2.resourceserver.jwt.issuer-uri` указания ссылки на issuer в application.yml;
-3. Из контекста Spring Security достается токен, а из него айди пользователя;
-4. С айди пользователя с помощью админ токена сервис запрашивает у Keycloak данные о пользователе по `/admin/realms/{realm}/users/{id}`;
+3. Из контекста Spring Security достается токен, а из него inner_id и email пользователя;
+4. С inner_id и email с помощью админ токена сервис запрашивает у person-service данные о пользователе по `GET /v1/individuals`;
 5. Данные отдаются клиенту.
+
+## Флоу обновления данных текущего пользователя:
+
+1. Запрос `PUT /v1/individual/update` на API individuals-api;
+2. Spring Security проверяет issuer токена с помощью библиотеки `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, и `spring.security.oauth2.resourceserver.jwt.issuer-uri` указания ссылки на issuer в application.yml;
+3. Из контекста Spring Security достается токен, а из него inner_id пользователя;
+4. С inner_id с помощью админ токена сервис запрашивает у person-service обновление данных о пользователе по `PUT /v1/individuals/{inner_id}`;
+5. 200 в случае успеха;
+
+## Флоу деактивации аккаунта текущего пользователя:
+
+1. Запрос `DELETE /v1/individual/delete` на API individuals-api;
+2. Spring Security проверяет issuer токена с помощью библиотеки `org.springframework.boot:spring-boot-starter-oauth2-resource-server`, и `spring.security.oauth2.resourceserver.jwt.issuer-uri` указания ссылки на issuer в application.yml;
+3. Из контекста Spring Security достается токен, а из него inner_id пользователя;
+4. С inner_id с помощью админ токена сервис запрашивает у person-service деактивацию аккаунта пользователя `DELETE /v1/individuals/{inner_id}`;
+5. 200 в случае успеха;
+
+## Nexus
+
+person-service публикует jar с Feign клиентом, который подтягивается в individuals-api и дергается для общения с person-service.
 
 ## Логирование
 
-Логирование WebClient производится с помощью ReactorClientHttpConnector настроенного на уровень DEBUG.
-Логирование API самого сервиса сделано с помощью имплементаций `org.springframework.web.server.WebFilter` в классах RequestLoggingFilter и ResponseLoggingFilter.
-Логи отправляются с помощью `com.github.loki4j:loki-logback-appender:2.0.0` в Loki -> Grafana.
+Логирование реализовано с помощью @Slf4j
+Логи пишутся в stdout докер контейнера, откуда их достает Alloy и пушит в Loki, откуда их подтягивает Grafana.
 
 ## ExceptionHandling
 
 За обработку ошибок и отправку результата на клиент отвечает `@ControllerAdvice` GlobalExceptionHandler.
+
+## Трейсинг
+
+Собирается с помощью Alloy, хранятся в Tempo, отображаются в Grafana.
 
 ## Метрики
 
@@ -149,4 +123,4 @@ individuals-api/
 
 ## Тестирование
 
-Тестирование разделено на юнит и интеграционное. Юнит проверяет отдельные сервисы и контроллер, интеграционное проверяет с помощью контейнера с Keycloak работу сервиса в целом.
+Тестирование разделено на юнит и интеграционное. Юнит проверяет отдельные сервисы и контроллер, интеграционное проверяет с помощью контейнера с Keycloak и WireMock работу сервиса в связке с person-service.
