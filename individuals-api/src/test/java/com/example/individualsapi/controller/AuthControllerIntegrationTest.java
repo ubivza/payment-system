@@ -8,10 +8,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
-import org.springframework.core.env.Environment;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
@@ -26,14 +24,6 @@ public class AuthControllerIntegrationTest extends Container {
     @Autowired
     ApplicationContext context;
     WebTestClient webTestClient;
-    @Value("${keycloak.client-id}")
-    String clientId;
-    @Value("${keycloak.realm}")
-    String realm;
-    @Value("${keycloak.client-secret}")
-    String clientSecret;
-    @Autowired
-    Environment environment;
 
     static {
         Container.start();

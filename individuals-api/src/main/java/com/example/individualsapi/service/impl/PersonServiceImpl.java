@@ -40,7 +40,7 @@ public class PersonServiceImpl implements PersonService {
     }
 
     public Mono<IndividualDto> getUserInfo(String innerId, String email, String accessToken) {
-        return Mono.fromCallable(() -> apiClient.getIndividualById(UUID.fromString(innerId), email, BEARER_SUFFIX + accessToken))
+        return Mono.fromCallable(() -> apiClient.getIndividualByIdAndEmail(UUID.fromString(innerId), email, BEARER_SUFFIX + accessToken))
                 .mapNotNull(HttpEntity::getBody)
                 .subscribeOn(Schedulers.boundedElastic())
                 .doOnNext(t -> log.info("Got information about user with innerId: {}", innerId));

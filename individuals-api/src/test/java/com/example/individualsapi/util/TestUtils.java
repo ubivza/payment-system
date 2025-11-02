@@ -96,4 +96,23 @@ public class TestUtils {
 
         return dto;
     }
+
+    public static UserUpdateRequest buildMockUserUpdateRequest() {
+        UserUpdateRequest updateRequest = new UserUpdateRequest();
+
+        updateRequest.setPassportNumber("1234567890");
+        updateRequest.setPhoneNumber("+79991234567");
+        updateRequest.setSecretKey("secretKey");
+        updateRequest.setFirstName("Иван");
+        updateRequest.setLastName("Петров");
+        updateRequest.setAddress("ул. Примерная, д. 123");
+        updateRequest.setZipCode("123456");
+        updateRequest.setCity("Москва");
+        updateRequest.setState("Московская область");
+        updateRequest.setName("Россия");
+        updateRequest.setAlpha2("RU");
+        updateRequest.setAlpha3("RUS");
+
+        return updateRequest;
+    }
 }

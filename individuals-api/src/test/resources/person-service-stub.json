@@ -40,7 +40,7 @@
     {
       "request": {
         "method": "GET",
-        "urlPathPattern": "/v1/individuals",
+        "urlPath": "/v1/individuals",
         "queryParameters": {
           "id": {
             "matches": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"
@@ -61,6 +61,39 @@
         "headers": {
           "Content-Type": "application/json"
         }
+      }
+    },
+    {
+      "request": {
+        "method": "PUT",
+        "urlPathPattern": "/v1/individuals/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.passport_number)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200
+      }
+    },
+    {
+      "request": {
+        "method": "DELETE",
+        "urlPathPattern": "/v1/individuals/([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200
       }
     }
   ]
