@@ -7,12 +7,12 @@ import com.example.individualsapi.service.api.PersonService;
 import com.example.person.api.PersonApiClient;
 import com.example.person.dto.IndividualDto;
 import com.example.person.dto.RegistrationResponse;
-import com.example.person.dto.UpdateDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.HttpEntity;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Schedulers;
 
 import java.util.UUID;
 
@@ -25,35 +25,38 @@ public class PersonServiceImpl implements PersonService {
     private static final String BEARER_SUFFIX = "Bearer ";
 
     public Mono<String> register(UserRegistrationRequest registrationRequest, String accessToken) {
-        IndividualDto individualDto = mapper.map(registrationRequest);
-
-        log.info("Sending user registration request: {}", individualDto);
-        ResponseEntity<RegistrationResponse> registrationResult = apiClient.registration(BEARER_SUFFIX + accessToken, individualDto);
-
-        return Mono.just(registrationResult.getBody().getUserUid());
+        return Mono.fromCallable(() -> apiClient.registration(BEARER_SUFFIX + accessToken, mapper.map(registrationRequest)))
+                .mapNotNull(HttpEntity::getBody)
+                .map(RegistrationResponse::getUserUid)
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(t -> log.info("Person registered id: {}", t));
     }
 
     public Mono<Void> rollbackRegistration(String innerId, String accessToken) {
-        apiClient.compensateFailedRegistration(UUID.fromString(innerId), BEARER_SUFFIX + accessToken);
-        log.info("Compensated registration failure, user with id {} deleted", innerId);
-        return Mono.empty();
+        return Mono.fromRunnable(() -> apiClient.compensateFailedRegistration(UUID.fromString(innerId), BEARER_SUFFIX + accessToken))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(t -> log.info("Compensated registration failure, user with id {} deleted", innerId))
+                .then();
     }
 
     public Mono<IndividualDto> getUserInfo(String innerId, String email, String accessToken) {
-        log.info("Getting information about user with innerId: {}", innerId);
-        return Mono.just(apiClient.getIndividualById(UUID.fromString(innerId), email, BEARER_SUFFIX + accessToken).getBody());
+        return Mono.fromCallable(() -> apiClient.getIndividualById(UUID.fromString(innerId), email, BEARER_SUFFIX + accessToken))
+                .mapNotNull(HttpEntity::getBody)
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(t -> log.info("Got information about user with innerId: {}", innerId));
     }
 
     public Mono<Void> deleteUser(String innerId, String accessToken) {
-        log.info("Deactivating user with innerId: {}", innerId);
-        apiClient.deleteIndividual(UUID.fromString(innerId), BEARER_SUFFIX + accessToken);
-        return Mono.empty();
+        return Mono.fromRunnable(() -> apiClient.deleteIndividual(UUID.fromString(innerId), BEARER_SUFFIX + accessToken))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(t -> log.info("Deactivated user with innerId: {}", innerId))
+                .then();
     }
 
     public Mono<Void> updateUser(String innerId, UserUpdateRequest userUpdateRequest, String accessToken) {
-        UpdateDto individualDto = mapper.map(userUpdateRequest);
-        log.info("Updating information about user: {}", individualDto);
-        apiClient.updateIndividualById(UUID.fromString(innerId), BEARER_SUFFIX + accessToken, individualDto);
-        return Mono.empty();
+        return Mono.fromCallable(() -> apiClient.updateIndividualById(UUID.fromString(innerId), BEARER_SUFFIX + accessToken, mapper.map(userUpdateRequest)))
+                .subscribeOn(Schedulers.boundedElastic())
+                .doOnNext(t -> log.info("Person registered id: {}", t))
+                .then();
     }
 }

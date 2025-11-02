@@ -2,8 +2,10 @@ package com.example.individualsapi.service.impl;
 
 import com.example.dto.*;
 import com.example.individualsapi.client.KeycloakClient;
+import com.example.individualsapi.service.api.PersonService;
 import com.example.individualsapi.service.api.TokenService;
 import com.example.individualsapi.util.TestUtils;
+import com.example.person.dto.IndividualDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,8 @@ class UserServiceImplTest {
     ContextUserSubExtractor uidExtractor;
     @MockitoBean
     MetricsCollector metricsCollector;
+    @MockitoBean
+    PersonService personService;
     @Autowired
     UserServiceImpl userService;
 
@@ -38,6 +42,10 @@ class UserServiceImplTest {
         TokenResponse response = TestUtils.buildMockTokenResponse();
         String innerId = UUID.randomUUID().toString();
 
+        when(tokenService.getAdminToken())
+                .thenReturn(Mono.just(response));
+        when(personService.register(registrationRequest, response.getAccessToken()))
+                .thenReturn(Mono.just(innerId));
         when(keycloakClient.createUser(registrationRequest, innerId))
                 .thenReturn(Mono.just(ResponseEntity.status(HttpStatus.CREATED).build()));
         when(tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword()))
@@ -102,13 +110,21 @@ class UserServiceImplTest {
     @Test
     @DisplayName("User get info happy flow")
     void getUserInfo() {
-        String userUid = "user uid";
+        String innerId = UUID.randomUUID().toString();
         UserInfoResponse userInfoResponse = TestUtils.buildMockUserInfoResponse();
+        IndividualDto individualDto = TestUtils.buildMockIndividualDto();
 
-        when(uidExtractor.getCurrentUserSub())
-                .thenReturn(Mono.just(userUid));
-        when(keycloakClient.getUserInfo(userUid))
-                .thenReturn(Mono.just(userInfoResponse));
+        TokenResponse tokenResponse = TestUtils.buildMockTokenResponse();
+
+        when(uidExtractor.getCurrentUserRequestData())
+                .thenReturn(Mono.just(ContextUserSubExtractor.UserRequestData.builder()
+                        .innerId(innerId)
+                        .email(individualDto.getEmail())
+                        .build()));
+        when(personService.getUserInfo(innerId, individualDto.getEmail(), tokenResponse.getAccessToken()))
+                .thenReturn(Mono.just(individualDto));
+        when(tokenService.getAdminToken())
+                .thenReturn(Mono.just(tokenResponse));
 
         Mono<UserInfoResponse> userInfo = userService.getUserInfo();
 

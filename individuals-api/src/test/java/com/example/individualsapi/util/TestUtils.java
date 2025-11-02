@@ -1,6 +1,7 @@
 package com.example.individualsapi.util;
 
 import com.example.dto.*;
+import com.example.person.dto.IndividualDto;
 
 public class TestUtils {
 
@@ -71,5 +72,28 @@ public class TestUtils {
         userInfoResponse.setSecretKey("secretKey");
 
         return userInfoResponse;
+    }
+
+    public static IndividualDto buildMockIndividualDto() {
+        IndividualDto dto = new IndividualDto();
+
+        dto.setPassportNumber("1234567890");
+        dto.setPhoneNumber("+79991234567");
+        dto.setEmail("email@mail.ru");
+        dto.setFirstName("Иван");
+        dto.setLastName("Петров");
+        dto.setAddress("ул. Примерная, д. 123");
+        dto.setZipCode("123456");
+        dto.setCity("Москва");
+        dto.setState("Московская область");
+        dto.setName("Россия");
+        dto.setAlpha2("RU");
+        dto.setAlpha3("RUS");
+        dto.setStatus("ACTIVE");
+        dto.setUserStatus("VERIFIED");
+        dto.setSecretKey("secretKey");
+        dto.setFilled(true);
+
+        return dto;
     }
 }
