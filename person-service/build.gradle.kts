@@ -19,11 +19,7 @@ java {
     }
 }
 
-configurations {
-    compileOnly {
-        extendsFrom(configurations.annotationProcessor.get())
-    }
-}
+configurations.all { resolutionStrategy.cacheChangingModulesFor(0, "seconds") }
 
 val versions = mapOf(
         "mapstructVersion" to "1.5.5.Final",
@@ -40,10 +36,6 @@ val versions = mapOf(
         "apacheCommons" to "3.19.0",
         "swaggerAnnotations" to "2.2.40"
 )
-
-springBoot {
-    mainClass.set("com.example.personservice.PersonServiceApplication")
-}
 
 repositories {
     mavenCentral()
@@ -109,19 +101,6 @@ dependencies {
 
 tasks.withType<Test> {
     useJUnitPlatform()
-}
-tasks.getByName<Jar>("jar") {
-    enabled = false
-}
-
-tasks {
-    clean {
-        delete(layout.buildDirectory.dir("generated-sources"))
-    }
-
-    withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
-        mainClass.set("com.example.personservice.PersonServiceApplication")
-    }
 }
 
 /*

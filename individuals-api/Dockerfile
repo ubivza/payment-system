@@ -1,25 +1,28 @@
 FROM gradle:8.14-jdk24 AS builder
-ARG NEXUS_URL=http://host.docker.internal:8081/repository/maven-snapshots
-ARG NEXUS_USERNAME=admin
-ARG NEXUS_PASSWORD=admin
+ARG LOCAL_NEXUS_URL=http://host.docker.internal:8085/repository/maven-snapshots
+ARG LOCAL_NEXUS_USERNAME=admin
+ARG LOCAL_NEXUS_PASSWORD=admin
 
-ENV NEXUS_URL=${NEXUS_URL}
-ENV NEXUS_USERNAME=${NEXUS_USERNAME}
-ENV NEXUS_PASSWORD=${NEXUS_PASSWORD}
+ENV LOCAL_NEXUS_URL=${LOCAL_NEXUS_URL}
+ENV LOCAL_NEXUS_USERNAME=${LOCAL_NEXUS_USERNAME}
+ENV LOCAL_NEXUS_PASSWORD=${LOCAL_NEXUS_PASSWORD}
 
-WORKDIR /app
+WORKDIR /home/gradle/project
 
-COPY build.gradle.kts settings.gradle.kts ./
-RUN gradle dependencies --no-daemon
+COPY build.gradle.kts .
+COPY settings.gradle.kts .
+COPY src ./src
+COPY openapi ./openapi
 
-COPY . .
-RUN gradle clean build -x test --no-daemon
+RUN gradle --no-daemon clean bootJar
 
 FROM openjdk:24-jdk-slim
 
+RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-COPY --from=builder /app/build/libs/*.jar app.jar
+COPY --from=builder /home/gradle/project/build/libs/*.jar app.jar
 
 EXPOSE 8081
 
