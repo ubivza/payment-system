@@ -36,12 +36,12 @@ public class UserServiceImpl implements UserService {
                                                         metricsCollector.recordRegistration(true);
                                                         return tokenService.requestUserToken(registrationRequest.getEmail(), registrationRequest.getPassword());
                                                     }
+
                                                     log.error("Something went wrong while register user in keycloak {}", registrationRequest.getEmail());
-                                                    return Mono.error(new RuntimeException("Something went wrong"));
-                                                })
-                                                .onErrorResume(err ->
-                                                        personService.rollbackRegistration(innerId, tokenResponse.getAccessToken()).then(Mono.error(err)))
-                                ));
+
+                                                    return personService.rollbackRegistration(innerId, tokenResponse.getAccessToken())
+                                                            .then(Mono.error(new RuntimeException("Something went wrong")));
+                                                })));
     }
 
     @Override

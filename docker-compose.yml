@@ -16,7 +16,7 @@ services:
       KC_DB_PASSWORD: keycloak
       KC_OTEL: true
     volumes:
-      - ./individuals-api/src/main/resources/realm-config.json:/opt/keycloak/data/import/realm-config.json
+      - .individuals-api/src/test/resources/realm-config.json:/opt/keycloak/data/import/realm-config.json
     depends_on:
       keycloak-postgres:
         condition: service_healthy
