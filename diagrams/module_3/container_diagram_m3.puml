@@ -1,0 +1,62 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_TOP_DOWN()
+
+Person(client, "Client", "Пользователь системы")
+
+Container_Boundary(payment_system, "Payment System") {
+Component(individuals_api, "Individuals API", "REST API", "Обработка запросов пользователей")
+Component(person_service, "Person Service", "Business Logic", "Управление персональными данными")
+Component(transaction_service, "Transaction Service", "Business Logic", "Управление операциями с кошельками")
+ContainerDb(person_db, "Person Database", "PostgreSQL", "Хранилище персональных данных")
+ContainerDb(transaction_db_1, "Transaction Database Shard 1", "PostgreSQL", "Хранилище операций с кошельками")
+ContainerDb(transaction_db_2, "Transaction Database Shard 2", "PostgreSQL", "Хранилище операций с кошельками")
+}
+
+System_Boundary(auth_system, "Authentication System") {
+Component(keycloak, "Keycloak", "OpenID Connect", "Аутентификация и авторизация")
+ContainerDb(kc_db, "Keycloak DB", "PostgreSQL", "Хранилище данных аутентификации")
+}
+
+
+Component(nexus, "Nexus", "Service Mesh", "Межсервисная коммуникация")
+
+Component(external_payment_gateway, "Payment Provider", "Payment logic", "Внешний провайдер платежей")
+
+Container(kafka, "Apache Kafka", "Apache Kafka", "Асинхронная коммуникация между сервисами")
+
+System_Boundary(monitoring_system, "Monitoring System") {
+Component(alloy, "Alloy", "Observability Agent", "Сбор метрик и логов")
+Component(tempo, "Tempo", "Distributed Tracing", "Хранение трейсов")
+Component(loki, "Loki", "Log Aggregation", "Хранение логов")
+Component(prometheus, "Prometheus", "Metrics", "Сбор метрик")
+Component(grafana, "Grafana", "Dashboard", "Визуализация мониторинга")
+}
+
+' Связи между компонентами
+Rel(client, individuals_api, "HTTP", "REST API")
+Rel(individuals_api, nexus, "HTTP", "Publish client")
+Rel(individuals_api, person_service, "HTTP", "Service communication")
+Rel(individuals_api, transaction_service, "HTTP", "Service communication")
+Rel(person_service, person_db, "JDBC", "Database operations")
+Rel(individuals_api, keycloak, "HTTP", "Authentication")
+Rel(keycloak, kc_db, "JDBC", "User data storage")
+Rel(transaction_service, kafka, "TCP", "Wallet transaction message")
+Rel(kafka, transaction_service, "TCP", "Wallet transaction message")
+Rel(kafka, external_payment_gateway, "TCP", "Wallet transaction message")
+Rel(external_payment_gateway, kafka, "TCP", "Wallet transaction message")
+Rel(transaction_service, nexus, "HTTP", "Publish client")
+Rel(transaction_service, transaction_db_1, "JDBC", "Database operations")
+Rel(transaction_service, transaction_db_2, "JDBC", "Database operations")
+
+' Мониторинг
+Rel(alloy, payment_system, "HTTP", "Metrics collection")
+Rel(alloy, tempo, "OTLP", "Traces export")
+Rel(alloy, loki, "HTTP", "Logs export")
+Rel(prometheus, payment_system, "HTTP", "Metrics export")
+Rel(tempo, grafana, "HTTP", "Traces query")
+Rel(loki, grafana, "HTTP", "Logs query")
+Rel(prometheus, grafana, "HTTP", "Metrics query")
+
+@enduml

@@ -1,0 +1,21 @@
+@startuml
+actor Client
+participant IndividualsAPI
+participant TransactionService
+participant WalletService
+
+Client -> IndividualsAPI: POST /transactions/withdrawal/init
+IndividualsAPI -> TransactionService: POST /transactions/withdrawal/init
+TransactionService -> WalletService: Проверка кошелька
+WalletService --> TransactionService: OK
+TransactionService --> IndividualsAPI: Условия (комиссия, доступность)
+IndividualsAPI --> Client: Условия пополнения
+
+Client -> IndividualsAPI: POST /transactions/transfer/confirm
+IndividualsAPI -> TransactionService: confirm transfer
+TransactionService -> WalletService: Debit + Credit
+WalletService -> DB: Две записи
+TransactionService -> DB: Статус транзакции COMPLETED
+TransactionService --> IndividualsAPI: COMPLETED, transactionId
+IndividualsAPI --> Client: COMPLETED, transactionId
+@enduml
