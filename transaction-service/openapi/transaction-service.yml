@@ -3,14 +3,14 @@ info:
   title: Transaction Service API
   version: 1.0.0
 servers:
-  - url: http://localhost:8083/v1
+  - url: http://localhost:8083
 
 tags:
   - name: Wallet
   - name: Transaction
 
 paths:
-  /wallets/{userUid}:
+  /v1/wallets/{userUid}:
     post:
       summary: Создание кошелька пользователя
       operationId: "createWallet"
@@ -51,7 +51,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /wallets/{userUid}/{walletUid}:
+  /v1/wallets/{userUid}/{walletUid}:
     get:
       summary: Получение информации о кошельке
       operationId: "getWallet"
@@ -90,7 +90,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/{type}/init:
+  /v1/transactions/{type}/init:
     post:
       summary: Инициализация транзакции (без создания)
       operationId: "initTransaction"
@@ -120,6 +120,12 @@ paths:
                 - $ref: '#/components/schemas/DepositInitRequest'
                 - $ref: '#/components/schemas/WithdrawalInitRequest'
                 - $ref: '#/components/schemas/TransferInitRequest'
+              discriminator:
+                propertyName: type
+                mapping:
+                  deposit: '#/components/schemas/DepositInitRequest'
+                  withdrawal: '#/components/schemas/WithdrawalInitRequest'
+                  transfer: '#/components/schemas/TransferInitRequest'
       responses:
         '200':
           description: Условия транзакции
@@ -134,7 +140,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/{type}/confirm:
+  /v1/transactions/{type}/confirm:
     post:
       summary: Подтверждение и запуск транзакции
       operationId: "confirmTransaction"
@@ -160,10 +166,7 @@ paths:
         content:
           application/json:
             schema:
-              oneOf:
-                - $ref: '#/components/schemas/DepositConfirmRequest'
-                - $ref: '#/components/schemas/WithdrawalConfirmRequest'
-                - $ref: '#/components/schemas/TransferConfirmRequest'
+              $ref: '#/components/schemas/ConfirmRequest'
       responses:
         '200':
           description: Транзакция подтверждена
@@ -178,7 +181,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
-  /transactions/{transactionId}/status:
+  /v1/transactions/{transactionId}/status:
     get:
       summary: Получение статуса транзакции
       operationId: "getTransactionStatus"
@@ -248,7 +251,6 @@ components:
 
     ErrorResponse:
       type: object
-      required:
       properties:
         error:
           type: string
@@ -257,19 +259,26 @@ components:
 
     DepositInitRequest:
       type: object
-      required: [walletUid, amount]
+      required: [walletUid, amount, type]
       properties:
+        type:
+          type: string
         walletUid:
           type: string
           format: uuid
         amount:
           type: number
           format: decimal
+        userUid:
+          type: string
+          format: uuid
 
     WithdrawalInitRequest:
       type: object
-      required: [userUid, walletUid, amount]
+      required: [userUid, walletUid, amount, type]
       properties:
+        type:
+          type: string
         userUid:
           type: string
           format: uuid
@@ -282,8 +291,10 @@ components:
 
     TransferInitRequest:
       type: object
-      required: [userUid, walletFromUid, walletToUid, amount]
+      required: [userUid, walletFromUid, walletToUid, amount, type]
       properties:
+        type:
+          type: string
         userUid:
           type: string
           format: uuid
@@ -299,65 +310,26 @@ components:
 
     TransactionInitResponse:
       type: object
-      required:
       properties:
         available:
           type: boolean
         fee:
           type: number
           format: decimal
-
-    DepositConfirmRequest:
-      type: object
-      required: [walletUid, amount, confirm]
-      properties:
-        walletUid:
+        token:
           type: string
-          format: uuid
-        amount:
-          type: number
-          format: decimal
+
+    ConfirmRequest:
+      type: object
+      required: [confirm, token]
+      properties:
         confirm:
           type: boolean
-
-    WithdrawalConfirmRequest:
-      type: object
-      required: [userUid, walletUid, amount, confirm]
-      properties:
-        userUid:
+        token:
           type: string
-          format: uuid
-        walletUid:
-          type: string
-          format: uuid
-        amount:
-          type: number
-          format: decimal
-        confirm:
-          type: boolean
-
-    TransferConfirmRequest:
-      type: object
-      required: [userUid, walletFromUid, walletToUid, amount, confirm]
-      properties:
-        userUid:
-          type: string
-          format: uuid
-        walletFromUid:
-          type: string
-          format: uuid
-        walletToUid:
-          type: string
-          format: uuid
-        amount:
-          type: number
-          format: decimal
-        confirm:
-          type: boolean
 
     TransactionConfirmResponse:
       type: object
-      required:
       properties:
         status:
           type: string
@@ -367,7 +339,6 @@ components:
 
     TransactionStatusResponse:
       type: object
-      required:
       properties:
         status:
           type: string

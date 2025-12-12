@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS transaction_service;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";

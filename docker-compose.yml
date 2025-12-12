@@ -16,7 +16,7 @@ services:
       KC_DB_PASSWORD: keycloak
       KC_OTEL: true
     volumes:
-      - .individuals-api/src/test/resources/realm-config.json:/opt/keycloak/data/import/realm-config.json
+      - ./individuals-api/src/test/resources/realm-config.json:/opt/keycloak/data/import/realm-config.json
     depends_on:
       keycloak-postgres:
         condition: service_healthy
@@ -224,6 +224,88 @@ services:
       - tempo_data:/var/tempo
     ports:
       - "3200:3200"
+    networks:
+      - payment-system
+
+  transaction-service:
+    build:
+      context: transaction-service
+      dockerfile: Dockerfile
+    container_name: transaction-service
+    ports:
+      - "8083:8083"
+    environment:
+      KEYCLOAK_HOST: http://keycloak:8080
+      SPRING_PROFILES_ACTIVE: docker
+      POSTGRES_HOST: transaction-postgres
+      POSTGRES_PORT: 5432
+      TRANSACTION_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      SHOW_SQL: false
+      FORMAT_SQL: false
+      HIGHLIGHT_SQL: false
+    depends_on:
+      transaction-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8083/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
+  transaction-postgres:
+    image: postgres:16
+    container_name: transaction-postgres
+    environment:
+      POSTGRES_DB: transaction
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5435:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.4
+    hostname: broker
+    container_name: kafka
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT,CONTROLLER:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_PROCESS_ROLES: broker,controller
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@broker:29093
+      KAFKA_LISTENERS: PLAINTEXT://broker:29092,CONTROLLER://broker:29093,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /tmp/kraft-combined-logs
+      CLUSTER_ID: MkU3OEVBNTcwNTJENDM2Qk
+    networks:
+      - payment-system
+
+  kafka-ui:
+    container_name: payment-system-kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 18080:8080
+    depends_on:
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
     networks:
       - payment-system
 
