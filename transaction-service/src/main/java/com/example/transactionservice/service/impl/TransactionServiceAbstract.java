@@ -6,11 +6,13 @@ import com.example.transactionservice.exception.NotFoundException;
 import com.example.transactionservice.mapper.TransactionsMapper;
 import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.service.api.TransactionService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
 
+@Slf4j
 public abstract class TransactionServiceAbstract implements TransactionService {
     private final TransactionsRepository transactionsRepository;
     private final TransactionsMapper mapper;
@@ -27,6 +29,16 @@ public abstract class TransactionServiceAbstract implements TransactionService {
                 .orElseThrow(() -> new NotFoundException(String.format("Transaction not found by id %s", transactionId)));
 
         return mapper.map(transactions);
+    }
+
+    @Override
+    public void complete(Object event) {
+        log.warn("Unexpected complete call");
+    }
+
+    @Override
+    public void abort(Object event) {
+        log.warn("Unexpected abort call");
     }
 
     protected BigDecimal addFee(BigDecimal addTo, BigDecimal amountToFee) {

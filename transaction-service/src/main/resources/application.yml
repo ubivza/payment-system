@@ -82,3 +82,14 @@ otel:
     exporter: none
   metrics:
     exporter: none
+
+kafka:
+  topic:
+    transaction-service:
+      transaction:
+        insert:
+          name: ${KAFKA_TOPIC_TRANSACTION_SERVICE_INSERT_NAME:transaction-insert}
+          auto-startup: ${spring.kafka.consumer.auto-startup}
+        read:
+          name: ${KAFKA_TOPIC_TRANSACTION_SERVICE_READ_NAME:transaction-read}
+          auto-startup: ${spring.kafka.consumer.auto-startup}

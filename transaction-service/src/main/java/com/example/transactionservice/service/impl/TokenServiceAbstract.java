@@ -19,6 +19,7 @@ public abstract class TokenServiceAbstract implements TokenService {
     public static final String TIMESTAMP = "timestamp";
     public static final String WALLET_FROM_UID = "walletFromUid";
     public static final String WALLET_TO_UID = "walletToUid";
+    public static final String DESTINATION = "destination";
     private final TokenProperties tokenProperties;
 
     protected TokenServiceAbstract(TokenProperties tokenProperties) {

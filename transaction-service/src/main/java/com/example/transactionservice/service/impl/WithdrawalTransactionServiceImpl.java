@@ -12,6 +12,10 @@ import com.example.transactionservice.entity.TransactionStatus;
 import com.example.transactionservice.entity.Transactions;
 import com.example.transactionservice.entity.Wallets;
 import com.example.transactionservice.exception.BadRequest;
+import com.example.transactionservice.exception.NotFoundException;
+import com.example.transactionservice.kafka.api.WithdrawalCompletedEvent;
+import com.example.transactionservice.kafka.api.WithdrawalFailedEvent;
+import com.example.transactionservice.kafka.producer.TransactionKafkaSender;
 import com.example.transactionservice.mapper.TransactionsMapper;
 import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.service.api.WalletService;
@@ -25,6 +29,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.AMOUNT;
+import static com.example.transactionservice.service.impl.TokenServiceAbstract.DESTINATION;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.USER_UID;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.WALLET_UID;
 
@@ -35,15 +40,18 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
     private final TransactionsMapper mapper;
     private final TokenTypeStrategyResolver tokenTypeStrategyResolver;
     private final WalletService walletService;
+    private final TransactionKafkaSender kafkaSender;
 
     @Autowired
     protected WithdrawalTransactionServiceImpl(TransactionsRepository transactionsRepository, TransactionsMapper mapper,
-                                               TokenTypeStrategyResolver tokenTypeStrategyResolver, WalletService walletService) {
+                                               TokenTypeStrategyResolver tokenTypeStrategyResolver, WalletService walletService,
+                                               TransactionKafkaSender kafkaSender) {
         super(transactionsRepository, mapper);
         this.transactionsRepository = transactionsRepository;
         this.mapper = mapper;
         this.tokenTypeStrategyResolver = tokenTypeStrategyResolver;
         this.walletService = walletService;
+        this.kafkaSender = kafkaSender;
     }
 
     @Override
@@ -52,7 +60,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
 
         WalletResponse walletResponse = walletService.get(withdrawalInitRequest.getUserUid().toString(), withdrawalInitRequest.getWalletUid().toString());
 
-        if (isBalanceNotEnough(walletResponse.getBalance().add(super.getFee(withdrawalInitRequest.getAmount())), withdrawalInitRequest.getAmount())) {
+        if (isBalanceNotEnough(walletResponse.getBalance(), withdrawalInitRequest.getAmount().add(getFee(withdrawalInitRequest.getAmount())))) {
             throw new BadRequest(String.format("Your wallet %s dont have enough balance to perform this operation!", withdrawalInitRequest.getWalletUid()));
         }
 
@@ -64,7 +72,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
 
 
         TransactionInitResponse response = new TransactionInitResponse();
-        response.setFee(addFee(withdrawalInitRequest.getAmount(), withdrawalInitRequest.getAmount()));
+        response.setFee(getFee(withdrawalInitRequest.getAmount()));
         response.setAvailable(true);
         response.setToken(token);
 
@@ -103,12 +111,11 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
             return response;
         } else {
             walletFrom.setBalance(walletFrom.getBalance().subtract(amount.add(getFee(amount))));
-
-            //TODO send kafka
-
             transactions.setStatus(TransactionStatus.PENDING);
 
             Transactions saved = transactionsRepository.save(transactions);
+
+            kafkaSender.send(mapper.mapToWithdrawalEvent(saved, claims.get(DESTINATION, String.class)));
 
             TransactionConfirmResponse response = new TransactionConfirmResponse();
             response.setStatus(TransactionStatus.PENDING.name());
@@ -116,6 +123,34 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
 
             return response;
         }
+    }
+
+    @Override
+    @Transactional
+    public void complete(Object event) {
+        WithdrawalCompletedEvent withdrawalCompletedEvent = (WithdrawalCompletedEvent) event;
+
+        UUID transactionId = withdrawalCompletedEvent.getTransactionId();
+
+        Transactions transaction = transactionsRepository.findById(transactionId)
+                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", transactionId)));
+
+        transaction.setStatus(TransactionStatus.COMPLETED);
+    }
+
+    @Override
+    @Transactional
+    public void abort(Object event) {
+        WithdrawalFailedEvent withdrawalFailedEvent = (WithdrawalFailedEvent) event;
+
+        UUID transactionId = withdrawalFailedEvent.getTransactionId();
+
+        Transactions transaction = transactionsRepository.findById(transactionId)
+                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", transactionId)));
+
+        transaction.setStatus(TransactionStatus.FAILED);
+        transaction.setFailureReason(withdrawalFailedEvent.getFailureReason());
+        transaction.getWallet().setBalance(transaction.getWallet().getBalance().add(transaction.getAmount().add(transaction.getFee())));
     }
 
     @Override

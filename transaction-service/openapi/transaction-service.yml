@@ -275,7 +275,7 @@ components:
 
     WithdrawalInitRequest:
       type: object
-      required: [userUid, walletUid, amount, type]
+      required: [userUid, walletUid, amount, type, destination]
       properties:
         type:
           type: string
@@ -288,6 +288,8 @@ components:
         amount:
           type: number
           format: decimal
+        destination:
+          type: string
 
     TransferInitRequest:
       type: object

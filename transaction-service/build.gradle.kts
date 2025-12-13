@@ -35,7 +35,7 @@ val versions = mapOf(
         "hibernateEnvers" to "6.4.4.Final",
         "apacheCommons" to "3.19.0",
         "swaggerAnnotations" to "2.2.40",
-        "springKafka" to "4.0.0",
+        "springKafka" to "3.3.1",
         "javaJwtApi" to "0.13.0",
         "javaJwtImpl" to "0.13.0",
         "javaJwtJackson" to "0.13.0"

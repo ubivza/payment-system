@@ -31,6 +31,7 @@ public class WithdrawalTokenServiceImpl extends TokenServiceAbstract {
         claims.put(TIMESTAMP, Instant.now().toString());
         claims.put(USER_UID, withdrawalInitRequest.getUserUid());
         claims.put(WALLET_UID, withdrawalInitRequest.getWalletUid());
+        claims.put(DESTINATION, withdrawalInitRequest.getDestination());
 
         return super.buildToken(claims, WITHDRAWAL_INIT);
     }

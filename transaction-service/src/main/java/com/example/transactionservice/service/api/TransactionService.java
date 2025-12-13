@@ -9,9 +9,9 @@ import com.example.transactionservice.entity.PaymentType;
 
 public interface TransactionService {
     TransactionInitResponse init(InitTransactionRequest initTransactionRequest);
-
     TransactionConfirmResponse confirm(ConfirmRequest confirmRequest);
-
     TransactionStatusResponse getStatus(String transactionId);
     PaymentType getType();
+    void complete(Object event);
+    void abort(Object event);
 }

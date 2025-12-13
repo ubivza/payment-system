@@ -7,6 +7,9 @@ import com.example.transaction.dto.TransactionInitResponse;
 import com.example.transactionservice.entity.PaymentType;
 import com.example.transactionservice.entity.TransactionStatus;
 import com.example.transactionservice.entity.Transactions;
+import com.example.transactionservice.exception.NotFoundException;
+import com.example.transactionservice.kafka.api.DepositCompletedEvent;
+import com.example.transactionservice.kafka.producer.TransactionKafkaSender;
 import com.example.transactionservice.mapper.TransactionsMapper;
 import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.service.api.WalletService;
@@ -32,15 +35,18 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
     private final TransactionsMapper mapper;
     private final TokenTypeStrategyResolver tokenTypeStrategyResolver;
     private final WalletService walletService;
+    private final TransactionKafkaSender kafkaSender;
 
     @Autowired
     protected DepositTransactionServiceImpl(TransactionsRepository transactionsRepository, TransactionsMapper mapper,
-                                            TokenTypeStrategyResolver tokenTypeStrategyResolver, WalletService walletService) {
+                                            TokenTypeStrategyResolver tokenTypeStrategyResolver, WalletService walletService,
+                                            TransactionKafkaSender kafkaSender) {
         super(transactionsRepository, mapper);
         this.transactionsRepository = transactionsRepository;
         this.mapper = mapper;
         this.tokenTypeStrategyResolver = tokenTypeStrategyResolver;
         this.walletService = walletService;
+        this.kafkaSender = kafkaSender;
     }
 
     @Override
@@ -72,14 +78,25 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
 
         Transactions saved = transactionsRepository.save(transactions);
 
-        //TODO send kafka
-
+        kafkaSender.send(mapper.mapToDepositEvent(saved));
 
         TransactionConfirmResponse response = new TransactionConfirmResponse();
         response.setStatus(TransactionStatus.PENDING.name());
         response.setTransactionId(saved.getId());
 
         return response;
+    }
+
+    @Override
+    @Transactional
+    public void complete(Object event) {
+        DepositCompletedEvent depositCompletedEvent = (DepositCompletedEvent) event;
+
+        Transactions transaction = transactionsRepository.findById(depositCompletedEvent.getTransactionId())
+                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", depositCompletedEvent.getTransactionId())));
+
+        transaction.setStatus(TransactionStatus.COMPLETED);
+        transaction.getWallet().setBalance(transaction.getWallet().getBalance().add(depositCompletedEvent.getAmount()));
     }
 
     @Override
