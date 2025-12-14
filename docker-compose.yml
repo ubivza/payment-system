@@ -1,7 +1,7 @@
 services:
   keycloak:
     image: quay.io/keycloak/keycloak:26.2
-    container_name: individuals-keycloak
+    container_name: keycloak
     command:
       - start-dev
       - --import-realm
@@ -59,6 +59,8 @@ services:
       KEYCLOAK_CLIENT_SECRET: BZG8aGN4k7Th5jjsTpjt2EUkRHwCJMVl
       INDIVIDUALS_API_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
       PERSON_URL: http://person-service:8082
+      TRANSACTION_URL: http://transaction-service:8083
+      WALLET_URL: http://transaction-service:8083
     depends_on:
       keycloak:
         condition: service_healthy
@@ -243,6 +245,7 @@ services:
       SHOW_SQL: false
       FORMAT_SQL: false
       HIGHLIGHT_SQL: false
+      KAFKA_BOOTSTRAP_SERVERS: broker:29092
     depends_on:
       transaction-postgres:
         condition: service_healthy

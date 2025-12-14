@@ -1,6 +1,6 @@
 package com.example.individualsapi.service.impl;
 
-import com.example.dto.TokenResponse;
+import com.example.individuals.dto.TokenResponse;
 import com.example.individualsapi.client.KeycloakClient;
 import com.example.individualsapi.service.api.TokenService;
 import lombok.RequiredArgsConstructor;

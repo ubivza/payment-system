@@ -1,6 +1,11 @@
 package com.example.individualsapi.service.api;
 
-import com.example.dto.*;
+import com.example.individuals.dto.TokenRefreshRequest;
+import com.example.individuals.dto.TokenResponse;
+import com.example.individuals.dto.UserInfoResponse;
+import com.example.individuals.dto.UserLoginRequest;
+import com.example.individuals.dto.UserRegistrationRequest;
+import com.example.individuals.dto.UserUpdateRequest;
 import reactor.core.publisher.Mono;
 
 public interface UserService {

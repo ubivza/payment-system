@@ -1,6 +1,6 @@
 package com.example.individualsapi.controller;
 
-import com.example.dto.UserUpdateRequest;
+import com.example.individuals.dto.UserUpdateRequest;
 import com.example.individualsapi.service.api.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

@@ -1,6 +1,6 @@
 package com.example.individualsapi.service.api;
 
-import com.example.dto.TokenResponse;
+import com.example.individuals.dto.TokenResponse;
 import reactor.core.publisher.Mono;
 
 public interface TokenService {

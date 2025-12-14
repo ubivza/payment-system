@@ -1,8 +1,8 @@
 package com.example.individualsapi.controller;
 
-import com.example.dto.TokenResponse;
-import com.example.dto.UserRegistrationRequest;
-import com.example.dto.UserUpdateRequest;
+import com.example.individuals.dto.TokenResponse;
+import com.example.individuals.dto.UserRegistrationRequest;
+import com.example.individuals.dto.UserUpdateRequest;
 import com.example.individualsapi.config.Container;
 import com.example.individualsapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
