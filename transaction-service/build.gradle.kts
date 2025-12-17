@@ -38,7 +38,8 @@ val versions = mapOf(
         "springKafka" to "3.3.1",
         "javaJwtApi" to "0.13.0",
         "javaJwtImpl" to "0.13.0",
-        "javaJwtJackson" to "0.13.0"
+        "javaJwtJackson" to "0.13.0",
+        "shardingSphere" to "5.5.2"
 )
 
 configurations {
@@ -86,9 +87,10 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:${versions["javaJwtImpl"]}")
     runtimeOnly("io.jsonwebtoken:jjwt-jackson:${versions["javaJwtJackson"]}")
 
-    //postgres
+    //db
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-database-postgresql")
+    implementation("org.apache.shardingsphere:shardingsphere-jdbc:${versions["shardingSphere"]}")
 
     //openapi codegen libs
     implementation("io.swagger.core.v3:swagger-annotations:${versions["swaggerAnnotations"]}")

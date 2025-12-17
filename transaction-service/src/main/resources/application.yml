@@ -16,22 +16,8 @@ spring:
         jwt:
           issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
   datasource:
-    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5435}/transaction
-    username: ${POSTGRES_USERNAME:admin}
-    password: ${POSTGRES_PASSWORD:admin}
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    properties:
-      hibernate:
-        default_schema: transaction_service
-        show_sql: ${SHOW_SQL:true}
-        format_sql: ${FORMAT_SQL:true}
-        highlight_sql: ${HIGHLIGHT_SQL:true}
-        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: ${SLOW_SQL_QUERY_INDICATOR_MS:1500}
-        hbm2ddl:
-          auto: validate
-    driver-class-name: org.postgresql.Driver
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:sharding.yml
   kafka:
     bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
     producer:
@@ -93,3 +79,12 @@ kafka:
         read:
           name: ${KAFKA_TOPIC_TRANSACTION_SERVICE_READ_NAME:transaction-read}
           auto-startup: ${spring.kafka.consumer.auto-startup}
+
+flyway:
+  dataSources:
+    - url: jdbc:postgresql://localhost:5435/transaction
+      username: admin
+      password: admin
+    - url: jdbc:postgresql://localhost:5436/transaction
+      username: admin
+      password: admin
