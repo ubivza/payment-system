@@ -1,5 +1,7 @@
 package com.example.transactionservice.integration;
 
+import com.example.api.kafka.DepositCompletedEvent;
+import com.example.api.kafka.DepositRequestedEvent;
 import com.example.transaction.dto.ConfirmRequest;
 import com.example.transaction.dto.CreateWalletRequest;
 import com.example.transaction.dto.DepositInitRequest;
@@ -11,8 +13,6 @@ import com.example.transaction.dto.TransferInitRequest;
 import com.example.transactionservice.config.Container;
 import com.example.transactionservice.config.KafkaTestContainer;
 import com.example.transactionservice.entity.TransactionStatus;
-import com.example.transactionservice.kafka.api.DepositCompletedEvent;
-import com.example.transactionservice.kafka.api.DepositRequestedEvent;
 import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.repository.WalletsRepository;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
