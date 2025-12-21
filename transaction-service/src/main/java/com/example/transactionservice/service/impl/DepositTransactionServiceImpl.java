@@ -1,5 +1,6 @@
 package com.example.transactionservice.service.impl;
 
+import com.example.api.kafka.DepositCompletedEvent;
 import com.example.transaction.dto.ConfirmRequest;
 import com.example.transaction.dto.InitTransactionRequest;
 import com.example.transaction.dto.TransactionConfirmResponse;
@@ -7,8 +8,6 @@ import com.example.transaction.dto.TransactionInitResponse;
 import com.example.transactionservice.entity.PaymentType;
 import com.example.transactionservice.entity.TransactionStatus;
 import com.example.transactionservice.entity.Transactions;
-import com.example.transactionservice.exception.NotFoundException;
-import com.example.transactionservice.kafka.api.DepositCompletedEvent;
 import com.example.transactionservice.kafka.producer.TransactionKafkaSender;
 import com.example.transactionservice.mapper.TransactionsMapper;
 import com.example.transactionservice.repository.TransactionsRepository;
@@ -92,11 +91,9 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
     public void complete(Object event) {
         DepositCompletedEvent depositCompletedEvent = (DepositCompletedEvent) event;
 
-        Transactions transaction = transactionsRepository.findById(depositCompletedEvent.getTransactionId())
-                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", depositCompletedEvent.getTransactionId())));
-
-        transaction.setStatus(TransactionStatus.COMPLETED);
-        transaction.getWallet().setBalance(transaction.getWallet().getBalance().add(depositCompletedEvent.getAmount()));
+        transactionsRepository.updateStatus(depositCompletedEvent.getTransactionId(), TransactionStatus.valueOf(depositCompletedEvent.getStatus()));
+        UUID walletId = transactionsRepository.findWalletId(depositCompletedEvent.getTransactionId());
+        walletService.depositMoney(walletId, depositCompletedEvent.getAmount());
     }
 
     @Override

@@ -1,4 +1,4 @@
-package com.example.transactionservice.kafka.api;
+package com.example.api.kafka;
 
 import lombok.Builder;
 import lombok.Getter;

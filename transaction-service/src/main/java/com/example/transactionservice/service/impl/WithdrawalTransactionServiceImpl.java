@@ -1,5 +1,7 @@
 package com.example.transactionservice.service.impl;
 
+import com.example.api.kafka.WithdrawalCompletedEvent;
+import com.example.api.kafka.WithdrawalFailedEvent;
 import com.example.transaction.dto.ConfirmRequest;
 import com.example.transaction.dto.InitTransactionRequest;
 import com.example.transaction.dto.TransactionConfirmResponse;
@@ -13,8 +15,6 @@ import com.example.transactionservice.entity.Transactions;
 import com.example.transactionservice.entity.Wallets;
 import com.example.transactionservice.exception.BadRequest;
 import com.example.transactionservice.exception.NotFoundException;
-import com.example.transactionservice.kafka.api.WithdrawalCompletedEvent;
-import com.example.transactionservice.kafka.api.WithdrawalFailedEvent;
 import com.example.transactionservice.kafka.producer.TransactionKafkaSender;
 import com.example.transactionservice.mapper.TransactionsMapper;
 import com.example.transactionservice.repository.TransactionsRepository;
@@ -110,7 +110,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
 
             return response;
         } else {
-            walletFrom.setBalance(walletFrom.getBalance().subtract(amount.add(getFee(amount))));
+            walletService.depositMoney(walletFrom.getId(), amount.add(getFee(amount)).negate());
             transactions.setStatus(TransactionStatus.PENDING);
 
             Transactions saved = transactionsRepository.save(transactions);
@@ -130,12 +130,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
     public void complete(Object event) {
         WithdrawalCompletedEvent withdrawalCompletedEvent = (WithdrawalCompletedEvent) event;
 
-        UUID transactionId = withdrawalCompletedEvent.getTransactionId();
-
-        Transactions transaction = transactionsRepository.findById(transactionId)
-                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", transactionId)));
-
-        transaction.setStatus(TransactionStatus.COMPLETED);
+        transactionsRepository.updateStatus(withdrawalCompletedEvent.getTransactionId(), TransactionStatus.valueOf(withdrawalCompletedEvent.getStatus()));
     }
 
     @Override
@@ -143,14 +138,12 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
     public void abort(Object event) {
         WithdrawalFailedEvent withdrawalFailedEvent = (WithdrawalFailedEvent) event;
 
-        UUID transactionId = withdrawalFailedEvent.getTransactionId();
+        Transactions transaction = transactionsRepository.findById(withdrawalFailedEvent.getTransactionId())
+                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", withdrawalFailedEvent.getTransactionId())));
 
-        Transactions transaction = transactionsRepository.findById(transactionId)
-                .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", transactionId)));
-
-        transaction.setStatus(TransactionStatus.FAILED);
-        transaction.setFailureReason(withdrawalFailedEvent.getFailureReason());
-        transaction.getWallet().setBalance(transaction.getWallet().getBalance().add(transaction.getAmount().add(transaction.getFee())));
+        transactionsRepository.updateStatus(withdrawalFailedEvent.getTransactionId(), TransactionStatus.valueOf(withdrawalFailedEvent.getStatus()));
+        transactionsRepository.updateFailureReason(withdrawalFailedEvent.getTransactionId(), withdrawalFailedEvent.getFailureReason());
+        walletService.depositMoney(transaction.getWallet().getId(), transaction.getAmount().add(transaction.getFee()));
     }
 
     @Override

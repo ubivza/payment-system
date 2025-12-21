@@ -39,17 +39,14 @@ val versions = mapOf(
         "javaJwtApi" to "0.13.0",
         "javaJwtImpl" to "0.13.0",
         "javaJwtJackson" to "0.13.0",
-        "shardingSphere" to "5.5.2"
+        "shardingSphere" to "5.5.2",
+        "kafkaApi" to "1.0.0-SNAPSHOT",
 )
 
 configurations {
     compileOnly {
         extendsFrom(configurations.annotationProcessor.get())
     }
-}
-
-repositories {
-    mavenCentral()
 }
 
 dependencyManagement {
@@ -75,6 +72,9 @@ dependencies {
     implementation("io.opentelemetry:opentelemetry-exporter-otlp")
     implementation("io.micrometer:micrometer-tracing")
     implementation("io.micrometer:micrometer-tracing-bridge-otel")
+
+    //kafka api
+    implementation("com.example:kafka-api:${versions["kafkaApi"]}")
 
     //utils
     implementation("org.apache.commons:commons-lang3:${versions["apacheCommons"]}")
@@ -328,6 +328,18 @@ publishing {
                 username = nexusUser
                 password = nexusPassword
             }
+        }
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url = uri(nexusUrl)
+        isAllowInsecureProtocol = true
+        credentials {
+            username = nexusUser
+            password = nexusPassword
         }
     }
 }

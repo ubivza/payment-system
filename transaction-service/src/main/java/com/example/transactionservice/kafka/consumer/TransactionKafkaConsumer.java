@@ -1,9 +1,9 @@
 package com.example.transactionservice.kafka.consumer;
 
+import com.example.api.kafka.DepositCompletedEvent;
+import com.example.api.kafka.WithdrawalCompletedEvent;
+import com.example.api.kafka.WithdrawalFailedEvent;
 import com.example.transactionservice.entity.PaymentType;
-import com.example.transactionservice.kafka.api.DepositCompletedEvent;
-import com.example.transactionservice.kafka.api.WithdrawalCompletedEvent;
-import com.example.transactionservice.kafka.api.WithdrawalFailedEvent;
 import com.example.transactionservice.service.strategy.TransactionTypeStrategyResolver;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

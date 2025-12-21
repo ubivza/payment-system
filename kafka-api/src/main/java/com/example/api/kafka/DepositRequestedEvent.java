@@ -1,4 +1,4 @@
-package com.example.transactionservice.kafka.api;
+package com.example.api.kafka;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -11,9 +11,11 @@ import java.util.UUID;
 @Builder
 @Getter
 @Jacksonized
-public class WithdrawalCompletedEvent {
+public class DepositRequestedEvent {
     private UUID transactionId;
-    private String status;
+    private UUID userId;
+    private UUID walletId;
     private BigDecimal amount;
+    private String currency;
     private Instant timestamp;
 }

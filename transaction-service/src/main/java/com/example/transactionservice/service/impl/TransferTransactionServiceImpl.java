@@ -109,8 +109,8 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
 
             return response;
         } else {
-            walletFrom.setBalance(walletFrom.getBalance().subtract(amount.add(getFee(amount))));
-            walletTo.setBalance(walletTo.getBalance().add(amount));
+            walletService.depositMoney(walletFrom.getId(), amount.add(getFee(amount)).negate());
+            walletService.depositMoney(walletTo.getId(), amount);
 
             transactions.setStatus(TransactionStatus.COMPLETED);
 

@@ -1,9 +1,9 @@
 package com.example.transactionservice.mapper;
 
+import com.example.api.kafka.DepositRequestedEvent;
+import com.example.api.kafka.WithdrawalRequestedEvent;
 import com.example.transaction.dto.TransactionStatusResponse;
 import com.example.transactionservice.entity.Transactions;
-import com.example.transactionservice.kafka.api.DepositRequestedEvent;
-import com.example.transactionservice.kafka.api.WithdrawalRequestedEvent;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;

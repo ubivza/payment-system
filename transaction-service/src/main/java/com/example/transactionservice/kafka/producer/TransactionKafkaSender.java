@@ -1,7 +1,7 @@
 package com.example.transactionservice.kafka.producer;
 
-import com.example.transactionservice.kafka.api.DepositRequestedEvent;
-import com.example.transactionservice.kafka.api.WithdrawalRequestedEvent;
+import com.example.api.kafka.DepositRequestedEvent;
+import com.example.api.kafka.WithdrawalRequestedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;

@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Service
@@ -38,5 +39,11 @@ public class WalletServiceImpl implements WalletService {
     public Wallets get(String walletUid) {
         return repository.findById(UUID.fromString(walletUid))
                 .orElseThrow(() -> new NotFoundException(String.format("Wallet with id %s not found", walletUid)));
+    }
+
+    @Override
+    @Transactional
+    public void depositMoney(UUID walletId, BigDecimal amount) {
+        repository.incrementBalance(walletId, amount);
     }
 }
