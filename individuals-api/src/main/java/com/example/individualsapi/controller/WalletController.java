@@ -4,6 +4,7 @@ import com.example.individuals.dto.CreateWalletRequestDto;
 import com.example.individuals.dto.WalletResponseDto;
 import com.example.individualsapi.service.api.WalletService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,7 +27,8 @@ public class WalletController {
     public Mono<ResponseEntity<UUID>> create(@RequestBody CreateWalletRequestDto createWalletRequest) {
         return walletService.create(createWalletRequest)
                 .map(response ->
-                        ResponseEntity.status(201).body(response));
+                        ResponseEntity.status(HttpStatus.CREATED)
+                                .body(response));
     }
 
     @GetMapping("/{walletUid}")

@@ -2,13 +2,13 @@ dataSources:
   transaction-postgres0:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:5435/transaction
+    jdbcUrl: jdbc:postgresql://transaction-postgres0:5432/transaction
     username: admin
     password: admin
   transaction-postgres1:
     dataSourceClassName: com.zaxxer.hikari.HikariDataSource
     driverClassName: org.postgresql.Driver
-    jdbcUrl: jdbc:postgresql://localhost:5436/transaction
+    jdbcUrl: jdbc:postgresql://transaction-postgres1:5432/transaction
     username: admin
     password: admin
 
