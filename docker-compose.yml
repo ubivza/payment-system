@@ -244,6 +244,14 @@ services:
       FORMAT_SQL: false
       HIGHLIGHT_SQL: false
       KAFKA_BOOTSTRAP_SERVERS: broker:29092
+      DATASOURCE_ONE_POSTGRES_HOST: transaction-postgres0
+      DATASOURCE_ONE_POSTGRES_PORT: 5432
+      DATASOURCE_ONE_POSTGRES_USERNAME: admin
+      DATASOURCE_ONE_POSTGRES_PASSWORD: admin
+      DATASOURCE_TWO_POSTGRES_HOST: transaction-postgres1
+      DATASOURCE_TWO_POSTGRES_PORT: 5432
+      DATASOURCE_TWO_POSTGRES_USERNAME: admin
+      DATASOURCE_TWO_POSTGRES_PASSWORD: admin
     depends_on:
       transaction-postgres0:
         condition: service_healthy

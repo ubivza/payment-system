@@ -82,9 +82,9 @@ kafka:
 
 flyway:
   dataSources:
-    - url: jdbc:postgresql://localhost:5435/transaction
-      username: admin
-      password: admin
-    - url: jdbc:postgresql://localhost:5436/transaction
-      username: admin
-      password: admin
+    - url: jdbc:postgresql://${DATASOURCE_ONE_POSTGRES_HOST:localhost}:${DATASOURCE_ONE_POSTGRES_PORT:5435}/transaction
+      username: ${DATASOURCE_ONE_POSTGRES_USERNAME:admin}
+      password: ${DATASOURCE_ONE_POSTGRES_PASSWORD:admin}
+    - url: jdbc:postgresql://${DATASOURCE_TWO_POSTGRES_HOST:localhost}:${DATASOURCE_TWO_POSTGRES_PORT:5436}/transaction
+      username: ${DATASOURCE_TWO_POSTGRES_USERNAME:admin}
+      password: ${DATASOURCE_TWO_POSTGRES_PASSWORD:admin}
