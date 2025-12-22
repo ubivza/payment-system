@@ -329,6 +329,16 @@ services:
     networks:
       - payment-system
 
+  kafka-api:
+    build:
+      context: transaction-service
+      dockerfile: Dockerfile
+    depends_on:
+      nexus:
+        condition: service_healthy
+    networks:
+      - payment-system
+
 networks:
   payment-system:
     driver: bridge
