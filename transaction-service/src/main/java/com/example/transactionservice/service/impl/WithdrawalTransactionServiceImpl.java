@@ -8,6 +8,7 @@ import com.example.transaction.dto.TransactionConfirmResponse;
 import com.example.transaction.dto.TransactionInitResponse;
 import com.example.transaction.dto.WalletResponse;
 import com.example.transaction.dto.WithdrawalInitRequest;
+import com.example.transactionservice.constant.FailureReason;
 import com.example.transactionservice.entity.ActivityStatus;
 import com.example.transactionservice.entity.PaymentType;
 import com.example.transactionservice.entity.TransactionStatus;
@@ -61,7 +62,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
         WalletResponse walletResponse = walletService.get(withdrawalInitRequest.getUserUid().toString(), withdrawalInitRequest.getWalletUid().toString());
 
         if (isBalanceNotEnough(walletResponse.getBalance(), withdrawalInitRequest.getAmount().add(getFee(withdrawalInitRequest.getAmount())))) {
-            throw new BadRequest(String.format("Your wallet %s dont have enough balance to perform this operation!", withdrawalInitRequest.getWalletUid()));
+            throw new BadRequest(String.format(FailureReason.NOT_ENOUGH_BALANCE, withdrawalInitRequest.getWalletUid()));
         }
 
         if (ActivityStatus.DISABLED.name().equalsIgnoreCase(walletResponse.getStatus())) {
@@ -100,7 +101,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
 
         if (walletFrom.getBalance().subtract(amount.add(getFee(amount))).compareTo(BigDecimal.ZERO) < 0) {
             transactions.setStatus(TransactionStatus.FAILED);
-            transactions.setFailureReason(String.format("Your wallet %s dont have enough balance to perform this operation!", walletFromUid));
+            transactions.setFailureReason(String.format(FailureReason.NOT_ENOUGH_BALANCE, walletFromUid));
 
             Transactions saved = transactionsRepository.save(transactions);
 
@@ -130,7 +131,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
     public void complete(Object event) {
         WithdrawalCompletedEvent withdrawalCompletedEvent = (WithdrawalCompletedEvent) event;
 
-        transactionsRepository.updateStatus(withdrawalCompletedEvent.getTransactionId(), TransactionStatus.valueOf(withdrawalCompletedEvent.getStatus()));
+        transactionsRepository.updateStatusAndFailureReason(withdrawalCompletedEvent.getTransactionId(), null,TransactionStatus.valueOf(withdrawalCompletedEvent.getStatus()));
     }
 
     @Override
@@ -141,9 +142,18 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
         Transactions transaction = transactionsRepository.findById(withdrawalFailedEvent.getTransactionId())
                 .orElseThrow(() -> new NotFoundException(String.format("Transaction with id %s not found", withdrawalFailedEvent.getTransactionId())));
 
-        transactionsRepository.updateStatus(withdrawalFailedEvent.getTransactionId(), TransactionStatus.valueOf(withdrawalFailedEvent.getStatus()));
-        transactionsRepository.updateFailureReason(withdrawalFailedEvent.getTransactionId(), withdrawalFailedEvent.getFailureReason());
+        transactionsRepository.updateStatusAndFailureReason(withdrawalFailedEvent.getTransactionId(), withdrawalFailedEvent.getFailureReason(), TransactionStatus.valueOf(withdrawalFailedEvent.getStatus()));
         walletService.depositMoney(transaction.getWallet().getId(), transaction.getAmount().add(transaction.getFee()));
+    }
+
+    @Override
+    @Transactional
+    public void cancelTransaction(UUID transactionId) {
+        transactionsRepository.findById(transactionId).ifPresent(transaction -> {
+            transactionsRepository.updateStatusAndFailureReason(transactionId, FailureReason.EXTERNAL_SYSTEM_FAILED, TransactionStatus.FAILED);
+            UUID targetWalletId = transactionsRepository.findTargetWalletId(transactionId);
+            walletService.depositMoney(targetWalletId, transaction.getAmount().add(transaction.getFee()));
+        });
     }
 
     @Override

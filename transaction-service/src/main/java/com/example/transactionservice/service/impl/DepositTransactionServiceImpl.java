@@ -5,6 +5,7 @@ import com.example.transaction.dto.ConfirmRequest;
 import com.example.transaction.dto.InitTransactionRequest;
 import com.example.transaction.dto.TransactionConfirmResponse;
 import com.example.transaction.dto.TransactionInitResponse;
+import com.example.transactionservice.constant.FailureReason;
 import com.example.transactionservice.entity.PaymentType;
 import com.example.transactionservice.entity.TransactionStatus;
 import com.example.transactionservice.entity.Transactions;
@@ -91,9 +92,15 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
     public void complete(Object event) {
         DepositCompletedEvent depositCompletedEvent = (DepositCompletedEvent) event;
 
-        transactionsRepository.updateStatus(depositCompletedEvent.getTransactionId(), TransactionStatus.valueOf(depositCompletedEvent.getStatus()));
+        transactionsRepository.updateStatusAndFailureReason(depositCompletedEvent.getTransactionId(), null, TransactionStatus.valueOf(depositCompletedEvent.getStatus()));
         UUID walletId = transactionsRepository.findWalletId(depositCompletedEvent.getTransactionId());
         walletService.depositMoney(walletId, depositCompletedEvent.getAmount());
+    }
+
+    @Override
+    @Transactional
+    public void cancelTransaction(UUID transactionId) {
+        transactionsRepository.updateStatusAndFailureReason(transactionId, FailureReason.EXTERNAL_SYSTEM_FAILED, TransactionStatus.FAILED);
     }
 
     @Override

@@ -215,6 +215,38 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /v1/transactions/compensate-transaction/{type}/{transactionId}:
+    delete:
+      summary: Компенсация распределенной транзакции по подтвержденной трензакции
+      operationId: "compensateFailedTransaction"
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - name: transactionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          description: Id транзакции
+        - name: type
+          in: path
+          required: true
+          schema:
+            type: string
+            enum: [ deposit, withdrawal, transfer ]
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      tags:
+        - Transaction
+      responses:
+        '200':
+          description: Транзакция отменена
+
 components:
   securitySchemes:
     bearerAuth:

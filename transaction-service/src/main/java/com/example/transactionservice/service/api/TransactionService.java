@@ -7,6 +7,8 @@ import com.example.transaction.dto.TransactionInitResponse;
 import com.example.transaction.dto.TransactionStatusResponse;
 import com.example.transactionservice.entity.PaymentType;
 
+import java.util.UUID;
+
 public interface TransactionService {
     TransactionInitResponse init(InitTransactionRequest initTransactionRequest);
     TransactionConfirmResponse confirm(ConfirmRequest confirmRequest);
@@ -14,4 +16,5 @@ public interface TransactionService {
     PaymentType getType();
     void complete(Object event);
     void abort(Object event);
+    void cancelTransaction(UUID transactionId);
 }

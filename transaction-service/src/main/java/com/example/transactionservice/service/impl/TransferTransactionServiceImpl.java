@@ -6,6 +6,7 @@ import com.example.transaction.dto.TransactionConfirmResponse;
 import com.example.transaction.dto.TransactionInitResponse;
 import com.example.transaction.dto.TransferInitRequest;
 import com.example.transaction.dto.WalletResponse;
+import com.example.transactionservice.constant.FailureReason;
 import com.example.transactionservice.entity.ActivityStatus;
 import com.example.transactionservice.entity.PaymentType;
 import com.example.transactionservice.entity.TransactionStatus;
@@ -17,6 +18,7 @@ import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.service.api.WalletService;
 import com.example.transactionservice.service.strategy.TokenTypeStrategyResolver;
 import io.jsonwebtoken.Claims;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,6 +31,7 @@ import static com.example.transactionservice.service.impl.TokenServiceAbstract.U
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.WALLET_FROM_UID;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.WALLET_TO_UID;
 
+@Slf4j
 @Service
 @Transactional(readOnly = true)
 public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
@@ -52,7 +55,7 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
         WalletResponse walletResponse = walletService.get(transferInitRequest.getUserUid().toString(), transferInitRequest.getWalletFromUid().toString());
 
         if (isBalanceNotEnough(walletResponse.getBalance().add(super.getFee(transferInitRequest.getAmount())), transferInitRequest.getAmount())) {
-            throw new BadRequest(String.format("Your wallet %s dont have enough balance to perform this operation!", transferInitRequest.getWalletFromUid()));
+            throw new BadRequest(String.format(FailureReason.NOT_ENOUGH_BALANCE, transferInitRequest.getWalletFromUid()));
         }
 
         if (ActivityStatus.DISABLED.name().equalsIgnoreCase(walletResponse.getStatus())) {
@@ -99,7 +102,7 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
 
         if (walletFrom.getBalance().subtract(amount.add(getFee(amount))).compareTo(BigDecimal.ZERO) < 0) {
             transactions.setStatus(TransactionStatus.FAILED);
-            transactions.setFailureReason(String.format("Your wallet %s dont have enough balance to perform this operation!", walletFromUid));
+            transactions.setFailureReason(String.format(FailureReason.NOT_ENOUGH_BALANCE, walletFromUid));
 
             Transactions saved = transactionsRepository.save(transactions);
 

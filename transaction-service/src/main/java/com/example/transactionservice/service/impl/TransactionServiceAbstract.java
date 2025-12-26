@@ -41,6 +41,11 @@ public abstract class TransactionServiceAbstract implements TransactionService {
         log.warn("Unexpected abort call");
     }
 
+    @Override
+    public void cancelTransaction(UUID transactionId) {
+        log.warn("Unexpected cancel call");
+    }
+
     protected BigDecimal addFee(BigDecimal addTo, BigDecimal amountToFee) {
         return addTo.add(amountToFee.multiply(BigDecimal.valueOf(0.05)));
     }
