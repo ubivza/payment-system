@@ -1,0 +1,43 @@
+dataSources:
+  test-postgresql-container-ps0:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:65431/test
+    username: admin
+    password: admin
+  test-postgresql-container-ps1:
+    dataSourceClassName: com.zaxxer.hikari.HikariDataSource
+    driverClassName: org.postgresql.Driver
+    jdbcUrl: jdbc:postgresql://localhost:65432/test
+    username: admin
+    password: admin
+
+rules:
+  - !SHARDING
+    tables:
+      wallets:
+        actualDataNodes: test-postgresql-container-ps${0..1}.wallets
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: uuid_hash
+      transactions:
+        actualDataNodes: test-postgresql-container-ps${0..1}.transactions
+        databaseStrategy:
+          standard:
+            shardingColumn: user_id
+            shardingAlgorithmName: uuid_hash
+      wallet_types:
+        actualDataNodes: test-postgresql-container-ps${0..1}.wallet_types
+        databaseStrategy:
+          standard:
+            shardingColumn: creator
+            shardingAlgorithmName: uuid_hash
+
+    defaultDatabaseStrategy:
+      none:
+    shardingAlgorithms:
+      uuid_hash:
+        type: UUID_HASH
+        props:
+          shard-count: 2

@@ -1,0 +1,90 @@
+server:
+  port: ${TRANSACTION_SERVICE_SERVER_PORT:8083}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:payment-system}
+
+spring:
+  application:
+    name: ${TRANSACTION_SERVICE_SPRING_APPLICATION_NAME:transaction-service}
+  main:
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
+  datasource:
+    driver-class-name: org.apache.shardingsphere.driver.ShardingSphereDriver
+    url: jdbc:shardingsphere:classpath:sharding.yml
+  kafka:
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        "[enable.idempotence]": "true"
+        spring.json.add.type.headers: true
+    consumer:
+      auto-startup: ${TRANSACTION_SERVICE_KAFKA_CONSUMER_AUTO_START:true}
+      group-id: ${TRANSACTION_SERVICE_KAFKA_CONSUMER_GROUP_ID:transaction-service}
+      auto-offset-reset: ${TRANSACTION_SERVICE_KAFKA_CONSUMER_AUTO_OFFSET_RESET:earliest}
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      enable-auto-commit: false
+      properties:
+        spring.json.trusted.packages: "*"
+        spring.json.use.type.headers: true
+    listener:
+      ack-mode: manual_immediate
+
+confirmation-token:
+  secret-key: ${TRANSACTION_SERVICE_CONFIRMATION_TOKEN_SECRET_KEY:hello-world-223$$2-goodbye-so^2-whatIsSThis?}
+  expiration-time: ${TRANSACTION_SERVICE_CONFIRMATION_TOKEN_EXPIRATION_TIME:300000}
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: ${TRANSACTION_SERVICE_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  endpoint:
+    health:
+      show-details: ${TRANSACTION_SERVICE_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+    prometheus:
+      access: ${TRANSACTION_SERVICE_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${TRANSACTION_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+
+kafka:
+  topic:
+    transaction-service:
+      transaction:
+        insert:
+          name: ${KAFKA_TOPIC_TRANSACTION_SERVICE_INSERT_NAME:transaction-insert}
+          auto-startup: ${spring.kafka.consumer.auto-startup}
+        read:
+          name: ${KAFKA_TOPIC_TRANSACTION_SERVICE_READ_NAME:transaction-read}
+          auto-startup: ${spring.kafka.consumer.auto-startup}
+
+flyway:
+  dataSources:
+    - url: jdbc:postgresql://${DATASOURCE_ONE_POSTGRES_HOST:localhost}:${DATASOURCE_ONE_POSTGRES_PORT:5435}/transaction
+      username: ${DATASOURCE_ONE_POSTGRES_USERNAME:admin}
+      password: ${DATASOURCE_ONE_POSTGRES_PASSWORD:admin}
+    - url: jdbc:postgresql://${DATASOURCE_TWO_POSTGRES_HOST:localhost}:${DATASOURCE_TWO_POSTGRES_PORT:5436}/transaction
+      username: ${DATASOURCE_TWO_POSTGRES_USERNAME:admin}
+      password: ${DATASOURCE_TWO_POSTGRES_PASSWORD:admin}

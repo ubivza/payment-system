@@ -1,0 +1,35 @@
+@startuml
+actor Client
+participant IndividualsAPI
+participant TransactionService
+participant WalletService
+participant Kafka
+participant TransactionServiceConsumer
+
+Client -> IndividualsAPI: POST /transactions/withdrawal/init
+IndividualsAPI -> TransactionService: POST /transactions/withdrawal/init
+TransactionService -> WalletService: Проверка кошелька
+WalletService --> TransactionService: OK
+TransactionService --> IndividualsAPI: Условия (комиссия, доступность)
+IndividualsAPI --> Client: Условия пополнения
+
+Client -> IndividualsAPI: POST /transactions/withdrawal/confirm
+IndividualsAPI -> TransactionService: confirm withdrawal
+TransactionService -> WalletService: блокирует деньги
+WalletService -> DB: блокирует деньги
+TransactionService -> DB: Создать транзакцию PENDING
+TransactionService -> Kafka: WithdrawalRequested
+TransactionService --> IndividualsAPI: Принято, status=PENDING, transactionId
+IndividualsAPI --> Client: status=PENDING, transactionId
+
+alt WithdrawalCompleted
+  Kafka -> TransactionServiceConsumer: WithdrawalCompleted (async)
+  TransactionServiceConsumer -> DB: Статус транзакции COMPLETED
+
+else WithdrawalFailed
+  Kafka -> TransactionServiceConsumer: WithdrawalFailed (async)
+  TransactionServiceConsumer -> WalletService: вернуть деньги
+  WalletService -> DB: возвращает деньги
+  TransactionServiceConsumer -> DB: Статус транзакции FAILED
+end
+@enduml

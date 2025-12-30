@@ -1,0 +1,43 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+
+Person_Ext(client, "Клиент", "Внешние вызовы от individuals-api")
+Component(nexus, "Nexus", "Хранилище артефактов")
+
+Container_Boundary(person_service, "person-service") {
+Component(transaction_controller, "TransactionController", "Spring MVC", "REST API для управления денежными операциями")
+Component(wallet_controller, "WalletController", "Spring MVC", "REST API для управления кошельками")
+Component(transaction_service, "TransactionService", "Business Logic", "Логика операций с деньгами")
+Component(transaction_handler, "TransactionHandler", "Business Logic", "Логика операций с деньгами")
+Component(wallet_service, "WalletService", "Business Logic", "Логика операций с кошельками")
+Component(wallet_repo, "WalletRepository", "Spring Data JPA", "CRUD операции для кошельков")
+Component(transaction_repo, "TransactionRepository", "Spring Data JPA", "Переводы, снятия, пополнения для денежных средств")
+Component(openapi_generator, "OpenApi Auto Generation", "Настройка автогенерации апи клиента")
+Component(kafka_sender, "TransactionKafkaSender", "Kafka", "Переводы, снятия, пополнения для денежных средств")
+Component(kafka_consumer, "TransactionKafkaConsumer", "Kafka", "Переводы, снятия, пополнения для денежных средств")
+}
+
+Container(kafka, "Apache Kafka", "Apache Kafka", "Асинхронная коммуникация между сервисами")
+ContainerDb(db_1, "Transaction Service Database Shard1", "PostgreSQL", "Хранилище данных сервиса")
+ContainerDb(db_2, "Transaction Service Database Shard2", "PostgreSQL", "Хранилище данных сервиса")
+Component(sharding, "Apache ShardingSphere JDBC", "Library", "Механизм шардирования базы данных")
+
+Rel(client, transaction_controller, "HTTP", "HTTP запросы")
+Rel(client, wallet_controller, "HTTP", "HTTP запросы")
+Rel(transaction_controller, transaction_service, "Сервисные методы",)
+Rel(wallet_controller, wallet_service, "Сервисные методы",)
+Rel(transaction_service, transaction_repo,)
+Rel(wallet_service, wallet_repo,)
+Rel(transaction_repo, sharding, "JDBC", "SQL запросы")
+Rel(wallet_repo, sharding, "JDBC", "SQL запросы")
+Rel(sharding, db_1, "JDBC", "SQL запросы")
+Rel(sharding, db_2, "JDBC", "SQL запросы")
+Rel(transaction_service, kafka_sender,)
+Rel(kafka_consumer, transaction_handler,)
+Rel(transaction_handler, transaction_service,)
+Rel(kafka_sender, kafka,)
+Rel(kafka, kafka_consumer,)
+Rel(openapi_generator, nexus, )
+
+@enduml

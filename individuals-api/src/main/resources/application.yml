@@ -8,7 +8,7 @@ keycloak:
   host: ${KEYCLOAK_HOST:http://localhost:8080}
   realm: ${KEYCLOAK_REALM:payment-system}
   client-id: ${KEYCLOAK_CLIENT_ID:individuals-api}
-  client-secret: ${KEYCLOAK_CLIENT_SECRET:oRQctok7p2NqxbpaENd1YsSsV2XGPWbu}
+  client-secret: ${KEYCLOAK_CLIENT_SECRET:BZG8aGN4k7Th5jjsTpjt2EUkRHwCJMVl}
 
 spring:
   application:
@@ -26,6 +26,16 @@ person:
   name: ${PERSON_NAME:person}
   contextId: ${person.name}
   url: ${PERSON_URL:http://localhost:8082}
+
+transaction:
+  name: ${TRANSACTION_NAME:transaction}
+  contextId: ${transaction.name}
+  url: ${TRANSACTION_URL:http://localhost:8083}
+
+wallet:
+  name: ${WALLET_NAME:wallet}
+  contextId: ${wallet.name}
+  url: ${WALLET_URL:http://localhost:8083}
 
 management:
   server:

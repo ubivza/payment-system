@@ -7,5 +7,5 @@ public class WireMockTestContainerBase {
     @Container
     static WireMockContainer wiremockServer = new WireMockContainer("wiremock/wiremock:3.6.0")
             .withExposedPorts(8080)
-            .withMappingFromResource("person-service", "person-service-stub.json");
+            .withMappingFromResource("internal-services", "internal-services-stub.json");
 }

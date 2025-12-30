@@ -1,8 +1,8 @@
 package com.example.individualsapi.client;
 
-import com.example.dto.TokenResponse;
-import com.example.dto.UserInfoResponse;
-import com.example.dto.UserRegistrationRequest;
+import com.example.individuals.dto.TokenResponse;
+import com.example.individuals.dto.UserInfoResponse;
+import com.example.individuals.dto.UserRegistrationRequest;
 import com.example.individualsapi.exception.*;
 import com.example.individualsapi.service.impl.MetricsCollector;
 import io.opentelemetry.instrumentation.annotations.WithSpan;
@@ -94,7 +94,6 @@ public class KeycloakClient {
                 });
     }
 
-    //pod snos? TODO
     public Mono<UserInfoResponse> getUserInfo(String currentUserUid) {
         return getAdminToken().flatMap(adminToken -> getUserInfo(currentUserUid, adminToken));
     }

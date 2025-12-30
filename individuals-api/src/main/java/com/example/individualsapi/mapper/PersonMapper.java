@@ -1,8 +1,8 @@
 package com.example.individualsapi.mapper;
 
-import com.example.dto.UserInfoResponse;
-import com.example.dto.UserRegistrationRequest;
-import com.example.dto.UserUpdateRequest;
+import com.example.individuals.dto.UserInfoResponse;
+import com.example.individuals.dto.UserRegistrationRequest;
+import com.example.individuals.dto.UserUpdateRequest;
 import com.example.person.dto.IndividualDto;
 import com.example.person.dto.UpdateDto;
 import org.mapstruct.Mapper;

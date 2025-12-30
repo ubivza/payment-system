@@ -1,6 +1,6 @@
 package com.example.individualsapi.handler;
 
-import com.example.dto.ErrorResponse;
+import com.example.individuals.dto.ErrorResponse;
 import com.example.individualsapi.exception.BadCredentialsException;
 import com.example.individualsapi.exception.NotFoundException;
 import com.example.individualsapi.exception.NotValidException;
