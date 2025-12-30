@@ -16,7 +16,7 @@ COPY openapi ./openapi
 
 RUN gradle --no-daemon clean bootJar
 
-FROM openjdk:24-jdk-slim
+FROM openjdk:24-ea-17-jdk-slim
 
 RUN apt-get update && apt-get install -y curl && rm -rf /var/lib/apt/lists/*
 

@@ -1,3 +1,5 @@
+import org.openapitools.generator.gradle.plugin.tasks.GenerateTask
+
 plugins {
     java
     id("org.springframework.boot") version "3.5.5"
@@ -36,7 +38,11 @@ val versions = mapOf(
         "feignMicrometerVersion" to "13.6",
         "springCloudStarterOpenfeign" to "4.1.1",
         "mapstructVersion" to "1.5.5.Final",
-        "wiremockTestcontainers" to "1.0-alpha-15"
+        "wiremockTestcontainers" to "1.0-alpha-15",
+        "transactionApiVersion" to "1.0.0-SNAPSHOT",
+        "javaxAnnotationApiVersion" to "1.3.2",
+        "javaxValidationApiVersion" to "2.0.0.Final",
+        "swaggerAnnotations" to "2.2.40"
 )
 
 dependencyManagement {
@@ -65,9 +71,15 @@ dependencies {
 
     //openapi codegen libs
     implementation("jakarta.validation:jakarta.validation-api:${versions["jakartaValidationApi"]}")
+    implementation("io.swagger.core.v3:swagger-annotations:${versions["swaggerAnnotations"]}")
+    implementation("javax.validation:validation-api:${versions["javaxValidationApiVersion"]}")
+    implementation("javax.annotation:javax.annotation-api:${versions["javaxAnnotationApiVersion"]}")
 
     //person-service api
     implementation("com.example:person-service:${versions["personApiVersion"]}")
+
+    //transaction-service api
+    implementation("com.example:transaction-service:${versions["transactionApiVersion"]}")
 
     //security jwt
     implementation("com.auth0:java-jwt:${versions["javaJwt"]}")
@@ -101,66 +113,109 @@ tasks.getByName<Jar>("jar") {
     enabled = false
 }
 
+
 /*
 ──────────────────────────────────────────────────────
 ============== Api generation ==============
 ──────────────────────────────────────────────────────
 */
 
-openApiGenerate {
-    generatorName.set("java")
-    inputSpec.set("${projectDir}/openapi/individuals-api.yml")
-    outputDir.set(layout.buildDirectory.dir("generated-sources/openapi").get().toString())
-    modelPackage.set("com.example.dto")
-    globalProperties.set(
-            mapOf(
-                    "models" to "",
-                    "apis" to "false",
-                    "supportingFiles" to "false",
-                    "modelDocs" to "false"
-            )
-    )
-    configOptions.set(
-            mapOf(
-                    "serializationLibrary" to "jackson",
-                    "dateLibrary" to "java8",
-                    "useBeanValidation" to "true",
-                    "useJakartaEe" to "true",
-                    "serializableModel" to "true",
-                    "library" to "webclient",
-                    "openApiNullable" to "false"
-            )
-    )
-    additionalProperties.set(
-            mapOf(
-                    "jackson" to "true",
-                    "useJacksonAnnotations" to "true",
-                    "gson" to "false"
-            )
-    )
-}
+val openApiDir = file("${rootDir}/openapi")
 
-sourceSets {
-    main {
-        java {
-            srcDir(layout.buildDirectory.dir("generated-sources/openapi/src/main/java"))
+val foundSpecifications = openApiDir.listFiles { f -> f.extension in listOf("yaml", "yml") } ?: emptyArray()
+logger.lifecycle("Found ${foundSpecifications.size} specifications: " + foundSpecifications.joinToString { it.name })
+
+foundSpecifications.forEach { specFile ->
+    val ourDir = getAbsolutePath(specFile.nameWithoutExtension)
+    val packageName = defineJavaPackageName(specFile.nameWithoutExtension)
+
+    val taskName = buildGenerateApiTaskName(specFile.nameWithoutExtension)
+    logger.lifecycle("Register task ${taskName} from ${ourDir.get()}")
+    val basePackage = "com.example.${packageName}"
+
+    tasks.register(taskName, GenerateTask::class) {
+        generatorName.set("spring")
+        inputSpec.set(specFile.absolutePath)
+        outputDir.set(ourDir)
+
+        configOptions.set(
+                mapOf(
+                        "library" to "spring-cloud",
+                        "skipDefaultInterface" to "true",
+                        "useBeanValidation" to "true",
+                        "openApiNullable" to "false",
+                        "useTags" to "true",
+                        "modelPackage" to "${basePackage}.dto",
+                        "configPackage" to "${basePackage}.config",
+                )
+        )
+
+        globalProperties.set(
+                mapOf(
+                        "models" to "",
+                        "apis" to "false",
+                        "supportingFiles" to "false",
+                        "modelDocs" to "false"
+                )
+        )
+
+        doFirst {
+            logger.lifecycle("$taskName: starting generation from ${specFile.name}")
         }
     }
 }
 
-tasks {
-    compileJava {
-        dependsOn(openApiGenerate)
-    }
 
-    clean {
-        delete(layout.buildDirectory.dir("generated-sources"))
-    }
+fun getAbsolutePath(nameWithoutExtension: String): Provider<String> {
+    return layout.buildDirectory
+            .dir("generated-sources/openapi/${nameWithoutExtension}")
+            .map { it.asFile.absolutePath }
+}
 
-    withType<org.springframework.boot.gradle.tasks.bundling.BootJar> {
-        mainClass.set("com.example.individualsapi.IndividualsApiApplication")
+fun defineJavaPackageName(name: String): String {
+    val beforeDash = name.substringBefore('-')
+    val match = Regex("^[a-z]+]").find(beforeDash)
+    return match?.value ?: beforeDash.lowercase()
+}
+
+fun buildGenerateApiTaskName(name: String): String {
+    return buildTaskName("generate", name)
+}
+
+fun buildJarTaskName(name: String): String {
+    return buildTaskName("jar", name)
+}
+
+fun buildTaskName(taskPrefix: String, name: String): String {
+    val prepareName = name
+            .split(Regex("[^A-Za-z0-9]"))
+            .filter { it.isNotBlank() }
+            .joinToString("") { it.replaceFirstChar(Char::uppercase) }
+
+    return "${taskPrefix}-${prepareName}"
+}
+
+val withoutExtensionNames = foundSpecifications.map { it.nameWithoutExtension }
+
+sourceSets.named("main") {
+    withoutExtensionNames.forEach { name ->
+        java.srcDir(layout.buildDirectory.dir("generated-sources/openapi/$name/src/main/java"))
     }
 }
+
+tasks.register("generateAllOpenApi") {
+    foundSpecifications.forEach { specFile ->
+        dependsOn(buildGenerateApiTaskName(specFile.nameWithoutExtension))
+    }
+    doLast {
+        logger.lifecycle("generateAllOpenApi: all specifications has been generated")
+    }
+}
+
+tasks.named("compileJava") {
+    dependsOn("generateAllOpenApi")
+}
+
 
 /*
 ──────────────────────────────────────────────────────

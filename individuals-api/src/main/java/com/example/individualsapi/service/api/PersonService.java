@@ -1,7 +1,7 @@
 package com.example.individualsapi.service.api;
 
-import com.example.dto.UserRegistrationRequest;
-import com.example.dto.UserUpdateRequest;
+import com.example.individuals.dto.UserRegistrationRequest;
+import com.example.individuals.dto.UserUpdateRequest;
 import com.example.person.dto.IndividualDto;
 import reactor.core.publisher.Mono;
 

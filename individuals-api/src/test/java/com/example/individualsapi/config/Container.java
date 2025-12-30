@@ -35,6 +35,8 @@ public class Container {
         registry.add("keycloak.client-secret", () -> "BZG8aGN4k7Th5jjsTpjt2EUkRHwCJMVl");
 
         registry.add("person.url", wireMockContainer::getBaseUrl);
+        registry.add("wallet.url", wireMockContainer::getBaseUrl);
+        registry.add("transaction.url", wireMockContainer::getBaseUrl);
     }
 
     @AfterEach
