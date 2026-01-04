@@ -1,0 +1,22 @@
+@startuml sequence
+actor Scheduler
+participant Shedlock
+participant CurrencyRateService
+participant ExternalProviderClient
+participant DB
+
+Scheduler -> Shedlock: Try acquire lock ("updateRates")
+alt Lock granted
+  Shedlock -> CurrencyRateService: start updateRates()
+  CurrencyRateService -> ExternalProviderClient: fetchRates()
+  ExternalProviderClient --> CurrencyRateService: Map(baseCurrency -> rates)
+  CurrencyRateService -> DB: getActiveCurrencies()
+  loop по всем парам (A, B)
+    CurrencyRateService -> CurrencyRateService: вычислить курс (A->B)
+    CurrencyRateService -> DB: save conversion_rate (A->B)
+  end
+  CurrencyRateService -> Shedlock: release lock
+else Already running elsewhere
+  Shedlock --> Scheduler: Skip (no lock)
+end
+@enduml
