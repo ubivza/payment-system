@@ -6,7 +6,6 @@ participant DB
 participant TransactionService
 
 Client -> IndividualsAPI: POST /transactions/transfer/init (USD->EUR)
-IndividualsAPI -> IndividualsAPI: Проверка валют кошельков (USD ≠ EUR)
 IndividualsAPI -> CurrencyRateService: GET /api/rates?from=USD&to=EUR&timestamp=...
 CurrencyRateService -> DB: findLatestRate(USD, EUR, timestamp)
 DB --> CurrencyRateService: RateResponse
