@@ -50,7 +50,7 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
     }
 
     @Override
-    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest) {
+    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
         String token = tokenTypeStrategyResolver.resolve(PaymentType.DEPOSIT.name()).generate(initTransactionRequest);
 
         TransactionInitResponse response = new TransactionInitResponse();

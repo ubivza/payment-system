@@ -299,6 +299,51 @@ services:
     networks:
       - payment-system
 
+  currency-rate-postgres:
+    image: postgres:16
+    container_name: currency-rate-postgres
+    environment:
+      POSTGRES_DB: currency_rate
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    ports:
+      - "5437:5432"
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
+  currency-rate-service:
+    build:
+      context: currency-rate-service
+      dockerfile: Dockerfile
+    container_name: currency-rate-service
+    ports:
+      - "8084:8084"
+    environment:
+      KEYCLOAK_HOST: http://keycloak:8080
+      TRANSACTION_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT: http://alloy:4318
+      SHOW_SQL: false
+      FORMAT_SQL: false
+      HIGHLIGHT_SQL: false
+      POSTGRES_HOST: currency-rate-postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USERNAME: admin
+      POSTGRES_PASSWORD: admin
+    depends_on:
+      currency-rate-postgres:
+        condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - payment-system
+
   kafka:
     image: confluentinc/cp-kafka:7.4.4
     hostname: broker

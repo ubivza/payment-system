@@ -1,0 +1,22 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/scripts/XML_daily.asp",
+        "queryParameters": {
+          "date_req": {
+            "matches": "^\\d{2}/\\d{2}/\\d{4}$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/xml; charset=windows-1251"
+        },
+        "body": "<?xml version=\"1.0\" encoding=\"windows-1251\"?>\n\n<ValCurs Date=\"31.12.2025\" name=\"Foreign Currency Market\">\n    <Valute ID=\"R01010\">\n        <NumCode>036</NumCode>\n        <CharCode>AUD</CharCode>\n        <Nominal>1</Nominal>\n        <Name>Австралийский доллар</Name>\n        <Value>52,4979</Value>\n        <VunitRate>52,4979</VunitRate>\n    </Valute>\n\n    <Valute ID=\"R01235\">\n        <NumCode>840</NumCode>\n        <CharCode>USD</CharCode>\n        <Nominal>1</Nominal>\n        <Name>Доллар США</Name>\n        <Value>78,2267</Value>\n        <VunitRate>78,2267</VunitRate>\n    </Valute>\n\n    <Valute ID=\"R01239\">\n        <NumCode>978</NumCode>\n        <CharCode>EUR</CharCode>\n        <Nominal>1</Nominal>\n        <Name>Евро</Name>\n        <Value>92,0938</Value>\n        <VunitRate>92,0938</VunitRate>\n    </Valute>\n\n    <Valute ID=\"R01035\">\n        <NumCode>826</NumCode>\n        <CharCode>GBP</CharCode>\n        <Nominal>1</Nominal>\n        <Name>Фунт стерлингов</Name>\n        <Value>105,6060</Value>\n        <VunitRate>105,606</VunitRate>\n    </Valute>\n</ValCurs>"
+      }
+    }
+  ]
+}

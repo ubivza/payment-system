@@ -1,5 +1,6 @@
 package com.example.individualsapi.config;
 
+import com.example.currency.api.CurrencyRateApiClient;
 import com.example.person.api.PersonApiClient;
 import com.example.transaction.api.TransactionApiClient;
 import com.example.transaction.api.WalletApiClient;
@@ -11,7 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @EnableFeignClients(basePackageClasses = {PersonApiClient.class,
         TransactionApiClient.class,
-        WalletApiClient.class})
+        WalletApiClient.class,
+        CurrencyRateApiClient.class})
 public class FeignConfig {
 
     @Bean

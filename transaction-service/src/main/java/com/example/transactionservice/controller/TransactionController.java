@@ -19,9 +19,9 @@ public class TransactionController implements TransactionApiClient {
     private final TransactionTypeStrategyResolver strategyResolver;
 
     @Override
-    public ResponseEntity<TransactionInitResponse> initTransaction(String authorization, String type, InitTransactionRequest initTransactionRequest) {
+    public ResponseEntity<TransactionInitResponse> initTransaction(String authorization, String type, InitTransactionRequest initTransactionRequest, String from, String to) {
         return ResponseEntity.ok()
-                .body(strategyResolver.resolve(type).init(initTransactionRequest));
+                .body(strategyResolver.resolve(type).init(initTransactionRequest, from, to));
     }
 
     @Override

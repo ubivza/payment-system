@@ -1,0 +1,97 @@
+server:
+  port: ${CURRENCY_RATE_SERVICE_SERVER_PORT:8084}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:payment-system}
+
+spring:
+  application:
+    name: ${CURRENCY_RATE_SERVICE_SPRING_APPLICATION_NAME:currency-rate-service}
+  main:
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5437}/currency_rate
+    username: ${POSTGRES_USERNAME:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: currency_rate
+        show_sql: ${SHOW_SQL:true}
+        format_sql: ${FORMAT_SQL:true}
+        highlight_sql: ${HIGHLIGHT_SQL:true}
+        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: ${SLOW_SQL_QUERY_INDICATOR_MS:1500}
+        hbm2ddl:
+          auto: validate
+    driver-class-name: org.postgresql.Driver
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: ${CURRENCY_RATE_SERVICE_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  endpoint:
+    health:
+      show-details: ${CURRENCY_RATE_SERVICE_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+    prometheus:
+      access: ${CURRENCY_RATE_SERVICE_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${CURRENCY_RATE_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+
+rate:
+  provider:
+    cbr:
+      url: https://www.cbr.ru
+
+scheduling:
+  update-currency-rate:
+    event-rate: ${CURRENCY_RATE_SCHEDULING_UPDATE_CURRENCY_RATE_EVENT_RATE:60000} #1 min
+
+resilience4j:
+  circuitbreaker:
+    configs:
+      default:
+        slidingWindowType: TIME_BASED
+        slidingWindowSize: 100
+        permittedNumberOfCallsInHalfOpenState: 10
+        slowCallDurationThreshold: 4s
+        slowCallRateThreshold: 90
+        failureRateThreshold: 50
+        waitDurationInOpenState: 10s
+        minimumNumberOfCalls: 10
+  retry:
+    configs:
+      default:
+        maxAttempts: 3
+        waitDuration: 100ms
+        retryExceptions:
+          - org.springframework.web.client.HttpServerErrorException
+          - java.util.concurrent.TimeoutException
+          - java.io.IOException
+  rateLimiter:
+    configs:
+      default:
+        timeoutDuration: 5s
+        limitForPeriod: 10
+        limit-refresh-period: 1s

@@ -27,6 +27,7 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.AMOUNT;
+import static com.example.transactionservice.service.impl.TokenServiceAbstract.RATE;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.USER_UID;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.WALLET_FROM_UID;
 import static com.example.transactionservice.service.impl.TokenServiceAbstract.WALLET_TO_UID;
@@ -49,10 +50,15 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
     }
 
     @Override
-    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest) {
+    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
         TransferInitRequest transferInitRequest = (TransferInitRequest) initTransactionRequest;
 
         WalletResponse walletResponse = walletService.get(transferInitRequest.getUserUid().toString(), transferInitRequest.getWalletFromUid().toString());
+        Wallets walletTo = walletService.get(transferInitRequest.getWalletToUid().toString());
+
+        if(!walletResponse.getCurrencyCode().equals(valuteFrom) || !walletTo.getWalletType().getCurrencyCode().equals(valuteTo)) {
+            throw new BadRequest("Wrong valutes");
+        }
 
         if (isBalanceNotEnough(walletResponse.getBalance().add(super.getFee(transferInitRequest.getAmount())), transferInitRequest.getAmount())) {
             throw new BadRequest(String.format(FailureReason.NOT_ENOUGH_BALANCE, transferInitRequest.getWalletFromUid()));
@@ -61,8 +67,6 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
         if (ActivityStatus.DISABLED.name().equalsIgnoreCase(walletResponse.getStatus())) {
             throw new BadRequest(String.format("Your wallet %s is disabled", transferInitRequest.getWalletFromUid()));
         }
-
-        Wallets walletTo = walletService.get(transferInitRequest.getWalletToUid().toString());
 
         if (ActivityStatus.DISABLED.equals(walletTo.getStatus())) {
             throw new BadRequest(String.format("Wallet %s you try to transfer to is disabled", transferInitRequest.getWalletToUid()));
@@ -83,7 +87,8 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
     public TransactionConfirmResponse confirm(ConfirmRequest confirmRequest) {
         Claims claims = tokenTypeStrategyResolver.resolve(PaymentType.TRANSFER.name()).validateAndGetClaims(confirmRequest.getToken());
 
-        BigDecimal amount = BigDecimal.valueOf(claims.get(AMOUNT, Double.class));
+        BigDecimal amount = new BigDecimal(claims.get(AMOUNT, String.class));
+        BigDecimal amountInValuteTo = amount.multiply(new BigDecimal(claims.get(RATE, String.class)));
 
         Transactions transactions = new Transactions();
         transactions.setAmount(amount);
@@ -113,7 +118,7 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
             return response;
         } else {
             walletService.depositMoney(walletFrom.getId(), amount.add(getFee(amount)).negate());
-            walletService.depositMoney(walletTo.getId(), amount);
+            walletService.depositMoney(walletTo.getId(), amountInValuteTo);
 
             transactions.setStatus(TransactionStatus.COMPLETED);
 

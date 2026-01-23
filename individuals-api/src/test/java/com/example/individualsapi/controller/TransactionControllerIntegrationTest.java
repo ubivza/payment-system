@@ -6,6 +6,7 @@ import com.example.individuals.dto.TokenResponse;
 import com.example.individuals.dto.TransactionConfirmResponseDto;
 import com.example.individuals.dto.TransactionInitResponseDto;
 import com.example.individuals.dto.TransactionStatusResponseDto;
+import com.example.individuals.dto.TransferInitRequestDto;
 import com.example.individuals.dto.UserRegistrationRequest;
 import com.example.individuals.dto.WithdrawalInitRequestDto;
 import com.example.individualsapi.config.Container;
@@ -59,7 +60,6 @@ public class TransactionControllerIntegrationTest extends Container {
         WithdrawalInitRequestDto initTransactionRequest = new WithdrawalInitRequestDto();
         initTransactionRequest.setAmount(new BigDecimal(10));
         initTransactionRequest.setType("withdrawal");
-        initTransactionRequest.setWalletUid(UUID.fromString("4cac87a9-f63f-49ec-88b5-e55fe660268b"));
         initTransactionRequest.setDestination("nalik");
 
         ConfirmRequestDto confirmRequestDto = new ConfirmRequestDto();
@@ -92,7 +92,8 @@ public class TransactionControllerIntegrationTest extends Container {
                             .expectBody(UUID.class)
                             .value(uuid -> {
                                 assertNotNull(uuid);
-                                webTestClient.post().uri("/v1/transactions/withdrawal/init")
+                                initTransactionRequest.setWalletUid(uuid);
+                                webTestClient.post().uri("/v1/transactions/withdrawal/init?from=RUB&to=RUB")
                                         .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
                                         .bodyValue(initTransactionRequest)
                                         .exchange()
@@ -111,6 +112,89 @@ public class TransactionControllerIntegrationTest extends Container {
                                                                 .exchange()
                                                                 .expectStatus().is2xxSuccessful()
                                                                 .expectBody(TransactionStatusResponseDto.class).isEqualTo(statusResponseDto);
+                                                    });
+                                        });
+                            });
+                });
+    }
+
+    @Test
+    @DisplayName("init transfer -> confirm -> get status COMPLETED")
+    void testTransferHappyFlow() {
+        CreateWalletRequestDto req = new CreateWalletRequestDto();
+        req.setName("Happy wallet");
+        req.currencyCode("RUB");
+
+        TransactionInitResponseDto transferInitResponseDto = new TransactionInitResponseDto();
+        transferInitResponseDto.setAvailable(true);
+        transferInitResponseDto.setFee(new BigDecimal(10));
+        transferInitResponseDto.setToken("init-token-123");
+
+        TransferInitRequestDto initTransactionRequest = new TransferInitRequestDto();
+        initTransactionRequest.setAmount(new BigDecimal(10));
+        initTransactionRequest.setType("transfer");
+        initTransactionRequest.setWalletFromUid(UUID.fromString("4cac87a9-f63f-49ec-88b5-e55fe660268b"));
+        initTransactionRequest.setWalletToUid(UUID.fromString("4cac87a9-f63f-49ec-88b5-e55fe660268b"));
+
+        ConfirmRequestDto confirmRequestDto = new ConfirmRequestDto();
+        confirmRequestDto.setConfirm(true);
+        confirmRequestDto.setToken("init-token-123");
+
+        TransactionConfirmResponseDto confirmResponseDto = new TransactionConfirmResponseDto();
+        confirmResponseDto.setTransactionId(UUID.fromString("6ca59b01-189c-495f-8240-0f72d921429b"));
+        confirmResponseDto.setStatus("PENDING");
+
+        TransactionStatusResponseDto statusResponseDto = new TransactionStatusResponseDto();
+        statusResponseDto.setStatus("COMPLETED");
+
+        UserRegistrationRequest userRegistrationRequest = TestUtils.buildMockUserRegistrationRequest();
+
+        webTestClient.post().uri("/v1/auth/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(userRegistrationRequest)
+                .exchange()
+                .expectStatus().is2xxSuccessful()
+                .expectBody(TokenResponse.class)
+                .value(registrationResponse -> {
+                    assertNotNull(registrationResponse.getAccessToken());
+                    webTestClient.post().uri("/v1/wallets")
+                            .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(req)
+                            .exchange()
+                            .expectStatus().is2xxSuccessful()
+                            .expectBody(UUID.class)
+                            .value(walletToId -> {
+                                assertNotNull(walletToId);
+                                webTestClient.post().uri("/v1/wallets")
+                                        .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
+                                        .contentType(MediaType.APPLICATION_JSON)
+                                        .bodyValue(req)
+                                        .exchange()
+                                        .expectStatus().is2xxSuccessful()
+                                        .expectBody(UUID.class)
+                                        .value(walletFromId -> {
+                                            assertNotNull(walletFromId);
+                                            webTestClient.post().uri("/v1/transactions/transfer/init?from=RUB&to=RUB")
+                                                    .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
+                                                    .bodyValue(initTransactionRequest)
+                                                    .exchange()
+                                                    .expectStatus().is2xxSuccessful()
+                                                    .expectBody(TransactionInitResponseDto.class).isEqualTo(transferInitResponseDto)
+                                                    .value(initResponse -> {
+                                                        webTestClient.post().uri("/v1/transactions/transfer/confirm")
+                                                                .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
+                                                                .bodyValue(confirmRequestDto)
+                                                                .exchange()
+                                                                .expectStatus().is2xxSuccessful()
+                                                                .expectBody(TransactionConfirmResponseDto.class).isEqualTo(confirmResponseDto)
+                                                                .value(confirmResponse -> {
+                                                                    webTestClient.get().uri("/v1/transactions/6ca59b01-189c-495f-8240-0f72d921429b/status")
+                                                                            .headers(headers -> headers.setBearerAuth(registrationResponse.getAccessToken()))
+                                                                            .exchange()
+                                                                            .expectStatus().is2xxSuccessful()
+                                                                            .expectBody(TransactionStatusResponseDto.class).isEqualTo(statusResponseDto);
+                                                                });
                                                     });
                                         });
                             });

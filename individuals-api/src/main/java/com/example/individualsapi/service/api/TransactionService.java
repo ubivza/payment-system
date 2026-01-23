@@ -8,7 +8,7 @@ import com.example.individuals.dto.TransactionStatusResponseDto;
 import reactor.core.publisher.Mono;
 
 public interface TransactionService {
-    Mono<TransactionInitResponseDto> init(String type, InitTransactionRequest initTransactionRequest);
+    Mono<TransactionInitResponseDto> init(String type, InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo);
     Mono<TransactionConfirmResponseDto> confirm(String type, ConfirmRequestDto confirmRequestDto);
     Mono<TransactionStatusResponseDto> getStatus(String transactionId);
 }

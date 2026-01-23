@@ -10,7 +10,7 @@ import com.example.transactionservice.entity.PaymentType;
 import java.util.UUID;
 
 public interface TransactionService {
-    TransactionInitResponse init(InitTransactionRequest initTransactionRequest);
+    TransactionInitResponse init(InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo);
     TransactionConfirmResponse confirm(ConfirmRequest confirmRequest);
     TransactionStatusResponse getStatus(String transactionId);
     PaymentType getType();
