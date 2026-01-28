@@ -1,0 +1,16 @@
+@startuml
+actor Client
+participant IndividualsAPI
+participant CurrencyRateService
+participant DB
+participant TransactionService
+
+Client -> IndividualsAPI: POST /transactions/transfer/init (USD->EUR)
+IndividualsAPI -> CurrencyRateService: GET /api/rates?from=USD&to=EUR&timestamp=...
+CurrencyRateService -> DB: findLatestRate(USD, EUR, timestamp)
+DB --> CurrencyRateService: RateResponse
+CurrencyRateService --> IndividualsAPI: RateResponse
+IndividualsAPI -> TransactionService: POST /transactions/transfer/init (с указанием курса USD->EUR)
+TransactionService --> IndividualsAPI: Условия транзакции
+IndividualsAPI --> Client: Условия транзакции с курсом
+@enduml

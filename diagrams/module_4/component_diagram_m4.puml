@@ -1,0 +1,26 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' Компонентная диаграмма
+
+Person_Ext(client, "Клиент", "Внешние вызовы от individuals-api")
+Component(nexus, "Nexus", "Хранилище артефактов")
+
+Container_Boundary(currency_rate_system, "currency-rate-service") {
+Component(currency_rate_controller, "CurrencyRateController", "Spring MVC", "REST API курсов валют")
+Component(currency_rate_service, "CurrencyRateService", "Business Logic", "Логика операций с курсами валют")
+Component(currency_rate_repo, "CurrencyRateRepository", "Spring Data JPA", "CRUD операции для курсов валют")
+Component(currency_rate_scheduler, "CurrencyRateUpdateScheduler", "Spring Scheduling", "Шедулер обновления курсов валют")
+Component(openapi_generator, "OpenApi Auto Generation", "Настройка автогенерации апи клиента")
+}
+
+ContainerDb(db, "Currency Rate Database", "PostgreSQL", "Хранилище данных сервиса")
+
+Rel(client, currency_rate_controller, "HTTP", "HTTP запросы")
+Rel(currency_rate_controller, currency_rate_service, "Сервисные методы",)
+Rel(currency_rate_service, currency_rate_repo, ,)
+Rel(currency_rate_repo, db, "JDBC", "SQL запросы")
+Rel(currency_rate_scheduler, db, "JDBC", "SQL запросы")
+Rel(openapi_generator, nexus, "HTTP", "Загрузка артефактов")
+
+@enduml

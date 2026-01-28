@@ -18,6 +18,8 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingConstants;
 
+import java.math.BigDecimal;
+
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING)
 public interface TransactionMapper {
     ConfirmRequest mapConfirm(ConfirmRequestDto externalDto);
@@ -28,6 +30,6 @@ public interface TransactionMapper {
     @Mapping(target = "userUid", source = "userId")
     DepositInitRequest mapDeposit(DepositInitRequestDto initTransactionRequest, String userId);
     @Mapping(target = "userUid", source = "userId")
-    TransferInitRequest mapTransfer(TransferInitRequestDto initTransactionRequest, String userId);
+    TransferInitRequest mapTransfer(TransferInitRequestDto initTransactionRequest, String userId, BigDecimal rate);
     TransactionInitResponseDto mapInitResponse(TransactionInitResponse transactionInitResponse);
 }

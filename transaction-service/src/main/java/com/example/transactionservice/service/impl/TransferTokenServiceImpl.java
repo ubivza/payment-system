@@ -29,9 +29,10 @@ public class TransferTokenServiceImpl extends TokenServiceAbstract {
         Map<String, Object> claims = new HashMap<>();
         claims.put(WALLET_FROM_UID, transferInitRequest.getWalletFromUid());
         claims.put(WALLET_TO_UID, transferInitRequest.getWalletToUid());
-        claims.put(AMOUNT, transferInitRequest.getAmount().doubleValue());
+        claims.put(AMOUNT, transferInitRequest.getAmount().toString());
         claims.put(TIMESTAMP, Instant.now().toString());
         claims.put(USER_UID, transferInitRequest.getUserUid());
+        claims.put(RATE, transferInitRequest.getRate().toString());
 
         return super.buildToken(claims, TRANSFER_INIT);
     }

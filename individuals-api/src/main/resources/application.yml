@@ -37,6 +37,11 @@ wallet:
   contextId: ${wallet.name}
   url: ${WALLET_URL:http://localhost:8083}
 
+currencyRate:
+  name: ${CURRENCY_RATE_NAME:currencyRate}
+  contextId: ${currencyRate.name}
+  url: ${CURRENCY_RATE_URL:http://localhost:8084}
+
 management:
   server:
     port: ${INDIVIDUALS_API_MANAGEMENT_SERVER_PORT:8081}

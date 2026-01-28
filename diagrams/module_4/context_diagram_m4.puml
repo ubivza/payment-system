@@ -1,0 +1,34 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+LAYOUT_LEFT_RIGHT()
+
+' Контекстная диаграмма
+
+Person(client, "Client", "Пользователь системы")
+
+System_Boundary(payment_boundary, "Payment System") {
+}
+
+Component(keycloak, "Keycloak", "OpenID Connect", "Управление пользователями и аутентификация")
+
+ContainerDb(kc_db, "Keycloak Database", "PostgreSQL", "Хранилище данных аутентификации")
+ContainerDb(ps_db, "Payment Database", "PostgreSQL", "Хранилище платежных данных")
+
+Component(external_payment_gateway, "Payment Provider", "Payment logic", "Внешний провайдер платежей")
+Component(external_currency_gateway, "Currency Rate Provider", "Currencies", "Внешний провайдер данных по курсу валютных пар")
+
+Container(kafka, "Apache Kafka", "Apache Kafka", "Асинхронная коммуникация между сервисами")
+
+' Связи
+Rel(client, payment_boundary, "Использует", "HTTP/JSON")
+Rel(payment_boundary, keycloak, "Аутентификация", "OpenID Connect")
+Rel(keycloak, kc_db, "Хранение данных", "JDBC")
+Rel(payment_boundary, ps_db, "Хранение платежей", "JDBC")
+Rel(payment_boundary, kafka, "Асинхронное взаимодействие с внешним сервисом")
+Rel(kafka, payment_boundary, "Асинхронное взаимодействие с внешним сервисом")
+Rel(kafka, external_payment_gateway, "Асинхронное взаимодействие с внешним сервисом")
+Rel(external_payment_gateway, kafka, "Асинхронное взаимодействие с внешним сервисом")
+Rel(payment_boundary, external_currency_gateway, "HTTP", "Cron update")
+
+@enduml

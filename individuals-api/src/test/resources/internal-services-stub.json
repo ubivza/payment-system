@@ -122,7 +122,6 @@
         }
       }
     },
-
     {
       "request": {
         "method": "GET",
@@ -141,11 +140,10 @@
         }
       }
     },
-
     {
       "request": {
         "method": "POST",
-        "urlPathPattern": "/v1/transactions/(deposit|withdrawal|transfer)/init",
+        "urlPathPattern": "/v1/transactions/withdrawal/init",
         "headers": {
           "Authorization": {
             "matches": "^Bearer .+$"
@@ -168,7 +166,6 @@
         }
       }
     },
-
     {
       "request": {
         "method": "POST",
@@ -195,7 +192,6 @@
         }
       }
     },
-
     {
       "request": {
         "method": "GET",
@@ -209,6 +205,78 @@
       "response": {
         "status": 200,
         "body": "{\n  \"status\": \"COMPLETED\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "urlPathPattern": "/v1/transactions/transfer/init",
+        "queryParameters": {
+          "from": {
+            "equalTo": "RUB"
+          },
+          "to": {
+            "equalTo": "RUB"
+          }
+        },
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.type)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.rate)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.walletFromUid)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.walletToUid)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"available\": true,\n  \"fee\": 10,\n  \"token\": \"init-token-123\"\n}",
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "urlPath": "/v1/rates",
+        "queryParameters": {
+          "from": {
+            "equalTo": "RUB"
+          },
+          "to": {
+            "equalTo": "RUB"
+          },
+          "timestamp": {
+            "matches": ".+Z"
+          }
+        },
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "body": "{\n  \"sourceCode\": \"RUB\",\n  \"destinationCode\": \"RUB\",\n  \"rate\": \"1\"\n, \"rateTimestamp\": \"2026-01-11T12:34:56Z\",\n \"providerCode\": \"CBR\"}",
         "headers": {
           "Content-Type": "application/json"
         }

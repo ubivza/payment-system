@@ -111,6 +111,16 @@ paths:
           schema:
             type: string
             enum: [deposit, withdrawal, transfer]
+        - name: from
+          in: query
+          required: false
+          schema:
+            type: string
+        - name: to
+          in: query
+          required: false
+          schema:
+            type: string
       requestBody:
         required: true
         content:
@@ -339,6 +349,9 @@ components:
           type: string
           format: uuid
         amount:
+          type: number
+          format: decimal
+        rate:
           type: number
           format: decimal
 

@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
@@ -24,8 +25,11 @@ public class TransactionController {
     private final TransactionService transactionService;
 
     @PostMapping("/{type}/init")
-    public Mono<ResponseEntity<TransactionInitResponseDto>> init(@PathVariable String type, @RequestBody InitTransactionRequest initTransactionRequest) {
-        return transactionService.init(type, initTransactionRequest)
+    public Mono<ResponseEntity<TransactionInitResponseDto>> init(@PathVariable String type,
+                                                                 @RequestBody InitTransactionRequest initTransactionRequest,
+                                                                 @RequestParam String from,
+                                                                 @RequestParam String to) {
+        return transactionService.init(type, initTransactionRequest, from, to)
                 .map(ResponseEntity::ok);
     }
 
