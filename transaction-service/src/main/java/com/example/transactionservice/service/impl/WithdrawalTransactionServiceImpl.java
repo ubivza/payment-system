@@ -56,7 +56,7 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
     }
 
     @Override
-    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest) {
+    public TransactionInitResponse init(InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
         WithdrawalInitRequest withdrawalInitRequest = (WithdrawalInitRequest) initTransactionRequest;
 
         WalletResponse walletResponse = walletService.get(withdrawalInitRequest.getUserUid().toString(), withdrawalInitRequest.getWalletUid().toString());

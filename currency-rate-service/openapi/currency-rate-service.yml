@@ -1,0 +1,184 @@
+openapi: 3.0.0
+info:
+  title: Currency Rate Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8084
+
+tags:
+  - name: CurrencyRate
+
+paths:
+  /v1/rates:
+    get:
+      summary: Получить курс между двумя валютами на указанную дату/время
+      operationId: "getRate"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - CurrencyRate
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - name: from
+          in: query
+          required: true
+          schema:
+            type: string
+            maxLength: 3
+          description: Код исходной валюты (например, "USD")
+        - name: to
+          in: query
+          required: true
+          schema:
+            type: string
+            maxLength: 3
+          description: Код целевой валюты (например, "EUR")
+        - name: timestamp
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date-time
+          description: Дата/время, на которую нужен курс (ISO 8601, UTC). Если не указано, возвращается последний актуальный курс.
+      responses:
+        '200':
+          description: Курс найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateResponse'
+        '404':
+          description: Курс не найден
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '400':
+          description: Ошибка запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /v1/currencies:
+    get:
+      summary: Получить список поддерживаемых валют
+      operationId: "getCurrencies"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - CurrencyRate
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      responses:
+        '200':
+          description: Список валют
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CurrencyResponse'
+
+  /v1/rate-providers:
+    get:
+      summary: Получить список провайдеров курсов валют
+      operationId: "getRateProviders"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - CurrencyRate
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      responses:
+        '200':
+          description: Провайдеры
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/RateProviderResponse'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+    RateResponse:
+      type: object
+      properties:
+        sourceCode:
+          type: string
+          description: Код исходной валюты (например, "USD")
+        destinationCode:
+          type: string
+          description: Код целевой валюты (например, "EUR")
+        rate:
+          type: number
+          description: Курс обмена sourceCode→destinationCode
+        rateTimestamp:
+          type: string
+          format: date-time
+          description: Время, на которое действует курс
+        providerCode:
+          type: string
+          description: Код провайдера курса
+
+    CurrencyResponse:
+      type: object
+      properties:
+        code:
+          type: string
+          description: Трёхбуквенный код валюты (ISO 4217)
+        isoCode:
+          type: integer
+          description: Числовой ISO-код валюты
+        description:
+          type: string
+        active:
+          type: boolean
+        symbol:
+          type: string
+          description: Символ валюты (например, $ или €)
+
+    RateProviderResponse:
+      type: object
+      properties:
+        providerCode:
+          type: string
+        providerName:
+          type: string
+        description:
+          type: string
+        priority:
+          type: integer
+        active:
+          type: boolean
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        status:
+          type: integer

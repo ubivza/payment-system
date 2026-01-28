@@ -9,7 +9,9 @@ import com.example.individuals.dto.TransactionStatusResponseDto;
 import com.example.individuals.dto.TransferInitRequestDto;
 import com.example.individuals.dto.WithdrawalInitRequestDto;
 import com.example.individualsapi.constant.AuthorizationConstants;
+import com.example.individualsapi.exception.InnerServiceException;
 import com.example.individualsapi.mapper.TransactionMapper;
+import com.example.individualsapi.service.api.CurrencyRateService;
 import com.example.individualsapi.service.api.TokenService;
 import com.example.individualsapi.service.api.TransactionService;
 import com.example.transaction.api.TransactionApiClient;
@@ -28,31 +30,42 @@ public class TransactionServiceImpl implements TransactionService {
     private final TokenService tokenService;
     private final ContextUserSubExtractor uidExtractor;
     private final TransactionMapper mapper;
+    private final CurrencyRateService rateService;
 
     @Override
-    public Mono<TransactionInitResponseDto> init(String type, InitTransactionRequest initTransactionRequest) {
+    public Mono<TransactionInitResponseDto> init(String type, InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
         return uidExtractor.getCurrentUserRequestData()
                 .flatMap(userRequestData -> {
-                            com.example.transaction.dto.InitTransactionRequest innerInitRequest;
+                            Mono<com.example.transaction.dto.InitTransactionRequest> innerInitRequestMono;
                             switch (type) {
                                 case "withdrawal" ->
-                                        innerInitRequest = mapper.mapWithdrawal((WithdrawalInitRequestDto) initTransactionRequest, userRequestData.getInnerId());
+                                        innerInitRequestMono = Mono.just(mapper.mapWithdrawal((WithdrawalInitRequestDto) initTransactionRequest, userRequestData.getInnerId()));
                                 case "deposit" ->
-                                        innerInitRequest = mapper.mapDeposit((DepositInitRequestDto) initTransactionRequest, userRequestData.getInnerId());
-                                case "transfer" ->
-                                        innerInitRequest = mapper.mapTransfer((TransferInitRequestDto) initTransactionRequest, userRequestData.getInnerId());
+                                        innerInitRequestMono = Mono.just(mapper.mapDeposit((DepositInitRequestDto) initTransactionRequest, userRequestData.getInnerId()));
+                                case "transfer" -> innerInitRequestMono = rateService.getActualRates(valuteFrom, valuteTo)
+                                        .doOnError(request -> {
+                                            log.error("Rate service unavailable");
+                                            throw new InnerServiceException("Rate service unavailable, try again later");
+                                        })
+                                        .map(rateResponse -> mapper.mapTransfer((TransferInitRequestDto) initTransactionRequest, userRequestData.getInnerId(), rateResponse.getRate()));
                                 default -> {
                                     return Mono.error(new RuntimeException("Unsupported transaction type: " + type));
                                 }
                             }
-                            return tokenService.getAdminToken()
-                                    .flatMap(tokenResponse ->
-                                            Mono.fromCallable(() ->
-                                                            apiClient.initTransaction(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), type, innerInitRequest))
-                                                    .mapNotNull(HttpEntity::getBody)
-                                                    .subscribeOn(Schedulers.boundedElastic())
-                                                    .doOnNext(t -> log.info("Got transaction initialization for user with innerId: {}", userRequestData.getInnerId()))
-                                                    .map(mapper::mapInitResponse));
+                            return innerInitRequestMono
+                                    .flatMap(innerInitRequest ->
+                                            tokenService.getAdminToken()
+                                                    .flatMap(tokenResponse ->
+                                                            Mono.fromCallable(() ->
+                                                                            apiClient.initTransaction(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), type, innerInitRequest, valuteFrom, valuteTo))
+                                                                    .doOnError(request -> {
+                                                                        log.error("Transactions service unavailable");
+                                                                        throw new InnerServiceException("Transactions service unavailable, try again later");
+                                                                    })
+                                                                    .mapNotNull(HttpEntity::getBody)
+                                                                    .subscribeOn(Schedulers.boundedElastic())
+                                                                    .doOnNext(t -> log.info("Got transaction initialization for user with innerId: {}", userRequestData.getInnerId()))
+                                                                    .map(mapper::mapInitResponse)));
                         }
                 );
     }
@@ -65,6 +78,10 @@ public class TransactionServiceImpl implements TransactionService {
                                 .flatMap(tokenResponse ->
                                         Mono.fromCallable(() ->
                                                         apiClient.confirmTransaction(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), type, mapper.mapConfirm(confirmRequestDto)))
+                                                .doOnError(request -> {
+                                                    log.error("Transactions service unavailable");
+                                                    throw new InnerServiceException("Transactions service unavailable, try again later");
+                                                })
                                                 .mapNotNull(HttpEntity::getBody)
                                                 .subscribeOn(Schedulers.boundedElastic())
                                                 .doOnNext(t -> log.info("Got transaction confirmation for user with innerId: {}", userRequestData.getInnerId()))
@@ -79,6 +96,10 @@ public class TransactionServiceImpl implements TransactionService {
                                 .flatMap(tokenResponse ->
                                         Mono.fromCallable(() ->
                                                         apiClient.getTransactionStatus(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), transactionId))
+                                                .doOnError(request -> {
+                                                    log.error("Transactions service unavailable");
+                                                    throw new InnerServiceException("Transactions service unavailable, try again later");
+                                                })
                                                 .mapNotNull(HttpEntity::getBody)
                                                 .subscribeOn(Schedulers.boundedElastic())
                                                 .doOnNext(t -> log.info("Got transaction status for user with innerId: {}", userRequestData.getInnerId()))

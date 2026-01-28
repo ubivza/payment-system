@@ -2,6 +2,7 @@ package com.example.individualsapi.handler;
 
 import com.example.individuals.dto.ErrorResponse;
 import com.example.individualsapi.exception.BadCredentialsException;
+import com.example.individualsapi.exception.InnerServiceException;
 import com.example.individualsapi.exception.NotFoundException;
 import com.example.individualsapi.exception.NotValidException;
 import com.example.individualsapi.exception.UserAlreadyExistsException;
@@ -51,6 +52,16 @@ public class GlobalExceptionHandler {
     public Mono<ErrorResponse> handleException(NotFoundException exception) {
         ErrorResponse response = new ErrorResponse();
         response.setStatus(404);
+        response.setError(exception.getMessage());
+        return Mono.just(response);
+    }
+
+    @ResponseStatus(HttpStatus.SERVICE_UNAVAILABLE)
+    @ExceptionHandler(InnerServiceException.class)
+    @ResponseBody
+    public Mono<ErrorResponse> handleException(InnerServiceException exception) {
+        ErrorResponse response = new ErrorResponse();
+        response.setStatus(503);
         response.setError(exception.getMessage());
         return Mono.just(response);
     }

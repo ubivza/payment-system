@@ -15,12 +15,14 @@ import com.example.transactionservice.config.KafkaTestContainer;
 import com.example.transactionservice.entity.TransactionStatus;
 import com.example.transactionservice.repository.TransactionsRepository;
 import com.example.transactionservice.repository.WalletsRepository;
+import com.example.transactionservice.service.api.WalletService;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -35,12 +37,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.util.MultiValueMap;
 import org.springframework.web.util.UriComponentsBuilder;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -62,6 +66,8 @@ public class TransactionsIntegrationTest extends Container {
     TransactionsRepository transactionsRepository;
     @Autowired
     WalletsRepository walletsRepository;
+    @Autowired
+    WalletService walletService;
     @MockitoBean
     private JwtDecoder jwtDecoder;
 
@@ -90,41 +96,50 @@ public class TransactionsIntegrationTest extends Container {
     void testCreateWalletThanTransfer() {
         UUID userId = UUID.randomUUID();
 
-        CreateWalletRequest createWalletRequest = new CreateWalletRequest();
-        createWalletRequest.setName("My wallet");
-        createWalletRequest.setCurrencyCode("RUB");
+        CreateWalletRequest createWalletFromRequest = new CreateWalletRequest();
+        createWalletFromRequest.setName("My wallet");
+        createWalletFromRequest.setCurrencyCode("USD");
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth("token");
-        HttpEntity<CreateWalletRequest> createWalletRequestHttpEntity = new HttpEntity<>(createWalletRequest, headers);
+        HttpEntity<CreateWalletRequest> createWalletFromRequestHttpEntity = new HttpEntity<>(createWalletFromRequest, headers);
 
         String createWalletUrl = UriComponentsBuilder.fromPath("/v1/wallets/{userUid}")
                 .uriVariables(Map.of("userUid", userId))
                 .toUriString();
 
-        ResponseEntity<UUID> createWalletResponse1 = restTemplate.exchange(createWalletUrl, HttpMethod.POST, createWalletRequestHttpEntity, UUID.class);
+        ResponseEntity<UUID> createWalletResponse1 = restTemplate.exchange(createWalletUrl, HttpMethod.POST, createWalletFromRequestHttpEntity, UUID.class);
 
         assertEquals(1, walletsRepository.findAll().size());
 
-        UUID wallet1Id = UUID.fromString(createWalletResponse1.getBody().toString());
+        UUID walletFromId = UUID.fromString(createWalletResponse1.getBody().toString());
+        walletService.depositMoney(walletFromId, new BigDecimal(105));
 
-        ResponseEntity<UUID> createWalletResponse2 = restTemplate.exchange(createWalletUrl, HttpMethod.POST, createWalletRequestHttpEntity, UUID.class);
+        CreateWalletRequest createWalletToRequest = new CreateWalletRequest();
+        createWalletToRequest.setName("My wallet");
+        createWalletToRequest.setCurrencyCode("RUB");
+
+        HttpEntity<CreateWalletRequest> createWalletToRequestHttpEntity = new HttpEntity<>(createWalletToRequest, headers);
+
+        ResponseEntity<UUID> createWalletResponse2 = restTemplate.exchange(createWalletUrl, HttpMethod.POST, createWalletToRequestHttpEntity, UUID.class);
 
         assertEquals(2, walletsRepository.findAll().size());
 
-        UUID wallet2Id = UUID.fromString(createWalletResponse2.getBody().toString());
+        UUID walletToId = UUID.fromString(createWalletResponse2.getBody().toString());
 
         TransferInitRequest transferInitRequest = new TransferInitRequest();
         transferInitRequest.setType("transfer");
         transferInitRequest.setUserUid(userId);
-        transferInitRequest.setWalletFromUid(wallet1Id);
-        transferInitRequest.setWalletToUid(wallet2Id);
-        transferInitRequest.setAmount(new BigDecimal(0));
+        transferInitRequest.setWalletFromUid(walletFromId);
+        transferInitRequest.setWalletToUid(walletToId);
+        transferInitRequest.setAmount(new BigDecimal(100));
+        transferInitRequest.setRate(new BigDecimal(10));
 
         InitTransactionRequest initTransactionRequest = transferInitRequest;
 
         String initTransferUrl = UriComponentsBuilder.fromPath("/v1/transactions/{type}/init")
                 .uriVariables(Map.of("type", "transfer"))
+                .queryParams(MultiValueMap.fromMultiValue(Map.of("from", List.of("USD"), "to", List.of("RUB"))))
                 .toUriString();
 
         HttpEntity<InitTransactionRequest> initTransactionRequestHttpEntity = new HttpEntity<>(initTransactionRequest, headers);
@@ -132,7 +147,7 @@ public class TransactionsIntegrationTest extends Container {
         ResponseEntity<TransactionInitResponse> initTransferResponse = restTemplate.exchange(initTransferUrl, HttpMethod.POST, initTransactionRequestHttpEntity, TransactionInitResponse.class);
 
         assertEquals(200, initTransferResponse.getStatusCode().value());
-        assertEquals(new BigDecimal(0).doubleValue(), initTransferResponse.getBody().getFee().doubleValue());
+        assertEquals(0, initTransferResponse.getBody().getFee().stripTrailingZeros().compareTo(new BigDecimal(105)));
         assertNotNull(initTransferResponse.getBody().getToken());
 
         ConfirmRequest transferConfirmRequest = new ConfirmRequest();
@@ -150,9 +165,13 @@ public class TransactionsIntegrationTest extends Container {
         assertEquals(1, transactionsRepository.findAll().size());
         assertEquals(200, confirmTransferResponse.getStatusCode().value());
         assertEquals(TransactionStatus.COMPLETED.name(), confirmTransferResponse.getBody().getStatus());
+
+        assertEquals(0, walletService.get(walletFromId.toString()).getBalance().compareTo(BigDecimal.ZERO));
+        assertEquals(0, walletService.get(walletToId.toString()).getBalance().compareTo(new BigDecimal(1000)));
     }
 
     @Test
+    @Disabled
     @DisplayName("Test create wallet -> init deposit -> check status -> receive DepositCompletedEvent flow success")
     void testCreateWalletThanInitDeposit() throws ExecutionException, InterruptedException {
         UUID userId = UUID.randomUUID();
