@@ -1,0 +1,33 @@
+@startuml
+actor MerchantApp as "Merchant Application"
+participant API as "Fake Payment Provider (Emulator)"
+database DB as "PostgreSQL DB"
+participant ExtNet as "External Test Service"
+
+MerchantApp -> API: POST /api/v1/transactions (Basic Auth)
+activate API
+  API -> API: Validate request data
+  API -> API: Authenticate merchant
+  API -> DB: INSERT into transactions (status=PENDING)
+  API <-- DB: new transaction record (ID)
+  API -> MerchantApp: 201 Created (status=PENDING)
+deactivate API
+
+... async later ...
+loop Retry up to 3 times
+  API -> ExtNet: POST /webhook/transaction ({id, status="SUCCESS"})
+  activate ExtNet
+    ExtNet -> ExtNet: Validate payload
+    ExtNet --> API: HTTP status (200 or error)
+  deactivate ExtNet
+  alt HTTP status == 200
+    API -> DB: UPDATE transaction.status = SUCCESS
+    API -> DB: INSERT into webhooks (entity_id, payload)
+    break
+  end
+end
+
+alt After 3 failed attempts
+  API -> DB: UPDATE transaction.status = FAILED
+end
+@enduml

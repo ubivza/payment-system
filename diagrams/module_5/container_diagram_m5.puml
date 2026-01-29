@@ -1,0 +1,24 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+
+Person_Ext(merchant, "Merchant System", "Клиент провайдера", $tags="ext")
+System_Boundary(provider_sys, "Fake Payment Provider (Эмулятор)") {
+  Container(api, "Payment Provider API", "Spring Boot", "REST API для транзакций и выплат; инициирует webhooks")
+  ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Транзакции, выплаты, журнал вебхуков")
+}
+System_Ext(extnet, "External Payment Network (Simulator)", "Получатель webhook", $tags="ext")
+
+Rel(merchant, api, "REST calls: /api/v1/transactions, /api/v1/payouts", "HTTPS + Basic Auth")
+Rel(api, db, "Read/Write (transactions, payouts, webhooks)", "JDBC")
+Rel(api, extnet, "HTTP webhook POST /webhook/* (status updates)", "HTTPS")
+Rel(extnet, api, "HTTP 200 OK / ошибки", "HTTPS")
+
+note right of api
+  Доставка webhook:
+  • до 3 попыток (retry)
+  • экспоненциальный backoff
+  • при успехе - фиксируем статус (SUCCESS/FAILED)
+  • при исчерпании попыток — статус домена по бизнес-правилам
+end note
+@enduml
