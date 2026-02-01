@@ -1,0 +1,2 @@
+CREATE SCHEMA IF NOT EXISTS payment_provider;
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
