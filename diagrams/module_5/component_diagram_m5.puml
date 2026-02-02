@@ -15,13 +15,14 @@ Container_Boundary(payment_system, "Payment System") {
     Component(transaction_service, "TransactionService", "Сервисный слой", "Бизнес-логика транзакций")
     Component(payout_service, "PayoutService", "Сервисный слой", "Бизнес-логика выплат")
     Component(webhook_service, "WebhookService", "Сервисный слой", "Обработка и аудит webhook")
-    Component(auth_service, "AuthService", "Сервисный слой", "Проверка прав мерчанта")
+    Component(merchant_auth_service, "MerchantDetailsProvider", "Сервисный слой", "Проверка прав мерчанта")
+    Component(webhhok_auth_service, "HMACAuthService", "Сервисный слой", "Проверка HMAC webhook сообщения")
 
     ' Репозитории
     Component(transaction_repo, "TransactionRepository", "Spring Data JPA", "CRUD операции с транзакциями")
     Component(payout_repo, "PayoutRepository", "Spring Data JPA", "CRUD операции с выплатами")
     Component(webhook_repo, "WebhookRepository", "Spring Data JPA", "Сохранение аудита webhook")
-    Component(merchant_repo, "MerchantRepository", "Spring Data JPA", "Поиск и авторизация мерчанта")
+    Component(merchant_repo, "MerchantRepository", "Spring Data JPA", "Поиск и аутентификация мерчанта")
 }
 
 ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Хранилище данных транзакций, выплат, мерчантов и webhook")
@@ -33,8 +34,11 @@ Rel(client, payout_controller, "HTTP", "Создание/получение вы
 ' Контроллеры -> Сервисы
 Rel(transaction_controller, transaction_service, "Сервисные методы")
 Rel(payout_controller, payout_service, "Сервисные методы")
-Rel(payout_controller, auth_service, "Сервисные методы")
-Rel(webhook_controller, webhook_service, "Сервисные методы")
+Rel(payout_controller, merchant_auth_service, "Сервисные методы")
+Rel(webhook_controller, webhhok_auth_service, "Сервисные методы")
+Rel(webhhok_auth_service, webhook_service, "Сервисные методы")
+
+Rel(transaction_controller, merchant_auth_service, "Сервисные методы")
 
 ' Сервисы -> Репозитории
 Rel(transaction_service, transaction_repo, "CRUD транзакций")
@@ -45,11 +49,8 @@ Rel(webhook_service, webhook_repo, "Сохранение аудита webhook")
 Rel(webhook_service, transaction_service, "Обновление статуса транзакций")
 Rel(webhook_service, payout_service, "Обновление статуса выплат")
 
-' Сервисы -> Auth
-Rel(transaction_service, auth_service, "Проверка прав мерчанта")
-
 ' Auth -> Merchant Repository
-Rel(auth_service, merchant_repo, "Basic Auth / поиск мерчанта")
+Rel(merchant_auth_service, merchant_repo, "Basic Auth / поиск мерчанта")
 
 ' Репозитории -> База данных
 Rel(transaction_repo, db, "JDBC", "SQL запросы")
