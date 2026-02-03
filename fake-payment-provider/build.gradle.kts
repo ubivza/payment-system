@@ -34,7 +34,6 @@ val versions = mapOf(
     "feignMicrometerVersion" to "13.6",
     "apacheCommons" to "3.19.0",
     "swaggerAnnotations" to "2.2.40",
-    "wiremockTestcontainers" to "1.0-alpha-15",
     "commonsCodec" to "1.21.0",
     "hibernateJpaModelgen" to "6.6.42.Final",
     "bucket4j" to "8.10.1"
@@ -108,7 +107,6 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:${versions["junitJupiter"]}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:${versions["wiremockTestcontainers"]}")
 }
 
 tasks.withType<Test> {

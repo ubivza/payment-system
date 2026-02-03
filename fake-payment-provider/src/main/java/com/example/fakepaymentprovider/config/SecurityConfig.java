@@ -19,7 +19,8 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers(HttpMethod.POST, "/api/v1/webhook/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, getWebhookPath()).permitAll()
+                        .requestMatchers(HttpMethod.GET, getMonitoringPaths()).permitAll()
                         .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults());
 
@@ -29,5 +30,13 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
+    }
+
+    private String getWebhookPath() {
+        return "/api/v1/webhook/**";
+    }
+
+    private String[] getMonitoringPaths() {
+        return new String[]{"/actuator/**"};
     }
 }
