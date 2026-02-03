@@ -34,7 +34,10 @@ val versions = mapOf(
     "feignMicrometerVersion" to "13.6",
     "apacheCommons" to "3.19.0",
     "swaggerAnnotations" to "2.2.40",
-    "wiremockTestcontainers" to "1.0-alpha-15"
+    "wiremockTestcontainers" to "1.0-alpha-15",
+    "commonsCodec" to "1.21.0",
+    "hibernateJpaModelgen" to "6.6.42.Final",
+    "bucket4j" to "8.10.1"
 )
 
 repositories {
@@ -70,10 +73,18 @@ dependencies {
 
     //utils
     implementation("org.apache.commons:commons-lang3:${versions["apacheCommons"]}")
+    implementation("commons-codec:commons-codec:${versions["commonsCodec"]}")
 
     //postgres
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-database-postgresql")
+
+    //modelgen
+    compileOnly("org.hibernate.orm:hibernate-jpamodelgen:${versions["hibernateJpaModelgen"]}")
+    annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:${versions["hibernateJpaModelgen"]}")
+
+    //bucket4j for rate limiting
+    implementation("com.bucket4j:bucket4j-core:${versions["bucket4j"]}")
 
     //openapi codegen libs
     implementation("io.swagger.core.v3:swagger-annotations:${versions["swaggerAnnotations"]}")

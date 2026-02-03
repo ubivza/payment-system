@@ -53,14 +53,14 @@ paths:
       parameters:
         - in: query
           name: start_date
-          required: true
+          required: false
           schema:
             type: string
             format: date-time
           description: Начало периода (включительно), формат ISO 8601
         - in: query
           name: end_date
-          required: true
+          required: false
           schema:
             type: string
             format: date-time
@@ -96,7 +96,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
           description: ID транзакции
       responses:
         '200':
@@ -190,7 +191,8 @@ paths:
           name: id
           required: true
           schema:
-            type: integer
+            type: string
+            format: uuid
           description: ID выплаты
       responses:
         '200':
@@ -208,13 +210,20 @@ paths:
         '401':
           description: Неавторизован
 
-  /webhook/transaction:
+  /api/v1/webhook/transaction:
     post:
       summary: Входящее уведомление о статусе транзакции (успех/неуспех)
       operationId: "updateTransaction"
       security: []   # вебхуки не требуют Basic Auth (предполагается своя проверка по подписи)
       tags:
         - Webhook
+      parameters:
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "621dc816b3bf670212e0c261dc9bcdb6"
       requestBody:
         required: true
         content:
@@ -233,13 +242,20 @@ paths:
         '401':
           description: Неавторизовано (неверенная подпись webhook-а, если реализовано)
 
-  /webhook/payout:
+  /api/v1/webhook/payout:
     post:
       summary: Входящее уведомление о статусе выплаты
       operationId: "updatePayout"
       security: []
       tags:
         - Webhook
+      parameters:
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "621dc816b3bf670212e0c261dc9bcdb6"
       requestBody:
         required: true
         content:
@@ -289,7 +305,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         merchantId:
           type: string
         amount:
@@ -331,7 +348,8 @@ components:
       type: object
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
         merchantId:
           type: string
         amount:
@@ -357,7 +375,8 @@ components:
       required: [id, status]
       properties:
         id:
-          type: integer
+          type: string
+          format: uuid
           description: ID транзакции/выплаты, статус которой обновляется
         status:
           type: string

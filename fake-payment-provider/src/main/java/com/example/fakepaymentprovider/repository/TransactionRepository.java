@@ -2,6 +2,11 @@ package com.example.fakepaymentprovider.repository;
 
 import com.example.fakepaymentprovider.entity.Transaction;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-public interface TransactionRepository extends JpaRepository<Transaction, Long> {
+import java.util.Optional;
+import java.util.UUID;
+
+public interface TransactionRepository extends JpaRepository<Transaction, UUID>, JpaSpecificationExecutor<Transaction> {
+    Optional<Transaction> findByIdAndMerchantId(UUID id, UUID merchantId);
 }
