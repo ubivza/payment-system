@@ -64,3 +64,7 @@ rate-limit:
 
 webhook:
   secret-key: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_SECRET_KEY:abrakadabra4224}
+#
+#logging:
+#  level:
+#    org.springframework.orm.jpa.JpaTransactionManager: DEBUG

@@ -28,7 +28,7 @@ public class PayoutController implements PayoutApi {
             return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
         }
 
-        return ResponseEntity.ok(service.create(payoutRequest));
+        return ResponseEntity.status(201).body(service.create(payoutRequest));
     }
 
     @Override
