@@ -1,0 +1,61 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+
+' Компонентная диаграмма платежного сервиса
+
+Person_Ext(client, "Клиент", "Внешние вызовы от приложений/мерчантов")
+
+Container_Boundary(payment_system, "Payment System") {
+    ' Контроллеры
+    Component(transaction_controller, "TransactionController", "Spring MVC", "Создание и получение транзакций")
+    Component(payout_controller, "PayoutController", "Spring MVC", "Создание и получение выплат")
+    Component(webhook_controller, "WebhookController", "Spring MVC", "Обработка входящих webhook")
+
+    ' Сервисы
+    Component(transaction_service, "TransactionService", "Сервисный слой", "Бизнес-логика транзакций")
+    Component(payout_service, "PayoutService", "Сервисный слой", "Бизнес-логика выплат")
+    Component(webhook_service, "WebhookService", "Сервисный слой", "Обработка и аудит webhook")
+    Component(merchant_auth_service, "MerchantDetailsProvider", "Сервисный слой", "Проверка прав мерчанта")
+    Component(webhhok_auth_service, "HMACAuthService", "Сервисный слой", "Проверка HMAC webhook сообщения")
+
+    ' Репозитории
+    Component(transaction_repo, "TransactionRepository", "Spring Data JPA", "CRUD операции с транзакциями")
+    Component(payout_repo, "PayoutRepository", "Spring Data JPA", "CRUD операции с выплатами")
+    Component(webhook_repo, "WebhookRepository", "Spring Data JPA", "Сохранение аудита webhook")
+    Component(merchant_repo, "MerchantRepository", "Spring Data JPA", "Поиск и аутентификация мерчанта")
+}
+
+ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Хранилище данных транзакций, выплат, мерчантов и webhook")
+
+' Внешние связи
+Rel(client, transaction_controller, "HTTP", "Создание/получение транзакций")
+Rel(client, payout_controller, "HTTP", "Создание/получение выплат")
+
+' Контроллеры -> Сервисы
+Rel(transaction_controller, transaction_service, "Сервисные методы")
+Rel(payout_controller, payout_service, "Сервисные методы")
+Rel(payout_controller, merchant_auth_service, "Сервисные методы")
+Rel(webhook_controller, webhhok_auth_service, "Сервисные методы")
+Rel(webhhok_auth_service, webhook_service, "Сервисные методы")
+
+Rel(transaction_controller, merchant_auth_service, "Сервисные методы")
+
+' Сервисы -> Репозитории
+Rel(transaction_service, transaction_repo, "CRUD транзакций")
+Rel(payout_service, payout_repo, "CRUD выплат")
+Rel(webhook_service, webhook_repo, "Сохранение аудита webhook")
+
+' Webhook обновляет статусы транзакций/выплат
+Rel(webhook_service, transaction_service, "Обновление статуса транзакций")
+Rel(webhook_service, payout_service, "Обновление статуса выплат")
+
+' Auth -> Merchant Repository
+Rel(merchant_auth_service, merchant_repo, "Basic Auth / поиск мерчанта")
+
+' Репозитории -> База данных
+Rel(transaction_repo, db, "JDBC", "SQL запросы")
+Rel(payout_repo, db, "JDBC", "SQL запросы")
+Rel(webhook_repo, db, "JDBC", "SQL запросы")
+Rel(merchant_repo, db, "JDBC", "SQL запросы")
+
+@enduml

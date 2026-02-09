@@ -1,0 +1,38 @@
+@startuml
+participant MerchantApp
+participant API as "Fake Payment Provider (Emulator)"
+database DB
+participant ExtNet as "External Network (Simulator)"
+
+MerchantApp -> API: POST /api/v1/payouts (Basic Auth)
+activate API
+  API -> API: Validate payout request
+  API -> API: Authenticate merchant
+  API -> DB: INSERT INTO payouts(status=PENDING)
+  API <-- DB: returns payout ID
+  API -> MerchantApp: 201 Created (status=PENDING)
+deactivate API
+
+... async after some time ...
+
+loop Retry up to 3 times
+  API -> ExtNet: POST /webhook/payout ({id, status="FAILED"})
+  activate ExtNet
+    ExtNet --> API: HTTP status (200 or error)
+  deactivate ExtNet
+  alt HTTP status == 200
+    ' Доставка вебхука успешна
+    API -> DB: UPDATE payouts SET status=FAILED WHERE id={id}
+    API -> DB: INSERT INTO webhooks(entity_id, payload, direction='OUTBOUND', delivered=true)
+    break
+  else Non-200 / timeout
+    API -> DB: INSERT INTO webhooks(entity_id, payload, direction='OUTBOUND', delivered=false)
+  end
+end
+
+alt After 3 failed attempts
+  ' Все 3 попытки доставки вебхука не удались
+  API -> DB: UPDATE payouts SET status=FAILED WHERE id={id}
+  API -> DB: INSERT INTO webhooks(entity_id, payload, direction='OUTBOUND', delivered=false, attempts=3)
+end
+@enduml
