@@ -11,7 +11,7 @@ plugins {
 
 group = "com.example"
 version = "1.0.0-SNAPSHOT"
-description = "currency-rate-service"
+description = "fake-payment-provider"
 
 java {
     toolchain {
@@ -22,23 +22,21 @@ java {
 configurations.all { resolutionStrategy.cacheChangingModulesFor(0, "seconds") }
 
 val versions = mapOf(
-        "mapstructVersion" to "1.5.5.Final",
-        "javaxAnnotationApiVersion" to "1.3.2",
-        "javaxValidationApiVersion" to "2.0.0.Final",
-        "springCloudStarterOpenfeign" to "4.1.1",
-        "logbackClassicVersion" to "1.5.18",
-        "testcontainers" to "1.21.3",
-        "logstashLogbackEncoder" to "8.1",
-        "micrometerRegistryPrometheus" to "1.15.4",
-        "junitJupiter" to "1.21.3",
-        "feignMicrometerVersion" to "13.6",
-        "hibernateEnvers" to "6.4.4.Final",
-        "apacheCommons" to "3.19.0",
-        "swaggerAnnotations" to "2.2.40",
-        "shedlockSpring" to "7.5.0",
-        "shedlockJdbcTemplate" to "7.5.0",
-        "resilience4j" to "2.3.0",
-        "wiremockTestcontainers" to "1.0-alpha-15"
+    "mapstructVersion" to "1.5.5.Final",
+    "javaxAnnotationApiVersion" to "1.3.2",
+    "javaxValidationApiVersion" to "2.0.0.Final",
+    "springCloudStarterOpenfeign" to "4.1.1",
+    "logbackClassicVersion" to "1.5.18",
+    "testcontainers" to "1.21.3",
+    "logstashLogbackEncoder" to "8.1",
+    "micrometerRegistryPrometheus" to "1.15.4",
+    "junitJupiter" to "1.21.3",
+    "feignMicrometerVersion" to "13.6",
+    "apacheCommons" to "3.19.0",
+    "swaggerAnnotations" to "2.2.40",
+    "commonsCodec" to "1.21.0",
+    "hibernateJpaModelgen" to "6.6.42.Final",
+    "bucket4j" to "8.10.1"
 )
 
 repositories {
@@ -57,7 +55,7 @@ dependencies {
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("org.springframework.boot:spring-boot-starter-oauth2-resource-server")
+    implementation("org.springframework.boot:spring-boot-starter-security")
     implementation("org.springframework.cloud:spring-cloud-starter-openfeign:${versions["springCloudStarterOpenfeign"]}")
 
     //monitoring
@@ -72,20 +70,20 @@ dependencies {
     //annotations
     implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 
-    //scheduling
-    implementation("net.javacrumbs.shedlock:shedlock-spring:${versions["shedlockSpring"]}")
-    implementation("net.javacrumbs.shedlock:shedlock-provider-jdbc-template:${versions["shedlockJdbcTemplate"]}")
-
-    //resilience4j
-    implementation("io.github.resilience4j:resilience4j-spring-boot3:${versions["resilience4j"]}")
-    implementation("io.github.resilience4j:resilience4j-spring6:2.3.0")
-
     //utils
     implementation("org.apache.commons:commons-lang3:${versions["apacheCommons"]}")
+    implementation("commons-codec:commons-codec:${versions["commonsCodec"]}")
 
     //postgres
     implementation("org.postgresql:postgresql")
     implementation("org.flywaydb:flyway-database-postgresql")
+
+    //modelgen
+    compileOnly("org.hibernate.orm:hibernate-jpamodelgen:${versions["hibernateJpaModelgen"]}")
+    annotationProcessor("org.hibernate.orm:hibernate-jpamodelgen:${versions["hibernateJpaModelgen"]}")
+
+    //bucket4j for rate limiting
+    implementation("com.bucket4j:bucket4j-core:${versions["bucket4j"]}")
 
     //openapi codegen libs
     implementation("io.swagger.core.v3:swagger-annotations:${versions["swaggerAnnotations"]}")
@@ -109,7 +107,6 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:${versions["junitJupiter"]}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:${versions["wiremockTestcontainers"]}")
 }
 
 tasks.withType<Test> {
@@ -141,17 +138,17 @@ foundSpecifications.forEach { specFile ->
         outputDir.set(ourDir)
 
         configOptions.set(
-                mapOf(
-                        "library" to "spring-cloud",
-                        "skipDefaultInterface" to "true",
-                        "useBeanValidation" to "true",
-                        "openApiNullable" to "false",
-                        "useFeignClientUrl" to "true",
-                        "useTags" to "true",
-                        "apiPackage" to "${basePackage}.api",
-                        "modelPackage" to "${basePackage}.dto",
-                        "configPackage" to "${basePackage}.config",
-                )
+            mapOf(
+                "library" to "spring-cloud",
+                "skipDefaultInterface" to "true",
+                "useBeanValidation" to "true",
+                "openApiNullable" to "false",
+                "useFeignClientUrl" to "true",
+                "useTags" to "true",
+                "apiPackage" to "${basePackage}.api",
+                "modelPackage" to "${basePackage}.dto",
+                "configPackage" to "${basePackage}.config",
+            )
         )
 
         doFirst {
@@ -163,8 +160,8 @@ foundSpecifications.forEach { specFile ->
 
 fun getAbsolutePath(nameWithoutExtension: String): Provider<String> {
     return layout.buildDirectory
-            .dir("generated-sources/openapi/${nameWithoutExtension}")
-            .map { it.asFile.absolutePath }
+        .dir("generated-sources/openapi/${nameWithoutExtension}")
+        .map { it.asFile.absolutePath }
 }
 
 fun defineJavaPackageName(name: String): String {
@@ -183,9 +180,9 @@ fun buildJarTaskName(name: String): String {
 
 fun buildTaskName(taskPrefix: String, name: String): String {
     val prepareName = name
-            .split(Regex("[^A-Za-z0-9]"))
-            .filter { it.isNotBlank() }
-            .joinToString("") { it.replaceFirstChar(Char::uppercase) }
+        .split(Regex("[^A-Za-z0-9]"))
+        .filter { it.isNotBlank() }
+        .joinToString("") { it.replaceFirstChar(Char::uppercase) }
 
     return "${taskPrefix}-${prepareName}"
 }
@@ -276,8 +273,8 @@ val nexusPassword = System.getenv("LOCAL_NEXUS_PASSWORD") ?: System.getProperty(
 
 if (nexusUrl.isNullOrBlank() || nexusUser.isNullOrBlank() || nexusPassword.isNullOrBlank()) {
     throw GradleException(
-            "NEXUS details are not set. Create a .env file with correct properties: " +
-                    "LOCAL_NEXUS_URL, LOCAL_NEXUS_USERNAME, LOCAL_NEXUS_PASSWORD"
+        "NEXUS details are not set. Create a .env file with correct properties: " +
+                "LOCAL_NEXUS_URL, LOCAL_NEXUS_USERNAME, LOCAL_NEXUS_PASSWORD"
     )
 }
 
@@ -293,8 +290,8 @@ publishing {
             val name = specFile.nameWithoutExtension
             val jarBaseName = name
             var jarFile = file("build/libs")
-                    .listFiles()
-                    ?.firstOrNull { it.name.contains(name) && (it.extension == "jar" || it.extension == "zip") }
+                .listFiles()
+                ?.firstOrNull { it.name.contains(name) && (it.extension == "jar" || it.extension == "zip") }
 
             if (jarFile != null) {
                 logger.lifecycle("publishing: ${jarFile.name}")

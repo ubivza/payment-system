@@ -1,0 +1,70 @@
+server:
+  port: ${FAKE_PAYMENT_PROVIDER_SERVER_PORT:8086}
+
+spring:
+  application:
+    name: ${FAKE_PAYMENT_PROVIDER_SPRING_APPLICATION_NAME:fake-payment-provider}
+  main:
+    banner-mode: off
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5438}/payment_provider
+    username: ${POSTGRES_USERNAME:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: payment_provider
+        show_sql: ${SHOW_SQL:true}
+        format_sql: ${FORMAT_SQL:true}
+        highlight_sql: ${HIGHLIGHT_SQL:true}
+        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: ${SLOW_SQL_QUERY_INDICATOR_MS:1500}
+        hbm2ddl:
+          auto: validate
+    driver-class-name: org.postgresql.Driver
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: ${FAKE_PAYMENT_PROVIDER_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  endpoint:
+    health:
+      show-details: ${FAKE_PAYMENT_PROVIDER_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+    prometheus:
+      access: ${FAKE_PAYMENT_PROVIDER_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${FAKE_PAYMENT_PROVIDER_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+
+rate-limit:
+  webhook:
+    bucket:
+      capacity: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_WEBHOOK_BUCKET_CAPACITY:100}
+      refill-tokens: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_WEBHOOK_BUCKET_REFILL_TOKENS:100} #greedy algorithm
+      refill-duration: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_WEBHOOK_BUCKET_REFILL_DURATION:1} #minutes
+  merchant-api:
+    bucket:
+      capacity: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_MERCHANT_API_BUCKET:50}
+      refill-tokens: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_MERCHANT_API_REFILL_TOKENS:50} #greedy algorithm
+      refill-duration: ${FAKE_PAYMENT_PROVIDER_RATE_LIMIT_MERCHANT_API_REFILL_DURATION:1} #minutes
+
+webhook:
+  secret-key: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_SECRET_KEY:abrakadabra4224}
+#
+#logging:
+#  level:
+#    org.springframework.orm.jpa.JpaTransactionManager: DEBUG

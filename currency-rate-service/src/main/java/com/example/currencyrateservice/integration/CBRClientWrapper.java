@@ -15,10 +15,10 @@ import org.springframework.stereotype.Component;
 public class CBRClientWrapper {
     private final CBRClient cbrClient;
 
-    @CircuitBreaker(name = "getRatesCircuitBreaker")
-    @Retry(name = "getRatesRetry")
-    @RateLimiter(name = "getRatesRateLimiter")
-    @Timer(name = "getRatesTimer")
+    @CircuitBreaker(name = "default")
+    @Retry(name = "default")
+    @RateLimiter(name = "default")
+    @Timer(name = "default")
     public CBRConversionRateResponse getRates(String date) {
         return cbrClient.getRates(date);
     }
