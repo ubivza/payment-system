@@ -1,0 +1,20 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+LAYOUT_TOP_DOWN()
+
+Container_Boundary(paymentService, "Payment Service") {
+    Component(PaymentController, "PaymentController", "Spring REST Controller", "REST API endpoints")
+    Component(PaymentService, "PaymentService", "Spring Service", "Оркестрация и бизнес-логика")
+    Component(PaymentRepository, "PaymentRepository", "Spring Data JPA", "CRUD платежей")
+    Component(PaymentMethodRepository, "PaymentMethodRepository", "Spring Data JPA", "Получение методов оплаты")
+    Component(FakeProviderClient, "FakeProviderClient", "Feign Client", "Вызов внешнего провайдера")
+    ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Хранилище данных платежей")
+}
+
+Rel(PaymentController, PaymentService, "использует")
+Rel(PaymentService, PaymentRepository, "CRUD операции платежей")
+Rel(PaymentService, PaymentMethodRepository, "получает методы оплаты")
+Rel(PaymentService, FakeProviderClient, "вызывает для проведения платежей")
+Rel(PaymentRepository, db, "SQL операции")
+Rel(PaymentMethodRepository, db, "SQL операции")
+@enduml
