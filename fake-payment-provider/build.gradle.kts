@@ -289,6 +289,7 @@ publishing {
         foundSpecifications.forEach { specFile ->
             val name = specFile.nameWithoutExtension
             val jarBaseName = name
+            val jarTaskName = buildJarTaskName(name)
             var jarFile = file("build/libs")
                 .listFiles()
                 ?.firstOrNull { it.name.contains(name) && (it.extension == "jar" || it.extension == "zip") }
@@ -297,7 +298,7 @@ publishing {
                 logger.lifecycle("publishing: ${jarFile.name}")
 
                 create<MavenPublication>("publish${name.replaceFirstChar(Char::uppercase)}Jar") {
-                    artifact(jarFile)
+                    artifact(tasks.named(jarTaskName))
                     groupId = "com.example"
                     artifactId = jarBaseName
                     version = "1.0.0-SNAPSHOT"

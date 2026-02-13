@@ -365,6 +365,10 @@ components:
           format: decimal
         token:
           type: string
+        amount:
+          type: number
+        currency:
+          type: string
 
     ConfirmRequest:
       type: object

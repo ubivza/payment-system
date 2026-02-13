@@ -1,0 +1,200 @@
+openapi: 3.0.0
+info:
+  title: Payment Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8087
+
+tags:
+  - name: PaymentMethod
+  - name: Payment
+
+paths:
+  /api/v1/payment-methods/{currencyCode}/{countryCode}:
+    get:
+      summary: Получение доступных методов оплаты по валюте и стране
+      operationId: "getPaymentMethods"
+      security:
+        - bearerAuth: []
+      tags:
+        - PaymentMethod
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: path
+          name: currencyCode
+          required: true
+          schema:
+            type: string
+          description: Трехбуквенный код валюты (ISO 4217), например "USD"
+        - in: path
+          name: countryCode
+          required: true
+          schema:
+            type: string
+          description: Двухбуквенный код страны (ISO 3166-1 alpha-2), например "US"
+      responses:
+        '200':
+          description: Список доступных методов оплаты
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/PaymentMethodResponse'
+        '400':
+          description: Неверные параметры запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /api/v1/payments:
+    post:
+      summary: Создать новый платеж
+      operationId: "createPayment"
+      security:
+        - bearerAuth: []
+      tags:
+        - Payment
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+      responses:
+        '201':
+          description: Платеж успешно создан
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentResponse'
+        '400':
+          description: Ошибка валидации входных данных
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизован (если требуется аутентификация)
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+
+  schemas:
+    PaymentMethodResponse:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        providerMethodType:
+          type: string
+          description: Тип метода у провайдера (например, CARD, SBP и т.д.)
+        imageUrl:
+          type: string
+          format: uri
+        requiredFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequiredField'
+      required:
+        - id
+        - name
+        - providerMethodType
+
+    RequiredField:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        placeholder:
+          type: string
+        dataType:
+          type: string
+          description: Тип данных (STRING, NUMBER и т.д.)
+        validationType:
+          type: string
+          description: Тип валидации (REGEX, LENGTH и т.д.)
+        validationRule:
+          type: string
+          description: Правило валидации (например regex)
+        defaultValue:
+          type: string
+        valuesOptions:
+          type: array
+          items:
+            type: string
+
+    PaymentRequest:
+      type: object
+      required:
+        - internalTransactionUid
+        - methodId
+        - amount
+        - currency
+      properties:
+        internalTransactionUid:
+          type: string
+          format: uuid
+          description: Внутренний UUID транзакции в системе
+        methodId:
+          type: string
+          format: uuid
+        amount:
+          type: number
+          format: double
+          minimum: 0.01
+        currency:
+          type: string
+          description: Трехбуквенный код валюты (ISO 4217)
+        userFields:
+          type: object
+          additionalProperties:
+            type: string
+          description: Значения полей, требуемых выбранным методом оплаты
+
+    PaymentResponse:
+      type: object
+      properties:
+        providerTransactionId:
+          type: string
+          description: ID транзакции у провайдера
+        status:
+          type: string
+          description: Статус платежа (PENDING, SUCCESS, FAILED)
+      required:
+        - providerTransactionId
+        - status
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+        status:
+          type: integer

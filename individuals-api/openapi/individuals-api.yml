@@ -327,6 +327,39 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /payments/{currencyCode}/{countryCode}:
+    get:
+      summary: Получение доступных методов оплаты
+      operationId: "getAvailablePaymentMethods"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Payments
+      parameters:
+        - name: currencyCode
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: countryCode
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Методы оплаты
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponseDto'
+        '401':
+          description: Не авторизован
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:
@@ -545,6 +578,10 @@ components:
           format: decimal
         token:
           type: string
+        amount:
+          type: number
+        currency:
+          type: string
 
     ConfirmRequestDto:
       type: object
@@ -553,6 +590,13 @@ components:
         confirm:
           type: boolean
         token:
+          type: string
+        amount:
+          type: number
+        methodId:
+          type: string
+          format: uuid
+        currency:
           type: string
 
     TransactionConfirmResponseDto:
@@ -569,6 +613,57 @@ components:
       properties:
         status:
           type: string
+
+    PaymentMethodResponseDto:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        name:
+          type: string
+        providerMethodType:
+          type: string
+          description: Тип метода у провайдера (например, CARD, SBP и т.д.)
+        imageUrl:
+          type: string
+          format: uri
+        requiredFields:
+          type: array
+          items:
+            $ref: '#/components/schemas/RequiredFieldDto'
+      required:
+        - id
+        - name
+        - providerMethodType
+
+    RequiredFieldDto:
+      type: object
+      properties:
+        uid:
+          type: string
+          format: uuid
+        name:
+          type: string
+        description:
+          type: string
+        placeholder:
+          type: string
+        dataType:
+          type: string
+          description: Тип данных (STRING, NUMBER и т.д.)
+        validationType:
+          type: string
+          description: Тип валидации (REGEX, LENGTH и т.д.)
+        validationRule:
+          type: string
+          description: Правило валидации (например regex)
+        defaultValue:
+          type: string
+        valuesOptions:
+          type: array
+          items:
+            type: string
 
     ErrorResponse:
       type: object

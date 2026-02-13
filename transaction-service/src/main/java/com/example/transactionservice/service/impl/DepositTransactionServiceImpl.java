@@ -2,6 +2,7 @@ package com.example.transactionservice.service.impl;
 
 import com.example.api.kafka.DepositCompletedEvent;
 import com.example.transaction.dto.ConfirmRequest;
+import com.example.transaction.dto.DepositInitRequest;
 import com.example.transaction.dto.InitTransactionRequest;
 import com.example.transaction.dto.TransactionConfirmResponse;
 import com.example.transaction.dto.TransactionInitResponse;
@@ -52,11 +53,14 @@ public class DepositTransactionServiceImpl extends TransactionServiceAbstract {
     @Override
     public TransactionInitResponse init(InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
         String token = tokenTypeStrategyResolver.resolve(PaymentType.DEPOSIT.name()).generate(initTransactionRequest);
+        DepositInitRequest depositInitRequest = (DepositInitRequest) initTransactionRequest;
 
         TransactionInitResponse response = new TransactionInitResponse();
         response.setAvailable(true);
         response.setFee(new BigDecimal(0));
         response.setToken(token);
+        response.setAmount(depositInitRequest.getAmount());
+        response.setCurrency(valuteFrom);
 
         return response;
     }
