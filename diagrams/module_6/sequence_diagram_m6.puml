@@ -11,6 +11,10 @@ PaymentService --> IndividualsAPI: Методы оплаты
 IndividualsAPI --> Client: Методы оплаты
 
 Client -> IndividualsAPI: Запрос на создание платежа
+IndividualsAPI -> TransactionService: Инициализация платежа
+TransactionService --> IndividualsAPI: Условия платежа
+IndividualsAPI --> Client: Условия платежа
+Client -> IndividualsAPI: Согласие с условиями платежа
 IndividualsAPI -> TransactionService: Создание транзакции (PENDING)
 TransactionService --> IndividualsAPI: Транзакция создана (PENDING)
 
@@ -20,7 +24,7 @@ PaymentService -> FakeProvider: Инициировать платёж
 alt Успешный платёж
     FakeProvider --> PaymentService: ID транзакции (успех)
     PaymentService --> IndividualsAPI: ID транзакции
-    IndividualsAPI -> TransactionService: Сохранение ID внешней транзакции, статус COMPLETED
+    IndividualsAPI -> TransactionService: Сохранение ID внешней транзакции, статус PENDING
 else Ошибка проведения платежа
     FakeProvider --> PaymentService: Ошибка проведения платежа
     PaymentService --> IndividualsAPI: Ошибка

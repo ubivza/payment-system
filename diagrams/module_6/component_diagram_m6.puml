@@ -4,7 +4,9 @@ LAYOUT_TOP_DOWN()
 
 Container_Boundary(paymentService, "Payment Service") {
     Component(PaymentController, "PaymentController", "Spring REST Controller", "REST API endpoints")
+    Component(PaymentMethodController, "PaymentMethodController", "Spring REST Controller", "REST API endpoints")
     Component(PaymentService, "PaymentService", "Spring Service", "Оркестрация и бизнес-логика")
+    Component(PaymentMethodService, "PaymentMethodService", "Spring Service", "Оркестрация и бизнес-логика")
     Component(PaymentRepository, "PaymentRepository", "Spring Data JPA", "CRUD платежей")
     Component(PaymentMethodRepository, "PaymentMethodRepository", "Spring Data JPA", "Получение методов оплаты")
     Component(FakeProviderClient, "FakeProviderClient", "Feign Client", "Вызов внешнего провайдера")
@@ -12,8 +14,9 @@ Container_Boundary(paymentService, "Payment Service") {
 }
 
 Rel(PaymentController, PaymentService, "использует")
+Rel(PaymentMethodController, PaymentMethodService, "бизнес логика")
+Rel(PaymentMethodService, PaymentMethodRepository, "получает методы оплаты")
 Rel(PaymentService, PaymentRepository, "CRUD операции платежей")
-Rel(PaymentService, PaymentMethodRepository, "получает методы оплаты")
 Rel(PaymentService, FakeProviderClient, "вызывает для проведения платежей")
 Rel(PaymentRepository, db, "SQL операции")
 Rel(PaymentMethodRepository, db, "SQL операции")
