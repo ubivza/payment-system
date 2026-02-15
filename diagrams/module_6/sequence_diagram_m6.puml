@@ -6,9 +6,13 @@ participant PaymentService
 participant FakeProvider
 
 Client -> IndividualsAPI: Запрос доступных методов оплаты
-IndividualsAPI -> PaymentService: GET GET /api/v1/payment-methods/{currencyCode}/{countryCode}
+IndividualsAPI -> PaymentService: GET /api/v1/payment-methods/{currencyCode}/{countryCode}
 PaymentService --> IndividualsAPI: Методы оплаты
 IndividualsAPI --> Client: Методы оплаты
+Client -> IndividualsAPI: Запрос данных метода оплаты по ID
+IndividualsAPI -> PaymentService: GET GET /api/v1/payment-methods/{id}
+PaymentService --> IndividualsAPI: Метод оплаты
+IndividualsAPI --> Client: Метод оплаты
 
 Client -> IndividualsAPI: Запрос на создание платежа
 IndividualsAPI -> TransactionService: Инициализация платежа

@@ -28,7 +28,7 @@ public class PaymentService {
     public PaymentResponse create(PaymentRequest paymentRequest) {
         UUID transactionId = client.createPayout(paymentRequest.getAmount(), paymentRequest.getCurrency());
 
-        PaymentMethod paymentMethod = paymentMethodService.getById(paymentRequest.getMethodId());
+        PaymentMethod paymentMethod = paymentMethodService.getEntityById(paymentRequest.getMethodId());
 
         Payment payment = mapper.toEntity(paymentRequest, transactionId);
         payment.setPaymentMethod(paymentMethod);

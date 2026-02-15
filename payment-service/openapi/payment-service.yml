@@ -53,6 +53,47 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /api/v1/payment-methods/{methodId}:
+    get:
+      summary: Получение метода оплаты по id
+      operationId: "getPaymentMethodById"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - PaymentMethod
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "Bearer {token}"
+        - in: path
+          name: methodId
+          required: true
+          schema:
+            type: string
+          description: Айди метода оплаты
+      responses:
+        '200':
+          description: Метод оплаты
+          content:
+            application/json:
+              schema:
+                  $ref: '#/components/schemas/PaymentMethodResponse'
+        '400':
+          description: Неверные параметры запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найден метод по айди
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
   /api/v1/payments:
     post:
       summary: Создать новый платеж

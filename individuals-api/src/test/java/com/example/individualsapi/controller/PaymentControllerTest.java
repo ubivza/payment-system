@@ -55,4 +55,24 @@ class PaymentControllerTest extends Container {
                             .expectStatus().isOk();
                 });
     }
+
+    @Test
+    @DisplayName("Registration -> get payment method by id")
+    void testRegistrationAndGetPaymentById() {
+        UserRegistrationRequest req = TestUtils.buildMockUserRegistrationRequest();
+
+        webTestClient.post().uri("/v1/auth/registration")
+                .contentType(MediaType.APPLICATION_JSON)
+                .bodyValue(req)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectBody(TokenResponse.class)
+                .value(tokenRes -> {
+                    assertNotNull(tokenRes.getAccessToken());
+                    webTestClient.get().uri("/v1/payments/6e98eda0-8873-4fbb-8bbd-0b4841c9bcac")
+                            .headers(headers -> headers.setBearerAuth(tokenRes.getAccessToken()))
+                            .exchange()
+                            .expectStatus().isOk();
+                });
+    }
 }

@@ -360,6 +360,41 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
 
+  /payment-methods/{methodId}:
+    get:
+      summary: Получение метода оплаты по id
+      operationId: "getPaymentMethodById"
+      security:
+        - bearerAuth: [ ]
+      tags:
+        - Payments
+      parameters:
+        - in: path
+          name: methodId
+          required: true
+          schema:
+            type: string
+          description: Айди метода оплаты
+      responses:
+        '200':
+          description: Метод оплаты
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentMethodResponseDto'
+        '400':
+          description: Неверные параметры запроса
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '404':
+          description: Не найден метод по айди
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
 components:
   securitySchemes:
     bearerAuth:

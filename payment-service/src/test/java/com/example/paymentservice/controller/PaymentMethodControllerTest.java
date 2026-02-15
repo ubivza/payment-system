@@ -2,6 +2,7 @@ package com.example.paymentservice.controller;
 
 import com.example.payment.dto.PaymentMethodResponse;
 import com.example.paymentservice.config.Container;
+import com.example.paymentservice.service.PaymentMethodService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -33,6 +34,8 @@ class PaymentMethodControllerTest extends Container {
     TestRestTemplate restTemplate;
     @MockitoBean
     private JwtDecoder jwtDecoder;
+    @Autowired
+    PaymentMethodService paymentMethodService;
 
     static {
         Container.startDBOnly();
@@ -67,5 +70,32 @@ class PaymentMethodControllerTest extends Container {
 
         assertEquals(1, getById.getBody().size());
         assertEquals("card", getById.getBody().get(0).getProviderMethodType());
+    }
+
+    @Test
+    @DisplayName("get payment method 200")
+    void getPaymentMethodByIdOk() {
+        String currencyCode = "JPY";
+        String countryCode = "JPN";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth("token");
+        HttpEntity<Void> entity = new HttpEntity<>(headers);
+
+        String getByCodesURI = UriComponentsBuilder.fromPath("/api/v1/payment-methods/{currencyCode}/{countryCode}")
+                .uriVariables(Map.of("currencyCode", currencyCode, "countryCode", countryCode))
+                .toUriString();
+
+        ResponseEntity<List<PaymentMethodResponse>> getByCodes = restTemplate.exchange(getByCodesURI, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
+        assertEquals(200, getByCodes.getStatusCode().value());
+
+        String getByIdUri = UriComponentsBuilder.fromPath("/api/v1/payment-methods/{methodId}")
+                .uriVariables(Map.of("methodId", getByCodes.getBody().get(0).getId()))
+                .toUriString();
+
+        ResponseEntity<PaymentMethodResponse> getById = restTemplate.exchange(getByIdUri, HttpMethod.GET, entity, new ParameterizedTypeReference<>() {});
+        assertEquals(200, getById.getStatusCode().value());
+
+        assertEquals("card", getById.getBody().getProviderMethodType());
     }
 }

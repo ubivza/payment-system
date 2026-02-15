@@ -67,4 +67,19 @@ public class PaymentServiceImpl implements PaymentService {
                     return new InnerServiceException("Payment service unavailable, try again later");
                 });
     }
+
+    @Override
+    public Mono<PaymentMethodResponseDto> getById(String methodId) {
+        return tokenService.getAdminToken()
+                .flatMap(tokenResponse ->
+                        Mono.fromCallable(() -> paymentMethodApiClient.getPaymentMethodById(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), methodId))
+                                .mapNotNull(HttpEntity::getBody)
+                                .subscribeOn(Schedulers.boundedElastic())
+                                .doOnNext(t -> log.info("Got payment method by id: {}", methodId))
+                                .map(mapper::mapPaymentMethodResponse)
+                                .onErrorMap(e -> {
+                                    log.error("Payment service unavailable", e);
+                                    return new InnerServiceException("Payment service unavailable, try again later");
+                                }));
+    }
 }

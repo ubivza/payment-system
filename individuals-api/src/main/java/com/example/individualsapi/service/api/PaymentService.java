@@ -10,4 +10,5 @@ import java.util.UUID;
 public interface PaymentService {
     Flux<PaymentMethodResponseDto> getAvailable(String currencyCode, String countryCode);
     Mono<PaymentResponse> create(UUID transactionId, UUID methodId, Double amount, String currency);
+    Mono<PaymentMethodResponseDto> getById(String methodId);
 }

@@ -26,8 +26,15 @@ public class PaymentMethodService {
                 .toList();
     }
 
-    public PaymentMethod getById(UUID methodId) {
+    public PaymentMethod getEntityById(UUID methodId) {
         return repository
                 .findById(methodId).orElseThrow(() -> new NotFoundException(String.format("Not found payment method with id %s", methodId)));
+    }
+
+    public PaymentMethodResponse getById(UUID methodId) {
+        return repository
+                .findById(methodId)
+                .map(mapper::toResponse)
+                .orElseThrow(() -> new NotFoundException(String.format("Not found payment method with id %s", methodId)));
     }
 }
