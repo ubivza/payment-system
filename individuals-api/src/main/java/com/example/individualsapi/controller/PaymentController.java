@@ -23,7 +23,7 @@ public class PaymentController {
     }
 
     @GetMapping("/{methodId}")
-    public Mono<PaymentMethodResponseDto> getAvailablePaymentMethods(@PathVariable String methodId) {
+    public Mono<PaymentMethodResponseDto> getMethodById(@PathVariable String methodId) {
         return service.getById(methodId);
     }
 }
