@@ -10,6 +10,7 @@ import com.example.individuals.dto.TransferInitRequestDto;
 import com.example.individuals.dto.UserRegistrationRequest;
 import com.example.individuals.dto.WithdrawalInitRequestDto;
 import com.example.individualsapi.config.Container;
+import com.example.individualsapi.service.impl.PaymentServiceImpl;
 import com.example.individualsapi.util.TestUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -25,6 +27,8 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 @Testcontainers
 @SpringBootTest
@@ -32,6 +36,8 @@ public class TransactionControllerIntegrationTest extends Container {
     @Autowired
     ApplicationContext context;
     WebTestClient webTestClient;
+    @MockitoSpyBean
+    PaymentServiceImpl paymentService;
 
     static {
         Container.start();
@@ -65,6 +71,9 @@ public class TransactionControllerIntegrationTest extends Container {
         ConfirmRequestDto confirmRequestDto = new ConfirmRequestDto();
         confirmRequestDto.setConfirm(true);
         confirmRequestDto.setToken("init-token-123");
+        confirmRequestDto.setAmount(new BigDecimal(10));
+        confirmRequestDto.setCurrency("RUB");
+        confirmRequestDto.setMethodId(UUID.fromString("5e837111-bd02-4ea8-ad64-486a8fb9a9de"));
 
         TransactionConfirmResponseDto confirmResponseDto = new TransactionConfirmResponseDto();
         confirmResponseDto.setTransactionId(UUID.fromString("6ca59b01-189c-495f-8240-0f72d921429b"));
@@ -116,6 +125,8 @@ public class TransactionControllerIntegrationTest extends Container {
                                         });
                             });
                 });
+
+        verify(paymentService, times(1)).create(UUID.fromString("6ca59b01-189c-495f-8240-0f72d921429b"), UUID.fromString("5e837111-bd02-4ea8-ad64-486a8fb9a9de"), 10d, "RUB");
     }
 
     @Test
@@ -139,6 +150,9 @@ public class TransactionControllerIntegrationTest extends Container {
         ConfirmRequestDto confirmRequestDto = new ConfirmRequestDto();
         confirmRequestDto.setConfirm(true);
         confirmRequestDto.setToken("init-token-123");
+        confirmRequestDto.setAmount(new BigDecimal(10));
+        confirmRequestDto.setCurrency("RUB");
+        confirmRequestDto.setMethodId(UUID.fromString("5e837111-bd02-4ea8-ad64-486a8fb9a9de"));
 
         TransactionConfirmResponseDto confirmResponseDto = new TransactionConfirmResponseDto();
         confirmResponseDto.setTransactionId(UUID.fromString("6ca59b01-189c-495f-8240-0f72d921429b"));
@@ -199,5 +213,7 @@ public class TransactionControllerIntegrationTest extends Container {
                                         });
                             });
                 });
+
+        verify(paymentService, times(1)).create(UUID.fromString("6ca59b01-189c-495f-8240-0f72d921429b"), UUID.fromString("5e837111-bd02-4ea8-ad64-486a8fb9a9de"), 10d, "RUB");
     }
 }

@@ -1,0 +1,1237 @@
+{
+  "info": {
+    "_postman_id": "f75434fd-6f25-44f4-b8a7-9ad9fbb8f407",
+    "name": "Test individuals api 6",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "31789287"
+  },
+  "item": [
+    {
+      "name": "v1",
+      "item": [
+        {
+          "name": "auth",
+          "item": [
+            {
+              "name": "registration",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"hello@mail.ru\",\r\n    \"password\": \"2222\",\r\n    \"confirm_password\": \"2222\",\r\n    \"passport_number\": \"1234567890\",\r\n    \"phone_number\": \"+79991234567\",\r\n    \"user_status\": \"ACTIVE\",\r\n    \"secret_key\": null,\r\n    \"first_name\": \"ЛЕха\",\r\n    \"last_name\": \"Иванов\",\r\n    \"filled\": true,\r\n    \"address\": \"ул. Пушкина, д. 10\",\r\n    \"zip_code\": \"123456\",\r\n    \"city\": \"Москва\",\r\n    \"state\": \"Московская область\",\r\n    \"name\": \"Россия\",\r\n    \"alpha2\": \"RU\",\r\n    \"alpha3\": \"RUS\",\r\n    \"status\": \"VERIFIED\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/auth/registration",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "auth",
+                    "registration"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      ""
+                    ],
+                    "type": "text/javascript",
+                    "packages": {},
+                    "requests": {}
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"hello@mail.ru\",\r\n    \"password\": \"2222\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/auth/login",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "auth",
+                    "login"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "refresh-token",
+              "request": {
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"refresh_token\": \"eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICI2Yzc3NzQ2NS02MDhjLTQ1MzAtODVkMi05MTMwZTBkMTJmNjAifQ.eyJleHAiOjE3NjU3MjExNDAsImlhdCI6MTc2NTcxOTM0MCwianRpIjoiZWVlZThkZTQtNjEyMy00NjM5LTgwM2EtNzBhNTljZDAyMGM4IiwiaXNzIjoiaHR0cDovL2xvY2FsaG9zdDo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJzdWIiOiI4OTBkYmE5Yi05YzMwLTQ3OTItOGZiMy00MGQzY2Q3NDQ4NTUiLCJ0eXAiOiJSZWZyZXNoIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwic2lkIjoiMGMzODlhMzYtNDFkMS00MjdkLTgwMGYtNDZlMzgyMzNiOTZkIiwic2NvcGUiOiJhY3Igd2ViLW9yaWdpbnMgc2VydmljZV9hY2NvdW50IHByb2ZpbGUgYmFzaWMgcm9sZXMgZW1haWwifQ.1KUX2GZz3oBiGmc0Q3aWGS5YOgEEuV-E_7ldfojErThlPAJsJhyt0TPlr2q1Qgiz8yCj5xdlPzb6BS86Ie8Gpw\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/auth/refresh-token",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "auth",
+                    "refresh-token"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get user info",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NjU3MjM5MzEsImlhdCI6MTc2NTcyMzYzMSwianRpIjoib25ydHJvOjhiMjMwYTlmLTQ5ZjktNDNmMC05ZDk4LWQwY2MzZGU2ZDMyOCIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiI4MDc4M2ZiZS00MjQwLTRmNTItYWE0Ny02NzVmMTAzZmY2NDIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.QNWLRZmdzfJv2eIt6BFtR_clJVA1THBoDvfncdMZSiHeglHue9eRHJhRAaYnogbMjXZi1z8924QVh0i4Mlv50rA3wg_NZ_Q4jt6a6dwKG0RhCIQSYfI6ohjeVcESv4iGd-_7zI3X03cudUe2NgkEovvIR0jJI4A6ybac_h15p1A-fGeyGzQRNhhrHY0rh0fJEsVo8Yd_tP_PN8UoA5CLPjLnRMXnmpS2tHM8Lq5Qa8C_YQRPrWoXVQMPE4Fgy5ppMY9M3ye8NusV5O-ht-Ybck1juS94MzCOdvpPTSWT-5JrpJsAEfwgwaB6PbyKbnpQ5hLENYxM4TN3YSAwNU1EXg",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/auth/me",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "auth",
+                    "me"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "individual",
+          "item": [
+            {
+              "name": "delete user",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZTW5YYVpRMmF1N2hjQVhZanhNcXRFekNMc3JKLVdHNG9tWDlzVkk0N3FZIn0.eyJleHAiOjE3NjIwMDIyNDYsImlhdCI6MTc2MjAwMTk0NiwianRpIjoidHJydGNjOjZkNTg4MzIyLTM0ZTctNGE1Ny04NGQzLTlhMzM5ZDNlNjJjMiIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.SodyFTXhMVC4OljW8IvwoGHFVvPiR544_30VTrHexB2ydvbl2dCGKQzqRXPS9g9QQdB1zJpVJ5rkqiMce1yRO4JHNkL0_XUp87EbXT4xOO-FqJUnxYXXwX4ihJRkjRgiFqLvJHxWpR2PPZ2XSEVQShRBqH24zoWuxinScYkPz2Ri5yYBng_DC6IMS-Ms58MFZw_Zolz56ryCgHcrDKmh8Bl-aYQZNQ8k1CH21sFNL3fI6w85eiGtAFdHuL9HJGh9jBcApF3p87HH7U7R6PD4-mszEsXmXc3JMwkxz8W5_jv8DgLpDvXJX2iVr4hYPar4lbsUfG4CJve8nb0wazyqVQ",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/individual/delete",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "individual",
+                    "delete"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "update user",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZTW5YYVpRMmF1N2hjQVhZanhNcXRFekNMc3JKLVdHNG9tWDlzVkk0N3FZIn0.eyJleHAiOjE3NjU3MTQ0MDAsImlhdCI6MTc2NTcxNDEwMCwianRpIjoib25ydHJvOmExYzg0MWM1LWY4YzktNDZlMC04Yjc2LTZmYjA4YmNhYmI2NCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiODkwZGJhOWItOWMzMC00NzkyLThmYjMtNDBkM2NkNzQ0ODU1IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwic2lkIjoiZTIzMzI3MmMtN2NlYi00N2IyLTgxMTktOGViY2Q1ODUzNWNjIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlubmVyX2lkIjoiNmFiMjRkNjktNzBlZS00Mzg0LWI5YzMtNDc3ZjM2MGY0M2FlIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiYWFhYTEyM2R3QG1haWwucnUiLCJlbWFpbCI6ImFhYWExMjNkd0BtYWlsLnJ1In0.ek2uTiOh1Peg5eFxEnecNZP6Btfro7Q7PQ1PfLjIu-PXM3jeyPsnY63XZNbvwcZ9nEj5YUqPjhzgtPbtBH9sP65s-IelsyLuvruCKQ3dEAMT8sDWXrS93sQjnndx_NHBysuAV6UiCKZgrYGoew3nAV4CDhIkqQBIUlZPVe5U6P_gvlMLxElVv580lFismcE8n3f2DkrlK-H_Bp4GKxk1OM2id_71kSuub-iy88xzJyh4LSnky0TM1SkpsqZ0BhiB1DIWdWmYm4Q2Ow0s5QCUZKuFrxTU4TGhQiLgOgMrf2Br9MkeJrMt8RHA6x1_Lq34XSAKYBat7UIA2soDVFqS3Q",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"email\": \"aaa2alikdw@mail.ru\",\r\n    \"password\": \"2222\",\r\n    \"confirm_password\": \"2222\",\r\n    \"passport_number\": \"1234567890\",\r\n    \"phone_number\": \"+79991234567\",\r\n    \"user_status\": \"ACTIVE\",\r\n    \"secret_key\": null,\r\n    \"first_name\": \"ЛЕха\",\r\n    \"last_name\": \"Иванов\",\r\n    \"filled\": true,\r\n    \"address\": \"ул. Пушкина, д. 10\",\r\n    \"zip_code\": \"123456\",\r\n    \"city\": \"Москва\",\r\n    \"state\": \"Московская область\",\r\n    \"name\": \"Россия\",\r\n    \"alpha2\": \"RU\",\r\n    \"alpha3\": \"RUS\",\r\n    \"status\": \"VERIFIED\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/individual/update",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "individual",
+                    "update"
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "wallets",
+          "item": [
+            {
+              "name": "create wallet",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjExMTAsImlhdCI6MTc3MDkyMDgxMCwianRpIjoib25ydHJvOmRjZjQ0Y2ZjLTBkMWYtNDNjMy04MmM1LTk2YmZhMDU4ODg5NyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiJkODhiN2QyMS1lNDk2LTQzODQtYjRmYi1iZjQwMDZkM2VmMDQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.giYxV-cj4nbQOKsqBJED-4EocwvJyqunKQM3qSB_bTJWq4uz2-Lnxd44pYvhfMBXpOLA3foFolYM_klnpsKEKxG8X9Nae4rltB_fUr0hvTWxGgU22tBa7dR0SviEwK9G0uJ3UFp4wPshcEBYwJlxJL8VK7vsOqhXU9xyMoOcJ92yuLhsrtcYfgt3JsLBSG5mZDaxMwSdlBUmBn6hBa1fjS3JSDHZfvvp3Euh-n9tQMlnlJoZjpWlHprUBPVOC3cFybJ_7yoZ3xYyxP0a3UhdVnHEP3NmcgvfThC5bphsgiaq5Zr10Qwa-lOOIohXITK0ZuD4D13mpO8s6sWpHbye6w",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"name\": \"HIHIHIHA\",\r\n    \"currencyCode\": \"RUB\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/wallets",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "wallets"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get wallet",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZTW5YYVpRMmF1N2hjQVhZanhNcXRFekNMc3JKLVdHNG9tWDlzVkk0N3FZIn0.eyJleHAiOjE3NjU2MjUzMTksImlhdCI6MTc2NTYyNTAxOSwianRpIjoidHJydGNjOmYwYTVkZGRiLWY2ZjItNDM5YS05MzYzLWEyMjkxYmU2OWE4NiIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.XaH4wcFlg0LDtyC8xfEyoTJRjXRDpjHfecpGw4LfrPsqiCnIBidFGIK4CUF3k7p4uil7HMYjunbso7ZxzWuXHGE_MLwgLpLq_NU8uTzUb_obcFi8FjbwV4_AQhpyh-kXxtfDAllAQsIk60Bz4uqTAumqfauYNAFwDq8qhQNlqunFSshhNyNvyElG6XLXspey2r3AudBJ5FTnnBHkDwK4ws-nubfCF_Su-knxUv-rqfsBWKSlsvVjXwqk3OX_PDAp3Tzlvz5kyTYWkDxtQ9A9N_jL0OsCdTzkE4uq-7Ocy-1QOdC_g0QBSGx5nYJ34oMC4oAsA8q5u-gCVu5LvDzqbw",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/wallets/:walletUid",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "wallets",
+                    ":walletUid"
+                  ],
+                  "variable": [
+                    {
+                      "key": "walletUid",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "transactions",
+          "item": [
+            {
+              "name": "deposit init",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjExMTAsImlhdCI6MTc3MDkyMDgxMCwianRpIjoib25ydHJvOmRjZjQ0Y2ZjLTBkMWYtNDNjMy04MmM1LTk2YmZhMDU4ODg5NyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiJkODhiN2QyMS1lNDk2LTQzODQtYjRmYi1iZjQwMDZkM2VmMDQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.giYxV-cj4nbQOKsqBJED-4EocwvJyqunKQM3qSB_bTJWq4uz2-Lnxd44pYvhfMBXpOLA3foFolYM_klnpsKEKxG8X9Nae4rltB_fUr0hvTWxGgU22tBa7dR0SviEwK9G0uJ3UFp4wPshcEBYwJlxJL8VK7vsOqhXU9xyMoOcJ92yuLhsrtcYfgt3JsLBSG5mZDaxMwSdlBUmBn6hBa1fjS3JSDHZfvvp3Euh-n9tQMlnlJoZjpWlHprUBPVOC3cFybJ_7yoZ3xYyxP0a3UhdVnHEP3NmcgvfThC5bphsgiaq5Zr10Qwa-lOOIohXITK0ZuD4D13mpO8s6sWpHbye6w",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"type\": \"deposit\",\r\n    \"walletUid\": \"2abdb146-afda-436c-a9ea-c518845db4cc\",\r\n    \"amount\": 100\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/deposit/init",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "deposit",
+                    "init"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "deposit confirm",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjExMTAsImlhdCI6MTc3MDkyMDgxMCwianRpIjoib25ydHJvOmRjZjQ0Y2ZjLTBkMWYtNDNjMy04MmM1LTk2YmZhMDU4ODg5NyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiJkODhiN2QyMS1lNDk2LTQzODQtYjRmYi1iZjQwMDZkM2VmMDQiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.giYxV-cj4nbQOKsqBJED-4EocwvJyqunKQM3qSB_bTJWq4uz2-Lnxd44pYvhfMBXpOLA3foFolYM_klnpsKEKxG8X9Nae4rltB_fUr0hvTWxGgU22tBa7dR0SviEwK9G0uJ3UFp4wPshcEBYwJlxJL8VK7vsOqhXU9xyMoOcJ92yuLhsrtcYfgt3JsLBSG5mZDaxMwSdlBUmBn6hBa1fjS3JSDHZfvvp3Euh-n9tQMlnlJoZjpWlHprUBPVOC3cFybJ_7yoZ3xYyxP0a3UhdVnHEP3NmcgvfThC5bphsgiaq5Zr10Qwa-lOOIohXITK0ZuD4D13mpO8s6sWpHbye6w",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"confirm\": \"true\",\r\n    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJhbW91bnQiOjEwMC4wLCJ3YWxsZXRVaWQiOiIyYWJkYjE0Ni1hZmRhLTQzNmMtYTllYS1jNTE4ODQ1ZGI0Y2MiLCJ0aW1lc3RhbXAiOiIyMDI2LTAyLTEyVDE4OjI3OjE4LjcxNTk1MDU4NVoiLCJ1c2VyVWlkIjoiNzY3YmQwOGQtNTZlOC00YmZhLWE3ZjAtNzliYTI3OGVhYzllIiwic3ViIjoiaW5pdC1kZXBvc2l0IiwiaXNzIjoidHJhbnNhY3Rpb24tc2VydmljZSIsImlhdCI6MTc3MDkyMDgzOCwiZXhwIjoxNzcwOTIxMTM4fQ.2nnl6bYY4t4adwSXNncdrbbSEby3ERQki9z8mVEO6Jw\",\r\n    \"amount\": 100,\r\n    \"methodId\": \"\",\r\n    \"currency\": \"JPY\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/deposit/confirm",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "deposit",
+                    "confirm"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "withdraw init",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjM1MTAsImlhdCI6MTc3MDkyMzIxMCwianRpIjoib25ydHJvOjUwNWRkZWU4LTEyYzgtNDk4OS05YjgxLWFlZTliOTQ4ODM1YyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiI5ZWQ3NjQ4MC0yNmFkLTQxMTMtYTU1Zi0zNjRmOWY3YmUwOTIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.g1cmcF83O4cHpFzOEzxfVKrQiaBPDtCKYL8LMM3Rno_QLkn28MYBX_QqdSfl2I0urBV7K7F1bMz1cyghN71gWE8ZGmDDA4_9xeq9uTG9c89Hveb-V7lUpRXINE1xhxkHCgp3qVhQ0PkChqK2rYZextlO2cWz7BEv8a_2uCYod-xTHS1Mquwwvcxi4Skxxh2eUBsfTgMPpIDGCr5mXMVypTMTXFfOF5rTCMim_rzjqmi3DXebnXA4nJkYJRr3kZ3RmYUsW6QYSV0fMvgFwsAJre2yxcqWSb1uG2PSV3FnuxCY_Q7V4w8YPDdZhdYQiagnIy9W2ciESeqNNDRu8i6Wsg",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"type\": \"withdrawal\",\r\n    \"walletUid\": \"d70269f9-8a94-41b2-8ed2-0f5eff246841\",\r\n    \"amount\": 0,\r\n    \"destination\": \"somewhere\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/withdrawal/init",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "withdrawal",
+                    "init"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "withdrawal confirm",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjM1MTAsImlhdCI6MTc3MDkyMzIxMCwianRpIjoib25ydHJvOjUwNWRkZWU4LTEyYzgtNDk4OS05YjgxLWFlZTliOTQ4ODM1YyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiI5ZWQ3NjQ4MC0yNmFkLTQxMTMtYTU1Zi0zNjRmOWY3YmUwOTIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.g1cmcF83O4cHpFzOEzxfVKrQiaBPDtCKYL8LMM3Rno_QLkn28MYBX_QqdSfl2I0urBV7K7F1bMz1cyghN71gWE8ZGmDDA4_9xeq9uTG9c89Hveb-V7lUpRXINE1xhxkHCgp3qVhQ0PkChqK2rYZextlO2cWz7BEv8a_2uCYod-xTHS1Mquwwvcxi4Skxxh2eUBsfTgMPpIDGCr5mXMVypTMTXFfOF5rTCMim_rzjqmi3DXebnXA4nJkYJRr3kZ3RmYUsW6QYSV0fMvgFwsAJre2yxcqWSb1uG2PSV3FnuxCY_Q7V4w8YPDdZhdYQiagnIy9W2ciESeqNNDRu8i6Wsg",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"confirm\": \"true\",\r\n    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJhbW91bnQiOjAuMCwid2FsbGV0VWlkIjoiZDcwMjY5ZjktOGE5NC00MWIyLThlZDItMGY1ZWZmMjQ2ODQxIiwiZGVzdGluYXRpb24iOiJzb21ld2hlcmUiLCJ0aW1lc3RhbXAiOiIyMDI2LTAyLTEyVDE5OjA2OjU4LjYwODY2NDM4OFoiLCJ1c2VyVWlkIjoiNzY3YmQwOGQtNTZlOC00YmZhLWE3ZjAtNzliYTI3OGVhYzllIiwic3ViIjoiaW5pdC13aXRoZHJhd2FsIiwiaXNzIjoidHJhbnNhY3Rpb24tc2VydmljZSIsImlhdCI6MTc3MDkyMzIxOCwiZXhwIjoxNzcwOTIzNTE4fQ.PiOhhLabODmNfoLmV7T-KNdjiv_bHBX3GnNmPAne43I\",\r\n    \"amount\": 100,\r\n    \"methodId\": \"2c803fe0-bb7c-46bd-a88b-fe0e6c002a46\",\r\n    \"currency\": \"JPY\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/withdrawal/confirm",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "withdrawal",
+                    "confirm"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "transfer init",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NjgwNDQ1NDAsImlhdCI6MTc2ODA0NDI0MCwianRpIjoib25ydHJvOmZlNmU5NWI1LTcwYzItNDBkZS1iYjA3LTRiZjYyZTNkNWQxOSIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOiJhY2NvdW50Iiwic3ViIjoiMzUyNDQyNTEtMzA0Yy00ZTM0LWIwODQtNmI3NThkZTdmM2I2IiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwic2lkIjoiOGMyZjcxZWUtZmU0OC00ZWUyLWEyMmEtMGVlMWVmZmMxNDY0IiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiYWNjb3VudCI6eyJyb2xlcyI6WyJtYW5hZ2UtYWNjb3VudCIsIm1hbmFnZS1hY2NvdW50LWxpbmtzIiwidmlldy1wcm9maWxlIl19fSwic2NvcGUiOiJwcm9maWxlIGVtYWlsIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsImlubmVyX2lkIjoiNzY3YmQwOGQtNTZlOC00YmZhLWE3ZjAtNzliYTI3OGVhYzllIiwicHJlZmVycmVkX3VzZXJuYW1lIjoiaGVsbG9AbWFpbC5ydSIsImVtYWlsIjoiaGVsbG9AbWFpbC5ydSJ9.GxgEA0_PI_Ddj1xLsVBlxu_LTbumTFws2CIubIC_FKY_sgdHBYpEXQ6DVTZeI2qMUFK-fwtP51tU515W4EjeOWzon2phN82QOe5BfBaMHiX7oEI9or5MjCVAwZsf_Ms2iqMyf3PMGrNFAUiGeiV_3VShVPqTDV9CuS9yefKG0i2ALq6L2qbuVL74QI_rnZkleEe7l2IzR0lEYEOLhGU2mQHTX6ruWtzVRRteRadmvT_S5K1tpOlPZx8cVf9rYMQc6qPFvnXodAA17LhHuFeoZXyA05AflFC6GkZ-RuhjIddaw_vIc-Pu5v2eK92d01nAXJjWRtUIQGKWtK09dBrjcg",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"type\": \"transfer\",\r\n    \"walletFromUid\": \"2abdb146-afda-436c-a9ea-c518845db4cc\",\r\n    \"walletToUid\": \"2abdb146-afda-436c-a9ea-c518845db4cc\",\r\n    \"amount\": 0\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/transfer/init?from=RUB&to=AUD",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "transfer",
+                    "init"
+                  ],
+                  "query": [
+                    {
+                      "key": "from",
+                      "value": "RUB"
+                    },
+                    {
+                      "key": "to",
+                      "value": "AUD"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "transfer confirm",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NjU3MjQ0MDcsImlhdCI6MTc2NTcyNDEwNywianRpIjoib25ydHJvOjQ0YTMxNDZhLTE0MTItNDk3My05ZjliLTY3NDRmZDdiYTk3YyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiJhMzg1YTkzOC01M2E3LTRlYzAtYTZkMi04MTQxOTQwNzY2NzciLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.NzBZdgR8zrPTWr-_1p6lTDt9PRXrigl6_rgwb7qQsMBmJsm-HpRr9WHbw8OW7cXXhuqwlP3rTs3bC1hRo2RTlybafv4_7l0_fNi3Fkc5jw4yVkGjqCq7hXUw2Mz_wJz0avTeaYEFR2y3GYq8gZs8s7LHZ59iOVX6TZ_ldocPeBs7AWDOQ0bkcrXdTUxziRdBWqaTAXVJwAwPSV36SkO5vcqTVDFNNuy-iQqmMpacmMIGG7afKDzk-lYbMAqY_G_CsPKSizKnmo25oFmj8GDnxOV-c7qeKujIwpka234FjZZz7uZYZu0ng7wjLnSqwaO_QROkPhlqDryRhVsLhxtrvw",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"confirm\": \"true\",\r\n    \"token\": \"eyJhbGciOiJIUzI1NiJ9.eyJhbW91bnQiOjAuMCwid2FsbGV0VG9VaWQiOiIyYWJkYjE0Ni1hZmRhLTQzNmMtYTllYS1jNTE4ODQ1ZGI0Y2MiLCJ3YWxsZXRGcm9tVWlkIjoiMmFiZGIxNDYtYWZkYS00MzZjLWE5ZWEtYzUxODg0NWRiNGNjIiwidGltZXN0YW1wIjoiMjAyNS0xMi0xNFQxNDo1NDo1NC40NDE1NjA1OTBaIiwidXNlclVpZCI6Ijc2N2JkMDhkLTU2ZTgtNGJmYS1hN2YwLTc5YmEyNzhlYWM5ZSIsInN1YiI6ImluaXQtdHJhbnNmZXIiLCJpc3MiOiJ0cmFuc2FjdGlvbi1zZXJ2aWNlIiwiaWF0IjoxNzY1NzI0MDk0LCJleHAiOjE3NjU3MjQzOTR9.JE4YtAs2dtVqSHUSut8r5_KEqo0GfRP0ON_7-SlA3Ws\",\r\n    \"amount\": 100,\r\n    \"methodId\": \"\",\r\n    \"currency\": \"JPY\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/transfer/confirm",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    "transfer",
+                    "confirm"
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "transaction status",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJZTW5YYVpRMmF1N2hjQVhZanhNcXRFekNMc3JKLVdHNG9tWDlzVkk0N3FZIn0.eyJleHAiOjE3NjU2MjUzMTksImlhdCI6MTc2NTYyNTAxOSwianRpIjoidHJydGNjOmYwYTVkZGRiLWY2ZjItNDM5YS05MzYzLWEyMjkxYmU2OWE4NiIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.XaH4wcFlg0LDtyC8xfEyoTJRjXRDpjHfecpGw4LfrPsqiCnIBidFGIK4CUF3k7p4uil7HMYjunbso7ZxzWuXHGE_MLwgLpLq_NU8uTzUb_obcFi8FjbwV4_AQhpyh-kXxtfDAllAQsIk60Bz4uqTAumqfauYNAFwDq8qhQNlqunFSshhNyNvyElG6XLXspey2r3AudBJ5FTnnBHkDwK4ws-nubfCF_Su-knxUv-rqfsBWKSlsvVjXwqk3OX_PDAp3Tzlvz5kyTYWkDxtQ9A9N_jL0OsCdTzkE4uq-7Ocy-1QOdC_g0QBSGx5nYJ34oMC4oAsA8q5u-gCVu5LvDzqbw",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/transactions/:transactionId/status",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "transactions",
+                    ":transactionId",
+                    "status"
+                  ],
+                  "variable": [
+                    {
+                      "key": "transactionId",
+                      "value": ""
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        },
+        {
+          "name": "payments",
+          "item": [
+            {
+              "name": "get available payment methods",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjAyMDksImlhdCI6MTc3MDkxOTkwOSwianRpIjoib25ydHJvOjc0ODVlODM0LTBiMDQtNGM0Ni04MmUwLTY1Y2VjOTllNTU0OCIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiI5MmE2NmMwYi0xYjg5LTQ1MDktYjEzZi0zODQ4NDc3YTllNDUiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.bcR9RU3BI57Tjmvzlvt0mayt4AQVN-S1FHLogxGsZLC1fu_WKC2flA76e94iDCBOVMXiUkf947xHmMqrQNPvXmSk_mhFfVDiCqOqfERaiye8ipewsNXGKjSfY7tfUn4p-MH8AONWm0yqbIHgyiEOydKZSaWOeFf4enKNsxLcXC1EZjedTQRQHBqSrlKAVGosxS91GHTB7H4cJmfVYuZHUq-ag_4gSqODQUrdt_hZb9Xa7_RWbDVTqERq4zZ-8-mN-U-V5Ovr8TtHjh-Ln6J4618IJAnS1jjClLDFrWtgNE2asPt_ZNiauDXG7ZOmUE8o73rRrNSALvxyaGPHbZ2C9w",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/payments/:currencyCode/:countryCode",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "payments",
+                    ":currencyCode",
+                    ":countryCode"
+                  ],
+                  "variable": [
+                    {
+                      "key": "currencyCode",
+                      "value": "JPY"
+                    },
+                    {
+                      "key": "countryCode",
+                      "value": "JPN"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            },
+            {
+              "name": "get method by id",
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzExNjA3ODUsImlhdCI6MTc3MTE2MDQ4NSwianRpIjoidHJydGNjOmFiMDA5ZDZlLWUyYTYtNGM1YS05Y2VlLTlhNGViN2VlZGQ5NCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.LbgkeO7FGzEJrsfdaAnsr9ZrVvOsZVTgFpj60wHuD0iFR1Jka9rPgQljRAYGmQigtICx56GXDqUHUpka2W16BuOh9Nc8f2--SP0VaNcv4r_jcRChJIcHiW24fH7-sk05TwG6BotoGA8CkYxEvvamECtSvsqJhf2uzn-3lokTKo023-jEk9YGWI9EDju_uOumgANxarLqc5SP5FV4DhV9bqm0zch2A2qXLG9mTG4aaNyFbuYqCmdVun4BLWB7Nkp78iIiR5itYpwz3Wc8m-6zLFBuidJY2gjFJxDX8A5yW038CZj0gktuZKkY6PkBXl-TjWFnY0lFouDyAMKmoOP2uQ",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:8081/v1/payments/:methodId",
+                  "protocol": "http",
+                  "host": [
+                    "localhost"
+                  ],
+                  "port": "8081",
+                  "path": [
+                    "v1",
+                    "payments",
+                    ":methodId"
+                  ],
+                  "variable": [
+                    {
+                      "key": "methodId",
+                      "value": "032b2315-1b88-4db4-8557-d50a3bb451b9"
+                    }
+                  ]
+                }
+              },
+              "response": []
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "api",
+      "item": [
+        {
+          "name": "v1",
+          "item": [
+            {
+              "name": "transactions",
+              "item": [
+                {
+                  "name": "{id}",
+                  "item": [
+                    {
+                      "name": "get transaction by id",
+                      "request": {
+                        "auth": {
+                          "type": "basic",
+                          "basic": [
+                            {
+                              "key": "username",
+                              "value": "adidas",
+                              "type": "string"
+                            },
+                            {
+                              "key": "password",
+                              "value": "ya_lublu_adidas12",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8086/api/v1/transactions/:id",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8086",
+                          "path": [
+                            "api",
+                            "v1",
+                            "transactions",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "83e76d32-693f-416a-9355-5a9027646241"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "create transaction",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "username",
+                          "value": "adidas",
+                          "type": "string"
+                        },
+                        {
+                          "key": "password",
+                          "value": "ya_lublu_adidas12",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"amount\": 100,\r\n    \"currency\": \"RUB\",\r\n    \"method\": \"CARD\",\r\n    \"description\": \"salary\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:8086/api/v1/transactions",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "8086",
+                      "path": [
+                        "api",
+                        "v1",
+                        "transactions"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get transactions",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "ya_lublu_adidas12",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "adidas",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:8086/api/v1/transactions?start_date=2026-02-01T12:34:56Z&end_date=2027-02-01T12:34:56Z",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "8086",
+                      "path": [
+                        "api",
+                        "v1",
+                        "transactions"
+                      ],
+                      "query": [
+                        {
+                          "key": "start_date",
+                          "value": "2026-02-01T12:34:56Z"
+                        },
+                        {
+                          "key": "end_date",
+                          "value": "2027-02-01T12:34:56Z"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "payouts",
+              "item": [
+                {
+                  "name": "{id}",
+                  "item": [
+                    {
+                      "name": "get payout by id",
+                      "request": {
+                        "auth": {
+                          "type": "basic",
+                          "basic": [
+                            {
+                              "key": "username",
+                              "value": "adidas",
+                              "type": "string"
+                            },
+                            {
+                              "key": "password",
+                              "value": "ya_lublu_adidas12",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8086/api/v1/payouts/:id",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8086",
+                          "path": [
+                            "api",
+                            "v1",
+                            "payouts",
+                            ":id"
+                          ],
+                          "variable": [
+                            {
+                              "key": "id",
+                              "value": "83e76d32-693f-416a-9355-5a9027646241"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "create payout",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "password",
+                          "value": "ya_lublu_puma12",
+                          "type": "string"
+                        },
+                        {
+                          "key": "username",
+                          "value": "puma",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "POST",
+                    "header": [],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"amount\": 100,\r\n    \"currency\": \"RUB\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:8086/api/v1/payouts",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "8086",
+                      "path": [
+                        "api",
+                        "v1",
+                        "payouts"
+                      ]
+                    }
+                  },
+                  "response": []
+                },
+                {
+                  "name": "get payouts",
+                  "request": {
+                    "auth": {
+                      "type": "basic",
+                      "basic": [
+                        {
+                          "key": "username",
+                          "value": "adidas",
+                          "type": "string"
+                        },
+                        {
+                          "key": "password",
+                          "value": "ya_lublu_adidas12",
+                          "type": "string"
+                        }
+                      ]
+                    },
+                    "method": "GET",
+                    "header": [],
+                    "url": {
+                      "raw": "http://localhost:8086/api/v1/payouts?start_date=2026-02-01T12:34:56Z&end_date=2027-02-01T12:34:56Z",
+                      "protocol": "http",
+                      "host": [
+                        "localhost"
+                      ],
+                      "port": "8086",
+                      "path": [
+                        "api",
+                        "v1",
+                        "payouts"
+                      ],
+                      "query": [
+                        {
+                          "key": "start_date",
+                          "value": "2026-02-01T12:34:56Z"
+                        },
+                        {
+                          "key": "end_date",
+                          "value": "2027-02-01T12:34:56Z"
+                        }
+                      ]
+                    }
+                  },
+                  "response": []
+                }
+              ]
+            },
+            {
+              "name": "webhook",
+              "item": [
+                {
+                  "name": "transaction",
+                  "item": [
+                    {
+                      "name": "update transaction status",
+                      "request": {
+                        "auth": {
+                          "type": "noauth"
+                        },
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "X-Signature",
+                            "value": "d025085ce329cf45998e06612a4e94ab4183922e712eea9754f45ab8a483ecd6",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"id\": \"b082ce3c-e954-4652-88f7-df389d5d9853\",\r\n    \"status\": \"SUCCESS\",\r\n    \"reason\": \"ok\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8086/api/v1/webhook/transaction",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8086",
+                          "path": [
+                            "api",
+                            "v1",
+                            "webhook",
+                            "transaction"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "payout",
+                  "item": [
+                    {
+                      "name": "update payout status",
+                      "request": {
+                        "method": "POST",
+                        "header": [
+                          {
+                            "key": "X-Signature",
+                            "value": "91fac7856d1cd151175161f0b2e94eb93ba74975827f28046c83914cb0ac84c4",
+                            "type": "text"
+                          }
+                        ],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"id\": \"4bc5096f-7285-4f9e-8078-c1df84e07326\",\r\n    \"status\": \"SUCCESS\",\r\n    \"reason\": \"ok\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8086/api/v1/webhook/payout",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8086",
+                          "path": [
+                            "api",
+                            "v1",
+                            "webhook",
+                            "payout"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "payment-service api",
+      "item": [
+        {
+          "name": "api",
+          "item": [
+            {
+              "name": "v1",
+              "item": [
+                {
+                  "name": "payment-methods",
+                  "item": [
+                    {
+                      "name": "get payment methods",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzExNjA3ODUsImlhdCI6MTc3MTE2MDQ4NSwianRpIjoidHJydGNjOmFiMDA5ZDZlLWUyYTYtNGM1YS05Y2VlLTlhNGViN2VlZGQ5NCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.LbgkeO7FGzEJrsfdaAnsr9ZrVvOsZVTgFpj60wHuD0iFR1Jka9rPgQljRAYGmQigtICx56GXDqUHUpka2W16BuOh9Nc8f2--SP0VaNcv4r_jcRChJIcHiW24fH7-sk05TwG6BotoGA8CkYxEvvamECtSvsqJhf2uzn-3lokTKo023-jEk9YGWI9EDju_uOumgANxarLqc5SP5FV4DhV9bqm0zch2A2qXLG9mTG4aaNyFbuYqCmdVun4BLWB7Nkp78iIiR5itYpwz3Wc8m-6zLFBuidJY2gjFJxDX8A5yW038CZj0gktuZKkY6PkBXl-TjWFnY0lFouDyAMKmoOP2uQ",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8087/api/v1/payment-methods/:currencyCode/:countryCode",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8087",
+                          "path": [
+                            "api",
+                            "v1",
+                            "payment-methods",
+                            ":currencyCode",
+                            ":countryCode"
+                          ],
+                          "variable": [
+                            {
+                              "key": "currencyCode",
+                              "value": "JPY"
+                            },
+                            {
+                              "key": "countryCode",
+                              "value": "JPN"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    },
+                    {
+                      "name": "get method by id",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzExNjA3ODUsImlhdCI6MTc3MTE2MDQ4NSwianRpIjoidHJydGNjOmFiMDA5ZDZlLWUyYTYtNGM1YS05Y2VlLTlhNGViN2VlZGQ5NCIsImlzcyI6Imh0dHA6Ly9sb2NhbGhvc3Q6ODA4MC9yZWFsbXMvcGF5bWVudC1zeXN0ZW0iLCJhdWQiOlsicmVhbG0tbWFuYWdlbWVudCIsImFjY291bnQiXSwic3ViIjoiYTM4N2E1OGEtNTAwMC00MzMzLWE2OTgtOTMzZTlmM2ZkZDBlIiwidHlwIjoiQmVhcmVyIiwiYXpwIjoiaW5kaXZpZHVhbHMtYXBpIiwiYWNyIjoiMSIsImFsbG93ZWQtb3JpZ2lucyI6WyJodHRwOi8vbG9jYWxob3N0OjgwODEiXSwicmVhbG1fYWNjZXNzIjp7InJvbGVzIjpbImRlZmF1bHQtcm9sZXMtcGF5bWVudC1zeXN0ZW0iLCJvZmZsaW5lX2FjY2VzcyIsInVtYV9hdXRob3JpemF0aW9uIl19LCJyZXNvdXJjZV9hY2Nlc3MiOnsiaW5kaXZpZHVhbHMtYXBpIjp7InJvbGVzIjpbInVtYV9wcm90ZWN0aW9uIl19LCJyZWFsbS1tYW5hZ2VtZW50Ijp7InJvbGVzIjpbInZpZXctaWRlbnRpdHktcHJvdmlkZXJzIiwidmlldy1yZWFsbSIsIm1hbmFnZS1pZGVudGl0eS1wcm92aWRlcnMiLCJpbXBlcnNvbmF0aW9uIiwicmVhbG0tYWRtaW4iLCJjcmVhdGUtY2xpZW50IiwibWFuYWdlLXVzZXJzIiwicXVlcnktcmVhbG1zIiwidmlldy1hdXRob3JpemF0aW9uIiwicXVlcnktY2xpZW50cyIsInF1ZXJ5LXVzZXJzIiwibWFuYWdlLWV2ZW50cyIsIm1hbmFnZS1yZWFsbSIsInZpZXctZXZlbnRzIiwidmlldy11c2VycyIsInZpZXctY2xpZW50cyIsIm1hbmFnZS1hdXRob3JpemF0aW9uIiwibWFuYWdlLWNsaWVudHMiLCJxdWVyeS1ncm91cHMiXX0sImFjY291bnQiOnsicm9sZXMiOlsibWFuYWdlLWFjY291bnQiLCJtYW5hZ2UtYWNjb3VudC1saW5rcyIsInZpZXctcHJvZmlsZSJdfX0sInNjb3BlIjoicHJvZmlsZSBlbWFpbCIsImVtYWlsX3ZlcmlmaWVkIjpmYWxzZSwiY2xpZW50SG9zdCI6IjE3Mi4xOS4wLjEiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJzZXJ2aWNlLWFjY291bnQtaW5kaXZpZHVhbHMtYXBpIiwiY2xpZW50QWRkcmVzcyI6IjE3Mi4xOS4wLjEiLCJjbGllbnRfaWQiOiJpbmRpdmlkdWFscy1hcGkifQ.LbgkeO7FGzEJrsfdaAnsr9ZrVvOsZVTgFpj60wHuD0iFR1Jka9rPgQljRAYGmQigtICx56GXDqUHUpka2W16BuOh9Nc8f2--SP0VaNcv4r_jcRChJIcHiW24fH7-sk05TwG6BotoGA8CkYxEvvamECtSvsqJhf2uzn-3lokTKo023-jEk9YGWI9EDju_uOumgANxarLqc5SP5FV4DhV9bqm0zch2A2qXLG9mTG4aaNyFbuYqCmdVun4BLWB7Nkp78iIiR5itYpwz3Wc8m-6zLFBuidJY2gjFJxDX8A5yW038CZj0gktuZKkY6PkBXl-TjWFnY0lFouDyAMKmoOP2uQ",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "GET",
+                        "header": [],
+                        "url": {
+                          "raw": "http://localhost:8087/api/v1/payment-methods/:methodId",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8087",
+                          "path": [
+                            "api",
+                            "v1",
+                            "payment-methods",
+                            ":methodId"
+                          ],
+                          "variable": [
+                            {
+                              "key": "methodId",
+                              "value": "032b2315-1b88-4db4-8557-d50a3bb451b9"
+                            }
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                },
+                {
+                  "name": "payments",
+                  "item": [
+                    {
+                      "name": "create payment",
+                      "request": {
+                        "auth": {
+                          "type": "bearer",
+                          "bearer": [
+                            {
+                              "key": "token",
+                              "value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJDZEJXaEdLbWV1OWljVFAxNGhmMHZ4Q0l3dm5YZkdzMlQ3Y09PRmUzeW5ZIn0.eyJleHAiOjE3NzA5MjM1MTAsImlhdCI6MTc3MDkyMzIxMCwianRpIjoib25ydHJvOjUwNWRkZWU4LTEyYzgtNDk4OS05YjgxLWFlZTliOTQ4ODM1YyIsImlzcyI6Imh0dHA6Ly9rZXljbG9hazo4MDgwL3JlYWxtcy9wYXltZW50LXN5c3RlbSIsImF1ZCI6ImFjY291bnQiLCJzdWIiOiIzNTI0NDI1MS0zMDRjLTRlMzQtYjA4NC02Yjc1OGRlN2YzYjYiLCJ0eXAiOiJCZWFyZXIiLCJhenAiOiJpbmRpdmlkdWFscy1hcGkiLCJzaWQiOiI5ZWQ3NjQ4MC0yNmFkLTQxMTMtYTU1Zi0zNjRmOWY3YmUwOTIiLCJhY3IiOiIxIiwiYWxsb3dlZC1vcmlnaW5zIjpbImh0dHA6Ly9sb2NhbGhvc3Q6ODA4MSJdLCJyZWFsbV9hY2Nlc3MiOnsicm9sZXMiOlsiZGVmYXVsdC1yb2xlcy1wYXltZW50LXN5c3RlbSIsIm9mZmxpbmVfYWNjZXNzIiwidW1hX2F1dGhvcml6YXRpb24iXX0sInJlc291cmNlX2FjY2VzcyI6eyJhY2NvdW50Ijp7InJvbGVzIjpbIm1hbmFnZS1hY2NvdW50IiwibWFuYWdlLWFjY291bnQtbGlua3MiLCJ2aWV3LXByb2ZpbGUiXX19LCJzY29wZSI6InByb2ZpbGUgZW1haWwiLCJlbWFpbF92ZXJpZmllZCI6dHJ1ZSwiaW5uZXJfaWQiOiI3NjdiZDA4ZC01NmU4LTRiZmEtYTdmMC03OWJhMjc4ZWFjOWUiLCJwcmVmZXJyZWRfdXNlcm5hbWUiOiJoZWxsb0BtYWlsLnJ1IiwiZW1haWwiOiJoZWxsb0BtYWlsLnJ1In0.g1cmcF83O4cHpFzOEzxfVKrQiaBPDtCKYL8LMM3Rno_QLkn28MYBX_QqdSfl2I0urBV7K7F1bMz1cyghN71gWE8ZGmDDA4_9xeq9uTG9c89Hveb-V7lUpRXINE1xhxkHCgp3qVhQ0PkChqK2rYZextlO2cWz7BEv8a_2uCYod-xTHS1Mquwwvcxi4Skxxh2eUBsfTgMPpIDGCr5mXMVypTMTXFfOF5rTCMim_rzjqmi3DXebnXA4nJkYJRr3kZ3RmYUsW6QYSV0fMvgFwsAJre2yxcqWSb1uG2PSV3FnuxCY_Q7V4w8YPDdZhdYQiagnIy9W2ciESeqNNDRu8i6Wsg",
+                              "type": "string"
+                            }
+                          ]
+                        },
+                        "method": "POST",
+                        "header": [],
+                        "body": {
+                          "mode": "raw",
+                          "raw": "{\r\n    \"internalTransactionUid\": \"2c803fe0-bb7c-46bd-a88b-fe0e6c002a46\",\r\n    \"methodId\": \"2c803fe0-bb7c-46bd-a88b-fe0e6c002a46\",\r\n    \"amount\": 100,\r\n    \"currency\": \"RUB\"\r\n}",
+                          "options": {
+                            "raw": {
+                              "language": "json"
+                            }
+                          }
+                        },
+                        "url": {
+                          "raw": "http://localhost:8087/api/v1/payments",
+                          "protocol": "http",
+                          "host": [
+                            "localhost"
+                          ],
+                          "port": "8087",
+                          "path": [
+                            "api",
+                            "v1",
+                            "payments"
+                          ]
+                        }
+                      },
+                      "response": []
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "refreshToken",
+      "value": "",
+      "type": "default"
+    }
+  ]
+}

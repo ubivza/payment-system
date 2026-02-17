@@ -1,0 +1,20 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+Person(client, "User", "Пользователь системы")
+System_Boundary(paymentSystem, "Payment System") {
+    Container(paymentService, "Payment Service", "Spring Boot", "Оркестрация платежей")
+    Container(transactionService, "Transaction Service", "Spring Boot", "Управление транзакциями")
+    Container(individualsApi, "Individuals API", "Spring Boot", "Оркестратор запросов")
+    Container(fakeProvider, "Fake Payment Provider", "Spring Boot", "Имитация внешнего провайдера")
+    ContainerDb(database, "PostgreSQL DB", "Хранение данных")
+}
+
+Rel(client, individualsApi, "Использует API")
+Rel(individualsApi, paymentService, "Получает методы оплаты и проводит платежи")
+Rel(individualsApi, transactionService, "Создаёт и обновляет транзакции")
+Rel(paymentService, fakeProvider, "Инициирует платежи")
+Rel(transactionService, database, "Чтение/запись данных")
+Rel(paymentService, database, "Чтение/запись данных")
+@enduml

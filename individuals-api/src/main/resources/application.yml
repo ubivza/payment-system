@@ -42,6 +42,16 @@ currencyRate:
   contextId: ${currencyRate.name}
   url: ${CURRENCY_RATE_URL:http://localhost:8084}
 
+payment:
+  name: ${PAYMENT_NAME:payment}
+  contextId: ${payment.name}
+  url: ${PAYMENT_URL:http://localhost:8087}
+
+paymentMethod:
+  name: ${PAYMENT_METHOD_NAME:paymentMethod}
+  contextId: ${paymentMethod.name}
+  url: ${PAYMENT_METHOD_URL:http://localhost:8087}
+
 management:
   server:
     port: ${INDIVIDUALS_API_MANAGEMENT_SERVER_PORT:8081}

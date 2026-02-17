@@ -12,8 +12,10 @@ import com.example.individualsapi.constant.AuthorizationConstants;
 import com.example.individualsapi.exception.InnerServiceException;
 import com.example.individualsapi.mapper.TransactionMapper;
 import com.example.individualsapi.service.api.CurrencyRateService;
+import com.example.individualsapi.service.api.PaymentService;
 import com.example.individualsapi.service.api.TokenService;
 import com.example.individualsapi.service.api.TransactionService;
+import com.example.payment.dto.PaymentResponse;
 import com.example.transaction.api.TransactionApiClient;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,7 @@ public class TransactionServiceImpl implements TransactionService {
     private final ContextUserSubExtractor uidExtractor;
     private final TransactionMapper mapper;
     private final CurrencyRateService rateService;
+    private final PaymentService paymentService;
 
     @Override
     public Mono<TransactionInitResponseDto> init(String type, InitTransactionRequest initTransactionRequest, String valuteFrom, String valuteTo) {
@@ -78,14 +81,25 @@ public class TransactionServiceImpl implements TransactionService {
                                 .flatMap(tokenResponse ->
                                         Mono.fromCallable(() ->
                                                         apiClient.confirmTransaction(AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken(), type, mapper.mapConfirm(confirmRequestDto)))
-                                                .doOnError(request -> {
+                                                .onErrorMap(request -> {
                                                     log.error("Transactions service unavailable");
-                                                    throw new InnerServiceException("Transactions service unavailable, try again later");
+                                                    return new InnerServiceException("Transactions service unavailable, try again later");
                                                 })
                                                 .mapNotNull(HttpEntity::getBody)
                                                 .subscribeOn(Schedulers.boundedElastic())
                                                 .doOnNext(t -> log.info("Got transaction confirmation for user with innerId: {}", userRequestData.getInnerId()))
-                                                .map(mapper::mapConfirmRequest)));
+                                                .map(mapper::mapConfirmRequest)))
+                .flatMap(response ->
+                        paymentService.create(response.getTransactionId(), confirmRequestDto.getMethodId(), confirmRequestDto.getAmount().doubleValue(), confirmRequestDto.getCurrency())
+                                .onErrorResume(paymentError ->
+                                        tokenService.getAdminToken()
+                                                .flatMap(tokenResponse ->
+                                                        Mono.fromCallable(() ->
+                                                                apiClient.compensateFailedTransaction(response.getTransactionId(), type, AuthorizationConstants.BEARER_SUFFIX + tokenResponse.getAccessToken())))
+                                                .subscribeOn(Schedulers.boundedElastic())
+                                                .then(Mono.just(new PaymentResponse())))
+                                .thenReturn(response)
+                );
     }
 
     @Override

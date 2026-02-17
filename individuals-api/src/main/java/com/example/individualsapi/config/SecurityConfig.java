@@ -33,6 +33,7 @@ public class SecurityConfig {
         return new String[]{
                 apiPath + "/auth/me",
                 apiPath + "/individual/delete",
-                apiPath + "/individual/update"};
+                apiPath + "/individual/update",
+                apiPath + "/payments/**"};
     }
 }

@@ -43,7 +43,8 @@ val versions = mapOf(
         "javaxAnnotationApiVersion" to "1.3.2",
         "javaxValidationApiVersion" to "2.0.0.Final",
         "swaggerAnnotations" to "2.2.40",
-        "currencyRateApiVersion" to "1.0.0-SNAPSHOT"
+        "currencyRateApiVersion" to "1.0.0-SNAPSHOT",
+        "paymentService" to "1.0.0-SNAPSHOT"
 )
 
 dependencyManagement {
@@ -84,6 +85,9 @@ dependencies {
 
     //currency-rate-service api
     implementation("com.example:currency-rate-service:${versions["currencyRateApiVersion"]}")
+
+    //payment-service api
+    implementation("com.example:payment-service:${versions["paymentService"]}")
 
     //security jwt
     implementation("com.auth0:java-jwt:${versions["javaJwt"]}")

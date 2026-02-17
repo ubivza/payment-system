@@ -6,7 +6,7 @@ scrape_configs:
   - job_name: prometheus
     metrics_path: /actuator/prometheus
     static_configs:
-      - targets: ['individuals-api:8081', 'person-service:8082', 'transaction-service:8083', 'currency-rate-service:8084', 'fake-payment-provider-service:8086']
+      - targets: ['individuals-api:8081', 'person-service:8082', 'transaction-service:8083', 'currency-rate-service:8084', 'fake-payment-provider-service:8086', 'payment-service:8087']
 
   - job_name: grafana
     static_configs:
