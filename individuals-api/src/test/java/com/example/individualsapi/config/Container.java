@@ -38,6 +38,8 @@ public class Container {
         registry.add("wallet.url", wireMockContainer::getBaseUrl);
         registry.add("transaction.url", wireMockContainer::getBaseUrl);
         registry.add("currencyRate.url", wireMockContainer::getBaseUrl);
+        registry.add("payment.url", wireMockContainer::getBaseUrl);
+        registry.add("paymentMethod.url", wireMockContainer::getBaseUrl);
     }
 
     @AfterEach

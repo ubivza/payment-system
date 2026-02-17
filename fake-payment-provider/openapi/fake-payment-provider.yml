@@ -3,7 +3,7 @@ info:
   title: Fake Payment Provider API
   version: 1.0.0
 servers:
-  - url: http://localhost:8085
+  - url: http://localhost:8086
 
 tags:
   - name: Transaction

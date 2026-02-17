@@ -58,7 +58,12 @@ public class MerchantService {
             merchantTwo.setName("OOO Puma Ru");
             merchantTwo.setSecretKey(passwordEncoder.encode("ya_lublu_puma12"));
 
-            repository.saveAll(List.of(merchant, merchantTwo));
+            Merchant merchantPaymentSystem = new Merchant();
+            merchantPaymentSystem.setMerchantId("payment-system");
+            merchantPaymentSystem.setName("OOO Payment-system");
+            merchantPaymentSystem.setSecretKey(passwordEncoder.encode("p@$$w0rD"));
+
+            repository.saveAll(List.of(merchant, merchantTwo, merchantPaymentSystem));
         }
     }
 }

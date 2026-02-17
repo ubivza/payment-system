@@ -281,6 +281,118 @@
           "Content-Type": "application/json"
         }
       }
+    },
+    {
+      "request": {
+        "method": "POST",
+        "url": "/api/v1/payments",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer\\s+[a-zA-Z0-9._-]+$"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$.internalTransactionUid",
+            "matchesJsonPath": "$.methodId",
+            "matchesJsonPath": "$.amount",
+            "matchesJsonPath": "$.currency"
+          },
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.currency == 'RUB' || @.currency == 'USD' || @.currency == 'EUR' || @.currency == 'USDT')]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.internalTransactionUid =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.methodId =~ /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 201,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "providerTransactionId": "2c803fe0-bb7c-46bd-a88b-fe0e6c002a46",
+          "status": "PENDING"
+        }
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/api/v1/payment-methods/RUB/RU",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer\\s+[a-zA-Z0-9._-]+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": [
+          {
+            "id": "6e98eda0-8873-4fbb-8bbd-0b4841c9bcac",
+            "name": "Банковская карта",
+            "providerMethodType": "CARD"
+          }
+        ]
+      }
+    },
+    {
+      "request": {
+        "method": "GET",
+        "url": "/api/v1/payment-methods/6e98eda0-8873-4fbb-8bbd-0b4841c9bcac",
+        "headers": {
+          "Authorization": {
+            "matches": "^Bearer\\s+[a-zA-Z0-9._-]+$"
+          }
+        }
+      },
+      "response": {
+        "status": 200,
+        "headers": {
+          "Content-Type": "application/json"
+        },
+        "jsonBody": {
+          "id": "6e98eda0-8873-4fbb-8bbd-0b4841c9bcac",
+          "name": "Банковская карта",
+          "providerMethodType": "CARD",
+          "imageUrl": "https://example.com/images/card.png",
+          "requiredFields": [
+            {
+              "uid": "a1b2c3d4-e5f6-4a5b-8c7d-9e0f1a2b3c4d",
+              "name": "cardNumber",
+              "description": "Номер банковской карты",
+              "placeholder": "1234 5678 9012 3456",
+              "dataType": "STRING",
+              "validationType": "REGEX",
+              "validationRule": "^[0-9]{16}$",
+              "defaultValue": null,
+              "valuesOptions": []
+            },
+            {
+              "uid": "b2c3d4e5-f6a7-5b6c-9d8e-0f1a2b3c4d5e",
+              "name": "expiryDate",
+              "description": "Срок действия карты (MM/YY)",
+              "placeholder": "MM/YY",
+              "dataType": "STRING",
+              "validationType": "REGEX",
+              "validationRule": "^(0[1-9]|1[0-2])/[0-9]{2}$",
+              "defaultValue": null,
+              "valuesOptions": []
+            }
+          ]
+        }
+      }
     }
   ]
 }

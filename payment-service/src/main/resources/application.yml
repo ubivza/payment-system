@@ -1,0 +1,85 @@
+server:
+  port: ${PAYMENT_SERVICE_SERVER_PORT:8087}
+
+keycloak:
+  host: ${KEYCLOAK_HOST:http://localhost:8080}
+  realm: ${KEYCLOAK_REALM:payment-system}
+
+spring:
+  application:
+    name: ${PAYMENT_SERVICE_SPRING_APPLICATION_NAME:payment-service}
+  main:
+    banner-mode: off
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: ${SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUER_URI:${keycloak.host}/realms/${keycloak.realm}}
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5439}/payment_service
+    username: ${POSTGRES_USERNAME:admin}
+    password: ${POSTGRES_PASSWORD:admin}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        default_schema: payment_service
+        show_sql: ${SHOW_SQL:true}
+        format_sql: ${FORMAT_SQL:true}
+        highlight_sql: ${HIGHLIGHT_SQL:true}
+        session.events.log.LOG_QUERIES_SLOWER_THAN_MS: ${SLOW_SQL_QUERY_INDICATOR_MS:1500}
+        hbm2ddl:
+          auto: validate
+    driver-class-name: org.postgresql.Driver
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: ${PAYMENT_SERVICE_MANAGEMENT_ENDPOINTS_WEB_EXPOSURE_INCLUDE:*}
+  endpoint:
+    health:
+      show-details: ${PAYMENT_SERVICE_MANAGEMENT_ENDPOINT_HEALTH_SHOW_DETAILS:always}
+    prometheus:
+      access: ${PAYMENT_SERVICE_MANAGEMENT_ENDPOINT_PROMETHEUS_ACCESS:read_only}
+  tracing:
+    sampling:
+      probability: '1.0'
+
+otel:
+  exporter:
+    otlp:
+      endpoint: ${PAYMENT_SERVICE_OTEL_EXPORTER_OTLP_ENDPOINT:http://localhost:4318}
+      protocol: http/protobuf
+  logs:
+    exporter: none
+  metrics:
+    exporter: none
+
+payout:
+  name: ${PAYOUT_NAME:payout}
+  contextId: ${payout.name}
+  url: ${PAYOUT_URL:http://localhost:8086}
+
+transaction:
+  name: ${TRANSACTION_NAME:transaction}
+  contextId: ${transaction.name}
+  url: ${TRANSACTION_URL:http://localhost:8086}
+
+webhook:
+  name: ${WEBHOOK_NAME:webhook}
+  contextId: ${webhook.name}
+  url: ${WEBHOOK_URL:http://localhost:8086}
+
+fakepaymentprovider:
+  security:
+    basicAuth:
+      username: ${FAKE_PAYMENT_PROVIDER_SECURITY_BASIC_AUTH_USERNAME:payment-system}
+      password: ${FAKE_PAYMENT_PROVIDER_SECURITY_BASIC_AUTH_PASSWORD:p@$$w0rD}
+
+#logging:
+#  level:
+#    org.springframework.orm.jpa.JpaTransactionManager: DEBUG

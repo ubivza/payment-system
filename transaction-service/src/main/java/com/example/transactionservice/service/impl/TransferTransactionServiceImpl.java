@@ -78,6 +78,8 @@ public class TransferTransactionServiceImpl extends TransactionServiceAbstract {
         response.setFee(addFee(transferInitRequest.getAmount(), transferInitRequest.getAmount()));
         response.setAvailable(true);
         response.setToken(token);
+        response.setAmount(transferInitRequest.getAmount());
+        response.setCurrency(valuteFrom);
 
         return response;
     }

@@ -8,6 +8,8 @@ import com.example.individuals.dto.TransactionStatusResponseDto;
 import com.example.individualsapi.service.api.TransactionService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.lang.Nullable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
 
+@Validated
 @RestController
 @RequestMapping("${individuals-api.path}/transactions")
 @RequiredArgsConstructor
@@ -27,8 +30,8 @@ public class TransactionController {
     @PostMapping("/{type}/init")
     public Mono<ResponseEntity<TransactionInitResponseDto>> init(@PathVariable String type,
                                                                  @RequestBody InitTransactionRequest initTransactionRequest,
-                                                                 @RequestParam String from,
-                                                                 @RequestParam String to) {
+                                                                 @Nullable @RequestParam String from,
+                                                                 @Nullable @RequestParam String to) {
         return transactionService.init(type, initTransactionRequest, from, to)
                 .map(ResponseEntity::ok);
     }

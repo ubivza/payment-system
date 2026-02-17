@@ -1,0 +1,37 @@
+@startuml
+actor Client
+participant IndividualsAPI
+participant TransactionService
+participant PaymentService
+participant FakeProvider
+
+Client -> IndividualsAPI: Запрос доступных методов оплаты
+IndividualsAPI -> PaymentService: GET /api/v1/payment-methods/{currencyCode}/{countryCode}
+PaymentService --> IndividualsAPI: Методы оплаты
+IndividualsAPI --> Client: Методы оплаты
+Client -> IndividualsAPI: Запрос данных метода оплаты по ID
+IndividualsAPI -> PaymentService: GET GET /api/v1/payment-methods/{id}
+PaymentService --> IndividualsAPI: Метод оплаты
+IndividualsAPI --> Client: Метод оплаты
+
+Client -> IndividualsAPI: Запрос на создание платежа
+IndividualsAPI -> TransactionService: Инициализация платежа
+TransactionService --> IndividualsAPI: Условия платежа
+IndividualsAPI --> Client: Условия платежа
+Client -> IndividualsAPI: Согласие с условиями платежа
+IndividualsAPI -> TransactionService: Создание транзакции (PENDING)
+TransactionService --> IndividualsAPI: Транзакция создана (PENDING)
+
+IndividualsAPI -> PaymentService: Провести платёж
+PaymentService -> FakeProvider: Инициировать платёж
+
+alt Успешный платёж
+    FakeProvider --> PaymentService: ID транзакции (успех)
+    PaymentService --> IndividualsAPI: ID транзакции
+    IndividualsAPI -> TransactionService: Сохранение ID внешней транзакции, статус PENDING
+else Ошибка проведения платежа
+    FakeProvider --> PaymentService: Ошибка проведения платежа
+    PaymentService --> IndividualsAPI: Ошибка
+    IndividualsAPI -> TransactionService: Компенсация транзакции, статус FAILED
+end
+@enduml

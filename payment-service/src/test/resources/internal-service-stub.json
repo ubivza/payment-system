@@ -1,0 +1,39 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/api/v1/payouts",
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.amount > 0)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.currency)]"
+          }
+        ],
+        "headers": {
+          "Authorization": {
+            "matches": "^Basic .+$"
+          }
+        }
+      },
+      "response": {
+        "status": 201,
+        "jsonBody": {
+          "id": "5300a5f4-1e18-4032-8a27-d309b04ebca5",
+          "merchantId": "5300a5f4-1e18-4032-8a27-d309b04ebca5",
+          "amount": 100.0,
+          "currency": "JPY",
+          "status": "SUCCESS",
+          "createdAt": "2023-10-31T01:30:00Z",
+          "updatedAt": "2023-10-31T01:30:00Z",
+          "externalId": "some id"
+        },
+        "headers": {
+          "Content-Type": "application/json"
+        }
+      }
+    }
+  ]
+}

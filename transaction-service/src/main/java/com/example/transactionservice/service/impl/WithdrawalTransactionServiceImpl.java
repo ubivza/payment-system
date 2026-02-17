@@ -76,6 +76,8 @@ public class WithdrawalTransactionServiceImpl extends TransactionServiceAbstract
         response.setFee(getFee(withdrawalInitRequest.getAmount()));
         response.setAvailable(true);
         response.setToken(token);
+        response.setAmount(withdrawalInitRequest.getAmount());
+        response.setCurrency(valuteFrom);
 
         return response;
     }
