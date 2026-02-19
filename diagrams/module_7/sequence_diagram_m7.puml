@@ -1,0 +1,18 @@
+@startuml
+actor FakeProvider
+participant WebhookCollector
+participant Kafka
+participant TransactionService
+participant DB
+
+FakeProvider -> WebhookCollector: POST /api/v1/webhooks/payment-provider
+WebhookCollector -> WebhookCollector: Проверка токена безопасности
+alt Токен верный
+    WebhookCollector -> DB: Сохранение webhook-уведомления
+    WebhookCollector -> Kafka: Публикация события в transaction-read топик
+    Kafka --> TransactionService: Событие о статусе платежа
+    TransactionService -> TransactionService: Финализация статуса транзакции
+else Токен неверный
+    WebhookCollector --> FakeProvider: 401 Unauthorized
+end
+@enduml
