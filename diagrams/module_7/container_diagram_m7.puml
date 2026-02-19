@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+LAYOUT_TOP_DOWN()
+
+
+Container(fakeProvider, "Fake Payment Provider", "Spring Boot", "Отправка webhook-уведомлений")
+
+System_Boundary(paymentSystem, "Payment System") {
+    Container(webhookCollector, "Webhook Collector Service", "Spring Boot", "Обработка webhook")
+    Container(transactionService, "Transaction Service", "Spring Boot", "Финализация транзакций")
+    ContainerDb(database, "PostgreSQL DB", "Хранение webhook-уведомлений")
+    Container(kafka, "Kafka", "Очередь событий")
+}
+
+Rel(fakeProvider, webhookCollector, "Отправляет webhook-уведомления")
+Rel(webhookCollector, database, "Сохраняет уведомления")
+Rel(webhookCollector, kafka, "Публикует события")
+Rel(transactionService, kafka, "Читает события для финализации")
+@enduml
