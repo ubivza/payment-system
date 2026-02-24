@@ -2,14 +2,13 @@
 actor Client
 participant IndividualsApi
 participant Keycloak
+participant PaymentService
 
 actor FakeProvider
 participant WebhookCollector
 participant Kafka
 participant TransactionService
 participant DB
-participant CurrencyRateService
-participant PaymentService
 
 Client -> IndividualsApi: /login
 IndividualsApi -> Keycloak: /realms/{realm}/protocol/openid-connect/token
@@ -37,21 +36,20 @@ IndividualsApi -> PaymentService: /api/v1/payments
 alt Успешно
     TransactionService -> IndividualsApi: статус и id транзакции
     IndividualsApi -> Client: статус и id транзакции
+    PaymentService -> FakeProvider: /api/v1/payouts создать выплату
+    FakeProvider -> WebhookCollector: POST /api/v1/webhooks/payment-provider
+    WebhookCollector -> WebhookCollector: Проверка HMAC подписи
+    alt Токен верный
+        WebhookCollector -> DB: Сохранение webhook-уведомления
+        WebhookCollector -> Kafka: Публикация события в transaction-read топик
+        Kafka --> TransactionService: Событие о статусе платежа
+        TransactionService -> TransactionService: Финализация статуса транзакции
+    else Токен неверный
+        WebhookCollector --> FakeProvider: 401 Unauthorized
+    end
 else 500/400
     TransactionService -> IndividualsApi: статус и id транзакции
     IndividualsApi -> TransactionService: /v1/transactions/compensate-transaction/deposit/{transactionId}
     IndividualsApi -> Client: статус и id транзакции
-end
-
-
-FakeProvider -> WebhookCollector: POST /api/v1/webhooks/payment-provider
-WebhookCollector -> WebhookCollector: Проверка HMAC подписи
-alt Токен верный
-    WebhookCollector -> DB: Сохранение webhook-уведомления
-    WebhookCollector -> Kafka: Публикация события в transaction-read топик
-    Kafka --> TransactionService: Событие о статусе платежа
-    TransactionService -> TransactionService: Финализация статуса транзакции
-else Токен неверный
-    WebhookCollector --> FakeProvider: 401 Unauthorized
 end
 @enduml
