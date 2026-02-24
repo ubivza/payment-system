@@ -4,16 +4,40 @@ LAYOUT_TOP_DOWN()
 
 
 Container(fakeProvider, "Fake Payment Provider", "Spring Boot", "Отправка webhook-уведомлений")
+Person_Ext(client, "Клиент", "Внешние вызовы")
 
 System_Boundary(paymentSystem, "Payment System") {
     Container(webhookCollector, "Webhook Collector Service", "Spring Boot", "Обработка webhook")
-    Container(transactionService, "Transaction Service", "Spring Boot", "Финализация транзакций")
     ContainerDb(database, "PostgreSQL DB", "Хранение webhook-уведомлений")
+
     Container(kafka, "Kafka", "Очередь событий")
+
+    Container(individualsApi, "Individuals Api", "Оркестратор системы")
+
+    Container(transactionService, "Transaction Service", "Spring Boot", "Финализация транзакций")
+    ContainerDb(database5, "PostgreSQL DB", "Хранение транзакций, кошельков")
+
+    Container(currencyRateService, "Currency Rate Service", "Сервис сбора курсов валют")
+    ContainerDb(database4, "PostgreSQL DB", "Хранение курсов")
+
+    Container(paymentService, "Payment Service", "Сервис обработки платежей")
+    ContainerDb(database2, "PostgreSQL DB", "Хранение платежей")
+
+    Container(personService, "Person Service", "Сервис работы с пользователями")
+    ContainerDb(database1, "PostgreSQL DB", "Хранение внутренних данных пользователей")
 }
 
+Rel(client, individualsApi, "Внешние рест вызовы")
+Rel(individualsApi, transactionService, "Вызов рест методов работы с кошельками и транзакциями")
+Rel(individualsApi, currencyRateService, "Получение курсов валют")
+Rel(individualsApi, paymentService, "Создание платежей")
+Rel(individualsApi, personService, "CRUD пользователей")
 Rel(fakeProvider, webhookCollector, "Отправляет webhook-уведомления")
 Rel(webhookCollector, database, "Сохраняет уведомления")
 Rel(webhookCollector, kafka, "Публикует события")
 Rel(transactionService, kafka, "Читает события для финализации")
+Rel(transactionService, database5, "SQL операции")
+Rel(currencyRateService, database4, "SQL операции")
+Rel(paymentService, database2, "SQL операции")
+Rel(personService, database1, "SQL операции")
 @enduml
