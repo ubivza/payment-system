@@ -61,7 +61,7 @@ class PayoutControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test basic auth -> bucket token consumed -> payout created 200")
     public void createPayoutHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<PayoutRequest> create = new HttpEntity<>(createPayoutRequest(), getBasicAuthHeader());
 
         String createUri = "/api/v1/payouts";
@@ -79,7 +79,7 @@ class PayoutControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test payout created -> get by id 200")
     public void getPayoutByIdHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<PayoutRequest> create = new HttpEntity<>(createPayoutRequest(), getBasicAuthHeader());
 
         String createTransactionUri = "/api/v1/payouts";
@@ -109,7 +109,7 @@ class PayoutControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test payout created -> get all 200")
     public void getPayoutsHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<PayoutRequest> create = new HttpEntity<>(createPayoutRequest(), getBasicAuthHeader());
 
         String createTransactionUri = "/api/v1/payouts";

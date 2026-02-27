@@ -64,6 +64,10 @@ rate-limit:
 
 webhook:
   secret-key: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_SECRET_KEY:abrakadabra4224}
+  outgoing-url: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_OUTGOING_URL:http://localhost:8088/api/v1/webhooks/payment-provider}
+  scheduler:
+    fixed-delay-ms: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_SCHEDULER_FIXED_DELAY_MS:5000}
+    batch-size: ${FAKE_PAYMENT_PROVIDER_WEBHOOK_SCHEDULER_BATCH_SIZE:100}
 #
 #logging:
 #  level:

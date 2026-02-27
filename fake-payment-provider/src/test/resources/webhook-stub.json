@@ -1,0 +1,29 @@
+{
+  "mappings": [
+    {
+      "request": {
+        "method": "POST",
+        "urlPath": "/webhook",
+        "headers": {
+          "X-Signature": {
+            "matches": ".+"
+          }
+        },
+        "bodyPatterns": [
+          {
+            "matchesJsonPath": "$[?(@.type)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.id)]"
+          },
+          {
+            "matchesJsonPath": "$[?(@.status)]"
+          }
+        ]
+      },
+      "response": {
+        "status": 200
+      }
+    }
+  ]
+}

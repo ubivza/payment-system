@@ -1,0 +1,20 @@
+package com.example.webhookcollectorservice.entity;
+
+import lombok.Builder;
+import lombok.Getter;
+import lombok.extern.jackson.Jacksonized;
+
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.util.UUID;
+
+@Builder
+@Getter
+@Jacksonized
+public class EventBody {
+    private UUID transactionId;
+    private String status;
+    private BigDecimal amount;
+    private String reason;
+    private Instant timestamp;
+}
