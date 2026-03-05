@@ -36,7 +36,8 @@ val versions = mapOf(
     "swaggerAnnotations" to "2.2.40",
     "commonsCodec" to "1.21.0",
     "hibernateJpaModelgen" to "6.6.42.Final",
-    "bucket4j" to "8.10.1"
+    "bucket4j" to "8.10.1",
+    "wiremockTestcontainers" to "1.0-alpha-15"
 )
 
 repositories {
@@ -107,6 +108,7 @@ dependencies {
     testImplementation("org.testcontainers:postgresql")
     testImplementation("org.testcontainers:junit-jupiter:${versions["junitJupiter"]}")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+    testImplementation("org.wiremock.integrations.testcontainers:wiremock-testcontainers-module:${versions["wiremockTestcontainers"]}")
 }
 
 tasks.withType<Test> {

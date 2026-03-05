@@ -12,7 +12,7 @@ import java.util.UUID;
 @Mapper(componentModel = MappingConstants.ComponentModel.SPRING,
         uses = {DateTimeUtils.class})
 public interface PayoutMapper {
-    @Mapping(target = "status", expression = "java(new String(\"PENDING\"))")
+    @Mapping(target = "status", ignore = true)
     Payout toEntity(PayoutRequest request, UUID merchantId);
     com.example.fake.dto.Payout toResponse(Payout entity);
 }

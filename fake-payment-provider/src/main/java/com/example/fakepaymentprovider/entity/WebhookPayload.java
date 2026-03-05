@@ -10,6 +10,7 @@ import java.util.UUID;
 @Getter
 @Jacksonized
 public class WebhookPayload {
+    private String type;
     private UUID id;
     private String status;
     private String reason;

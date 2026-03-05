@@ -2,7 +2,6 @@ package com.example.fakepaymentprovider.service;
 
 import com.example.fake.dto.Payout;
 import com.example.fake.dto.PayoutRequest;
-import com.example.fake.dto.StatusUpdate;
 import com.example.fakepaymentprovider.exception.NotFoundException;
 import com.example.fakepaymentprovider.exception.NotValidException;
 import com.example.fakepaymentprovider.mapper.PayoutMapper;
@@ -14,15 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class PayoutService implements WebhookListener {
+public class PayoutService {
     private final PayoutRepository repository;
     private final PayoutMapper mapper;
     private final MerchantService merchantService;
+    private final Random random = new Random();
 
     @Transactional
     public Payout create(PayoutRequest payoutRequest) {
@@ -30,7 +31,9 @@ public class PayoutService implements WebhookListener {
             throw new NotValidException("Amount must be more than 0");
         }
 
-        com.example.fakepaymentprovider.entity.Payout saved = repository.save(mapper.toEntity(payoutRequest, merchantService.getCurrentMerchantInnerId()));
+        com.example.fakepaymentprovider.entity.Payout entity = mapper.toEntity(payoutRequest, merchantService.getCurrentMerchantInnerId());
+        entity.setStatus(random.nextBoolean() ? "COMPLETED" : "FAILED");
+        com.example.fakepaymentprovider.entity.Payout saved = repository.save(entity);
         return mapper.toResponse(saved);
     }
 
@@ -54,16 +57,5 @@ public class PayoutService implements WebhookListener {
         return repository.findAll(spec).stream()
                 .map(mapper::toResponse)
                 .toList();
-    }
-
-    @Override
-    @Transactional
-    public void updateStatus(StatusUpdate statusUpdate) {
-        com.example.fakepaymentprovider.entity.Payout payout = repository.findById(statusUpdate.getId())
-                .orElseThrow(() -> new NotFoundException(String.format("Not found payout with id %s", statusUpdate.getId())));
-
-        payout.setStatus(statusUpdate.getStatus());
-
-        repository.save(payout);
     }
 }

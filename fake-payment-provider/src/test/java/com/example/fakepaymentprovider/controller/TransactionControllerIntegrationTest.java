@@ -61,7 +61,7 @@ class TransactionControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test basic auth -> bucket token consumed -> transaction created 200")
     public void createTransactionHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<TransactionRequest> createTransaction = new HttpEntity<>(createTransactionRequest(), getBasicAuthHeader());
 
         String createTransactionUri = "/api/v1/transactions";
@@ -79,7 +79,7 @@ class TransactionControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test transaction created -> get by id 200")
     public void getTransactionByIdHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<TransactionRequest> createTransaction = new HttpEntity<>(createTransactionRequest(), getBasicAuthHeader());
 
         String createTransactionUri = "/api/v1/transactions";
@@ -109,7 +109,7 @@ class TransactionControllerIntegrationTest extends Container {
     @Test
     @DisplayName("Test transaction created -> get all 200")
     public void getTransactionsHappy() {
-        assertEquals(2, merchantRepository.findAll().size());
+        assertEquals(3, merchantRepository.findAll().size());
         HttpEntity<TransactionRequest> createTransaction = new HttpEntity<>(createTransactionRequest(), getBasicAuthHeader());
 
         String createTransactionUri = "/api/v1/transactions";

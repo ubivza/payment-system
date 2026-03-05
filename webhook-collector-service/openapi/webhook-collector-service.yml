@@ -1,0 +1,77 @@
+openapi: 3.0.0
+info:
+  title: Webhook Collector Service API
+  version: 1.0.0
+servers:
+  - url: http://localhost:8088
+
+tags:
+  - name: Webhook
+
+paths:
+  /api/v1/webhooks/payment-provider:
+    post:
+      summary: Входящее уведомление о статусе транзакции (успех/неуспех)
+      operationId: "processWebhook"
+      security: []   # HMAC проверка по подписи
+      tags:
+        - Webhook
+      parameters:
+        - name: X-Signature
+          in: header
+          required: true
+          schema:
+            type: string
+            example: "621dc816b3bf670212e0c261dc9bcdb6"
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StatusUpdate'
+      responses:
+        '200':
+          description: Уведомление принято
+        '400':
+          description: Некорректный запрос
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Неавторизовано (неверенная подпись webhook-а)
+
+components:
+  schemas:
+    StatusUpdate:   # схема для webhook-уведомления о статусе
+      type: object
+      required: [id, status]
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID транзакции/выплаты, статус которой обновляется
+        type:
+          type: string
+          description: Тип (withdrawal <-> payout/deposit <-> transaction)
+        status:
+          type: string
+          description: Новый статус ("SUCCESS" или "FAILED")
+        reason:
+          type: string
+          description: Необязательное поле с причиной отказа / дополнительной информацией
+        provider:
+          type: string
+        amount:
+          type: number
+
+    ErrorResponse:
+      type: object
+      properties:
+        error:
+          type: string
+          description: Короткий код ошибки, например "VALIDATION_ERROR"
+        message:
+          type: string
+          description: Описание ошибки для отображения или логирования
+      required: [error, message]
