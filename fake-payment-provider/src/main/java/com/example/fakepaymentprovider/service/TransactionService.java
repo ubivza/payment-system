@@ -1,6 +1,5 @@
 package com.example.fakepaymentprovider.service;
 
-import com.example.fake.dto.StatusUpdate;
 import com.example.fake.dto.Transaction;
 import com.example.fake.dto.TransactionRequest;
 import com.example.fakepaymentprovider.exception.NotFoundException;
@@ -14,15 +13,17 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 @Service
 @Transactional(readOnly = true)
 @RequiredArgsConstructor
-public class TransactionService implements WebhookListener {
+public class TransactionService {
     private final TransactionRepository repository;
     private final TransactionMapper mapper;
     private final MerchantService merchantService;
+    private final Random random = new Random();
 
     @Transactional
     public Transaction create(TransactionRequest transactionRequest) {
@@ -30,7 +31,9 @@ public class TransactionService implements WebhookListener {
             throw new NotValidException("Amount must be more than 0");
         }
 
-        com.example.fakepaymentprovider.entity.Transaction saved = repository.save(mapper.toEntity(transactionRequest, merchantService.getCurrentMerchantInnerId()));
+        com.example.fakepaymentprovider.entity.Transaction entity = mapper.toEntity(transactionRequest, merchantService.getCurrentMerchantInnerId());
+        entity.setStatus(random.nextBoolean() ? "COMPLETED" : "FAILED");
+        com.example.fakepaymentprovider.entity.Transaction saved = repository.save(entity);
         return mapper.toResponse(saved);
     }
 
@@ -54,16 +57,5 @@ public class TransactionService implements WebhookListener {
         return repository.findAll(spec).stream()
                 .map(mapper::toResponse)
                 .toList();
-    }
-
-    @Override
-    @Transactional
-    public void updateStatus(StatusUpdate statusUpdate) {
-        com.example.fakepaymentprovider.entity.Transaction transaction = repository.findById(statusUpdate.getId())
-                .orElseThrow(() -> new NotFoundException(String.format("Not found transaction with id %s", statusUpdate.getId())));
-
-        transaction.setStatus(statusUpdate.getStatus());
-
-        repository.save(transaction);
     }
 }

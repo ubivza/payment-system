@@ -11,4 +11,13 @@ import org.springframework.context.annotation.Configuration;
 @ConfigurationProperties(prefix = "webhook")
 public class WebhookSecretHolder {
     private String secretKey;
+    private String outgoingUrl;
+    private Scheduler scheduler = new Scheduler();
+
+    @Setter
+    @Getter
+    public static class Scheduler {
+        private long fixedDelayMs = 5000;
+        private int batchSize = 100;
+    }
 }

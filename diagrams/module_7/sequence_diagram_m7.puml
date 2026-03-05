@@ -1,0 +1,55 @@
+@startuml
+actor Client
+participant IndividualsApi
+participant Keycloak
+participant PaymentService
+
+actor FakeProvider
+participant WebhookCollector
+participant Kafka
+participant TransactionService
+participant DB
+
+Client -> IndividualsApi: /login
+IndividualsApi -> Keycloak: /realms/{realm}/protocol/openid-connect/token
+Keycloak -> IndividualsApi: access token + refresh token пара
+IndividualsApi -> Client: access token + refresh token пара
+
+Client -> IndividualsApi: /payments/{currencyCode}/{countryCode}
+IndividualsApi -> PaymentService: /api/v1/payment-methods/{currencyCode}/{countryCode}
+PaymentService -> IndividualsApi: доступные методы оплаты по валюте и стране
+IndividualsApi -> Client: доступные методы оплаты по валюте и стране
+
+Client -> IndividualsApi: /payments/{methodId}
+IndividualsApi -> PaymentService: /api/v1/payment-methods/{methodId}
+PaymentService -> IndividualsApi: метод оплаты по id
+IndividualsApi -> Client: метод оплаты по id
+
+Client -> IndividualsApi: /transactions/deposit/init
+IndividualsApi -> TransactionService: /v1/transactions/deposit/init
+TransactionService -> IndividualsApi: условия проведения транзакции
+IndividualsApi -> Client: условия проведения транзакции
+
+Client -> IndividualsApi: /transactions/deposit/confirm
+IndividualsApi -> TransactionService: /v1/transactions/deposit/confirm
+IndividualsApi -> PaymentService: /api/v1/payments
+alt Успешно
+    TransactionService -> IndividualsApi: статус и id транзакции
+    IndividualsApi -> Client: статус и id транзакции
+    PaymentService -> FakeProvider: /api/v1/payouts создать выплату
+    FakeProvider -> WebhookCollector: POST /api/v1/webhooks/payment-provider
+    WebhookCollector -> WebhookCollector: Проверка HMAC подписи
+    alt Токен верный
+        WebhookCollector -> DB: Сохранение webhook-уведомления
+        WebhookCollector -> Kafka: Публикация события в transaction-read топик
+        Kafka --> TransactionService: Событие о статусе платежа
+        TransactionService -> TransactionService: Финализация статуса транзакции
+    else Токен неверный
+        WebhookCollector --> FakeProvider: 401 Unauthorized
+    end
+else 500/400
+    TransactionService -> IndividualsApi: статус и id транзакции
+    IndividualsApi -> TransactionService: /v1/transactions/compensate-transaction/deposit/{transactionId}
+    IndividualsApi -> Client: статус и id транзакции
+end
+@enduml

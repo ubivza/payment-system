@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+LAYOUT_TOP_DOWN()
+
+Container_Boundary(webhookCollector, "Webhook Collector Service") {
+    Component(WebhookController, "WebhookController", "REST Controller")
+    Component(WebhookService, "WebhookService", "Service Layer")
+    Component(SecurityService, "SecurityService", "Token Validation")
+    Component(WebhookRepository, "WebhookRepository", "Spring Data JPA")
+    Component(TransactionKafkaSender, "TransactionKafkaSender", "Kafka Template")
+    ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Хранилище данных вебхуков")
+}
+
+Rel(WebhookController, SecurityService, "Проверяет токен")
+Rel(WebhookController, WebhookService, "Обрабатывает webhook")
+Rel(WebhookService, WebhookRepository, "Сохраняет уведомления")
+Rel(WebhookService, TransactionKafkaSender, "Публикует событие в Kafka")
+Rel(WebhookRepository, db, "SQL операции")
+@enduml

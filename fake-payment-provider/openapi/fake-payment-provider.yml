@@ -8,7 +8,6 @@ servers:
 tags:
   - name: Transaction
   - name: Payout
-  - name: Webhook
 
 security:
   - basicAuth: []   # По умолчанию все приватные методы требуют Basic Auth
@@ -210,70 +209,6 @@ paths:
         '401':
           description: Неавторизован
 
-  /api/v1/webhook/transaction:
-    post:
-      summary: Входящее уведомление о статусе транзакции (успех/неуспех)
-      operationId: "updateTransaction"
-      security: []   # вебхуки не требуют Basic Auth (предполагается своя проверка по подписи)
-      tags:
-        - Webhook
-      parameters:
-        - name: X-Signature
-          in: header
-          required: true
-          schema:
-            type: string
-            example: "621dc816b3bf670212e0c261dc9bcdb6"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StatusUpdate'
-      responses:
-        '200':
-          description: Уведомление принято, статус обновлен
-        '400':
-          description: Некорректный запрос (например, транзакция не найдена или неверный статус)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Неавторизовано (неверенная подпись webhook-а, если реализовано)
-
-  /api/v1/webhook/payout:
-    post:
-      summary: Входящее уведомление о статусе выплаты
-      operationId: "updatePayout"
-      security: []
-      tags:
-        - Webhook
-      parameters:
-        - name: X-Signature
-          in: header
-          required: true
-          schema:
-            type: string
-            example: "621dc816b3bf670212e0c261dc9bcdb6"
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/StatusUpdate'
-      responses:
-        '200':
-          description: Уведомление о выплате принято, статус обновлен
-        '400':
-          description: Некорректный запрос (например, выплата не найдена)
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
-          description: Неавторизовано (неверная аутентификация webhook)
-
 components:
   securitySchemes:
     basicAuth:
@@ -369,21 +304,6 @@ components:
         externalId:
           type: string
       required: [id, merchantId, amount, currency, status, createdAt]
-
-    StatusUpdate:   # схема для webhook-уведомления о статусе
-      type: object
-      required: [id, status]
-      properties:
-        id:
-          type: string
-          format: uuid
-          description: ID транзакции/выплаты, статус которой обновляется
-        status:
-          type: string
-          description: Новый статус ("SUCCESS" или "FAILED")
-        reason:
-          type: string
-          description: Необязательное поле с причиной отказа / дополнительной информацией
 
     ErrorResponse:
       type: object
