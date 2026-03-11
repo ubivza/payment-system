@@ -1,0 +1,19 @@
+@startuml
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Component.puml
+LAYOUT_TOP_DOWN()
+
+Container_Boundary(notificationService, "Notification Service") {
+    Component(NotificationController, "NotificationController", "REST Controller")
+    Component(NotificationService, "NotificationService", "Service Layer")
+    Component(NotificationRepository, "NotificationRepository", "Spring Data JPA")
+    Component(KafkaConsumer, "KafkaConsumer", "Kafka Listener")
+    Component(EmailService, "EmailService", "Отправка email")
+    ContainerDb(db, "PostgreSQL Database", "PostgreSQL", "Хранилище уведомлений")
+}
+
+Rel(KafkaConsumer, NotificationService, "Обрабатывает Kafka-сообщения")
+Rel(NotificationController, NotificationService, "REST вызовы")
+Rel(NotificationService, NotificationRepository, "CRUD операции уведомлений")
+Rel(NotificationService, EmailService, "Отправляет email")
+Rel(NotificationRepository, db, "SQL операции")
+@enduml
